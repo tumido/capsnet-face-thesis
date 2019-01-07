@@ -1,11 +1,11 @@
-It's essential to any living species to recognise others in their community. Evolution has allowed animals to develop many methods, how to identify fellow members. Different species use various senses to do so. Smell, vision or hearing are the most common ones. However, humankind relies mostly on their vision. We didn't develop strong perception of smell or other senses, that we can utilise on purpose or over longer distances. Therefore we mostly use our vision.
+It's essential to any living species to recognize others in their community. Evolution has allowed animals to develop many methods, how to identify fellow members. Different species use various senses to do so. Smell, vision or hearing are the most common ones. However, humankind relies mostly on their vision. We didn't develop strong perception of smell or other senses, that we can utilise on purpose or over longer distances. Therefore we mostly use our vision.
 
-Moreover our species developed a habit to cover ourselves in clothes, which left only certain parts of our body exposed. Usually that's head and hands. And since receptors for most of our senses are placed on head, we're required to have it exposed to be able to orient in surroundings. This makes the frontal part of our head, a face, a great candidate for identifying others. We can recognise many nuances of different elements on the face. Shape of eyes, nose or mouth, colour of our eyes... That's just a subset of all the available features we use.
+Moreover our species developed a habit to cover ourselves in clothes, which left only certain parts of our body exposed. Usually that's head and hands. And since receptors for most of our senses are placed on head, we're required to have it exposed to be able to orient in surroundings. This makes the frontal part of our head, a face, a great candidate for identifying others. We can recognize many nuances of different elements on the face. Shape of eyes, nose or mouth, colour of our eyes... That's just a subset of all the available features we use.
 
-In this era of computers and information technologies, mankind tend to use what we know and offload our skills and capabilities to artificial intelligence. We hope to sharpen and enhance our senses; obtain more knowledge or widen our possibilities. As an example, which is more deeply elaborated in this thesis, we're trying to "teach" machines to recognise faces in the same way as we do. And there are various reasons to do so.
+In this era of computers and information technologies, mankind tend to use what we know and offload our skills and capabilities to artificial intelligence. We hope to sharpen and enhance our senses; obtain more knowledge or widen our possibilities. As an example, which is more deeply elaborated in this thesis, we're trying to "teach" machines to recognize faces in the same way as we do. And there are various reasons to do so.
 
 \section{Motivation}
-Facial recognition in computer science is used in many different ways. Some use cases require people to be recognised for personal or company security purposes, for surveillance or just for our convenience.
+Facial recognition in computer science is used in many different ways. Some use cases require people to be recognized for personal or company security purposes, for surveillance or just for our convenience.
 
 Automating security countermeasures is a huge driving factor. It allows us to devote our time to other activities then watching over our belongings. It ensures our privacy and well being of your community. Let's list some basic use cases:
 
@@ -19,12 +19,31 @@ Furthermore, automated recognition of people's faces and identification of them 
 
 \section{Justification}
 
-Similarly to every field in computer science, there is an ongoing race to provide better service in facial recognition. There are multiple aspects used as a metric to define better solution and this varies for each use case. Once, it's essential to provide the best performing software for automated recognition in places where limited computational power is available. Other time, it's rather about precision and time required to recognise a face which defines success. Outrunning other solutions means better service and inventing new technologies along the way unlocks better understanding in our own thinking process. In this thesis the existing solutions will be elaborated in detail as well as principles used to achieve such results.
+As in any field in computer science, there is an ongoing race to provide better service in facial recognition. There are multiple aspects used as a metric to define better solution and this varies for each use case. Once, it's essential to provide the best performing software for automated recognition in places where limited computational power is available. Other time, it's rather about precision and time required to recognize a face. Outrunning other solutions means better service and inventing new technologies along the way unlocks better understanding in our own thinking process. In this thesis the existing solutions will be elaborated in detail as well as principles used to achieve such results.
 
-There are also different approaches used for creating different solutions. Sometimes a naive approach is used, other times the implementation leverages different aspects of Neural Networks. 
+There are also different approaches used to create different solutions. Sometimes a naive approach is used, other times the implementation leverages different aspects of Artificial Inteligence, especially Neural Networks.
 
-The aim of this thesis is to construct a very own solution to this problem, relying strictly on Neural Networks. Each part of the problem is explained and implemented. Comparison with existing solution is offered as a part of the discussion chapter~\ref{chapter:discussion}, later in this paper.
+The aim of this thesis is to construct a very own solution to this problem, relying strictly on Neural Networks. Each part of the problem is explained and implemented. Comparison with existing solution is offered as a part of Discussion chapter
+%~\ref{chapter:discussion}
+, later in this paper.
 
-\section{Computer science approach}
 
-\todo{divide into sub-problems}
+\section{Decomposition}
+
+To recognize a human face is a complex problem. Therefore it's usually divided into smaller subtasks wich are easier to comprehend and solve. Firstly, it's required to understand the input data. This understanding provides means to fundamentally divide the problem into easily solvable subtasks. Let's define and describe what are the expectations and demands on the input, as well as elaborate the required outputs.
+
+\subsection{In-the-wild pictures}
+
+As wide as the use cases, the variety of input data is vast. Some cases depends on frontal pictures of faces, some accents the so-called "pictures in-the-wild". This is a term specifically used for pictures captured without cooperation with the subject on the picture. Person on the picture is captured from an angle, without eye contact with camera, etc. This thesis aims to cover a topic of facial recognition over CCTV data. However it can be said that any in-the-wild pictures are suitable for the the implementation. The sufficient resolution is the most important feature and requirement on the input data. The model has to be able to find a face on the picture. Therefore even it the model would rely solely on CCTV data, the data feed has to provide enough detail of the person's face.
+
+\todo{image}
+
+CCTV as a source of the input data has some crucial advantages for real world scenarios over any random "pictures in-the-wild". Usually CCTV produces feeds, therefore the subject of recognition is captured on many frames of such video. That means, the model can have multiple images of the same face available and if it is properly configured and trained, it can leverage this aspect. This topic will be elaborated further in the Available data sets chapter.
+
+\subsection{Recognition and identification}
+
+Imagine an individual captured on a CCTV footage. To identify the person by face we have to naturally focus the model on a face. Therefore the first step would be to detect where and if the picture captures a face. When such region is found, it's essential to detect all the facial features the models is trained to detect. Not always all features are available (the face can be partially covered, captured from an angle etc.)\,--\,the model has to adapt to such situation. Based on the features detected, the model creates an normalized estimation of the facial features. This normalized template should represent a frontal scan of facial features of the individuals face. When the model has access to multiple images of the face, it can produce multiple templates and combine them into one unique normalized master template unique to the person.
+
+\subsection{Output information}
+
+Last but not least, let's define what is expected to be found in such pictures. A facial identification model aims to come up with a unique vector (face template) for each person. Unique in a sense of minimisation of interdimensionality and maximizing intradimensionality. That means the vector extracted from the picture is as much as possible similar to all other vectors for the same person, and the most different to vector assigned to other people. Naturally each picture of the same person can result into slightly different template. However this sample specific output vector is nearly identical to a summarised template for the person. This summarized template is a result of combining many output vectors for the same individual.
