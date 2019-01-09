@@ -1,3 +1,7 @@
+## Final document changes ignored
+project.pdf
+
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
@@ -15,6 +19,7 @@
 ## Intermediate documents:
 *.dvi
 *.xdv
+*.ptc
 *-converted-to.*
 # these rules might exclude image files for figures etc.
 # *.ps
