@@ -1,0 +1,172 @@
+Before implementing own solution, let's firstly uncover some available and current solutions to this very problem. Naturally, big progress and research is performed in this topic, therefore this chapter is not meant to provide full market scan, or list every solution available. It rather aims to discover some fine examples of neural network implementations which perform well.
+
+Later on you'll stumble upon a list of available face recognition databases and data sets which can be used for training and evaluating the very own implementation. Each of the data set description is accompanied by a short list of their respective metrics.
+
+\section{Existing implementations}
+
+\subsection{Some other solution}
+
+\subsection{FaceNET}
+
+\section{Frameworks}
+
+Each of the previously mentioned solutions has something in common. They've used a AI framework or library of some sort. Writing neural networks from scratch is obviously a complex task, therefore there are many initiatives which seeks to simplify and facilitate access to such complex structures. Let§s list some most common ones and list some of their basic advantages and disadvantages.
+
+\subsection{Torch and PyTorch}
+
+Torch is a deep-learning and computational framework written in Lua. While very powerful, its design prevented from being adopted by users and researchers. The main problem was in usage of rather exotic programming language which created barrier for users. It's been decided to create a Python clone of the framework, which brought PyTorch to existence. It was created by Facebook and released in 2007 under an open source license. One of it's key features are dynamic computation graphs, which can serve well when processing inputs or outputs of variable length.
+
+\begin{itemize}
+    \item[$\boldsymbol{+}$] Many pluggable modules
+    \item[$\boldsymbol{+}$] Easy to integrate different extensions
+    \item[$\boldsymbol{+}$] Simple to define own layers
+    \item[$\boldsymbol{+}$] Straightforward access to running code on GPU
+    \item[$\boldsymbol{+}$] Offers dynamic computation graphs
+    \item[$\boldsymbol{+}$] Broad community and wide audience
+    \item[$\boldsymbol{+}$] Easier to inspect and monitor training of models
+    \item[$\boldsymbol{+}$] Intuitive API
+    \item[$\boldsymbol{-}$] Requires custom training code
+\end{itemize}
+
+\subsection{Tesorflow}
+
+This library created by Google was designed as a replacement for their previous project called Theano. Tensorflow a heavyweight framework written as a Python API in C/C++. It simplifies researcher's task in many ways better than other frameworks. For example it generates a computational graph and performs automatic differentiation. That means the user is not required to write a training code (backpropagation) every time, he's experimenting with a new network topology. Since this framework is backed by Google it thrives in many different applications and can scale across devices. Many posibilities for applying saved models in different environment enables use of AI in mobile devices and even in web browsers. However it's broad possibilities and options make this framework hard to understand and for newcomers it can be confusing and too complex. Therefore an abstraction layer above Tensorflow had been created, but more about that in the Keras subsection below.
+
+\begin{itemize}
+    \item[$\boldsymbol{+}$] Native Python and Numpy integration
+    \item[$\boldsymbol{+}$] Automatic training code
+    \item[$\boldsymbol{+}$] Broad community and wide audience
+    \item[$\boldsymbol{-}$] Heavyweight frameworks
+    \item[$\boldsymbol{-}$] A bit slower than PyTorch
+\end{itemize}
+
+\subsection{Caffe and Caffe2}
+
+Caffe is another competition framework, which is widely popular among researchers. It started as a C/C++ port of Matlab's implementation of fast convolutional networks. It's mainly oriented on feed forward networks and image processing and is not intended for other deep learning application like text processing or 1D series data. Later on it became performace wise obsolete and community of Caffe developers decided to start from scratch and created a long-awaited successor Caffe2. Backed by Facebook as their second deep learning toolkit after PyTorch it provides more lightweight and scalable solution than before. It's main area of focus is enterprise grade production environments.
+
+\begin{itemize}
+    \item[$\boldsymbol{+}$] Great for image processing and feedforward networks
+    \item[$\boldsymbol{+}$] Automatic training code
+    \item[$\boldsymbol{+}$] Lightweight
+    \item[$\boldsymbol{+}$] BSD license
+\end{itemize}
+
+\subsection{Keras}
+
+A modern abstraction layer above Tensorflow. Authors and users of Tensorflow suffered from heavy and complex code structures and when PyTorch appeared with their light and straightforward Python API, they've started adopting the same principals for the Tensorflow as well. Therefore a project named Keras was created. It provides intuitive API inspired by Torch and while starting from Tensorflow it outgrown this base and spread across many deep learning libraries as its backeds - Theano, Deeplearning4j, and CNTK. In addition to its high level abstraction over the backends Keras also provides means to drill down and optimize and manipulate the underlying code.
+
+\begin{itemize}
+    \item[$\boldsymbol{+}$] Intuitive API
+    \item[$\boldsymbol{+}$] Multiple backeds to choose from
+    \item[$\boldsymbol{+}$] Lightweight
+    \item[$\boldsymbol{+}$] Fask growing community
+    \item[$\boldsymbol{+}$] Recognized as a standard Python API for neural networks
+\end{itemize}
+
+\section{Data Sets}
+
+In order to better understand the nature of CCTV imagery, pictures in the wild and the source data we are about to work with, let's describe some commonly used databases of face images and face recognition data. It's crucial to understand the variety and differences between subjects captured on sample images, like their age, sex, and ethnicity. Also we need to pay attention to circumstances of the photo setup. That means for example consistency of resolution across samples, poses and angles, etc.
+
+\subsection{FDDB: Face Detection Data Set and Benchmark}
+
+This data set provides annotations for Faces in the Wild\,\cite{fiw} database. FDDB\,\cite{fddb} lists coordinates for bounding boxes of over 5 thousands faces located on pictures from Faces in the Wild database. Usually multiple faces are located on a single picture. This data set can provide ground for face detection algorithm and therefore it can be benefited from in the first step of implementation. For recognition of individuals whom such face belongs to, another data set has to be used. A great accompanying data set can be the LFW mentioned in next subsection.
+
+\begin{table}[ht]
+    \centering
+    \caption{FDDB data set metrics}
+
+    \begin{tabularx}{0.75\textwidth}{l|l}
+        \toprule
+        Number of subjects & \num{5171} \\
+        Total images &  \num{28045} \\
+        Poses & Varies \\
+        Resolution & All kind, even blurred faces \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{LFW: Labeled Faces in the Wild}
+
+LFW\,\cite{lfw} provides labels for images from Faces in the Wild data set mentioned before. Therefore when used in conjunction with FDDB...
+
+\begin{table}[ht]
+    \centering
+    \caption{LWF data set metrics}
+
+    \begin{tabularx}{0.75\textwidth}{l|l}
+        \toprule
+        Number of subjects &  \\
+        Total images &  \\
+        Samples per subject &  \\
+        Resolution &  \\
+        License &  \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{The Extended Yale Face Database B}
+
+Extended version of original Yale Face Database. The extension was provided by UCSD\,\cite{ext_yale_paper}. This database comprises over \num{16000} images of 28 unique subjects. They are fitted to same size and resolution, covering various angles of the face. There are 9 poses provided for each person, each of them covering 64 different illumination condition.  When compared to a large scale data set this database lacks volume, however it maintains consistency across its samples.
+
+\begin{table}[ht]
+    \centering
+    \caption{Extended Yale Face Database B metrics}
+
+    \begin{tabularx}{0.75\textwidth}{l|l}
+        \toprule
+        Number of subjects & 28 \\
+        Total images & \num{16128} \\
+        Samples per subject & 576 \\
+        Poses & 9 \\
+        Resolution & 168x192 pixels \\
+        License & Free to use for research purposes\\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{SCface - Surveillance Cameras Face Database}
+
+A face database originate from University of Zagreb. Quaility data set of surveillance like face images. It aims to simulate a CCTV captured images by simulating an uncontrolled indoor environment. Each of 130 subjects is captured by up to 8 video survailence cameras. Some of them even capable of IR capturing. Each camera produces images of different resolution and sharpness. Cameras are also set in different angles against the subject. SCFace\,\cite{scface} mimics real-world circumstances and use cases of CCTV, therefore this data set can be used to train robust solutions for face recoginition targeting CCTV and survailence cameras.
+
+A disadvantage is the size of this data set, where we can find \num{4160} image samples only. When compared to large-scaled data set like the VGGFace and VGGFace2 mentioned in next subsection, this data set lacks volume. Also the variety of subjects is not robust enough in comparison to other data set. As said, SCFace captures 130 subjects. Most of them are of the same sex, all of the same ethnicity.
+
+\begin{table}[ht]
+    \centering
+    \caption{SCFace data set metrics}
+
+    \begin{tabularx}{0.75\textwidth}{l|l}
+        \toprule
+        Number of subjects & 130 \\
+        Total images & \num{4160} \\
+        Samples per subject & Fixed amount of 32 images per person \\
+        Resolution & Varies, 3 different sizes \\
+        License & Custom \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+This database is available for research purposes and upon written request to the authors.
+
+
+\subsection{VGGFace2}
+
+Visual Geometry Group produced a second iteration of their face recognition data set\,\cite{VVGFace2}. This is one of the most wide data sets which are publicly available. It provides a wide-scale data for face recognition for over 9000 different identities. Distribution of individuals varies though, with minimal 87 images up to 843 per identity. Average number of images per subject is 362. The data set contains over \num{3.3} milion of images. Subjects varies in ethnicity, age and profession, while the images varies in angles or poses.
+
+The data set is made available under Creative Commons license\,\cite{cc_by-sa_40}, therefore it's available for broad use to any project.
+
+This project also provides sample models trained on this data set. However, the example pretrained neural network models provided within this project are not the sole example of the data set usage. Many popular face recognition models are trained on this data set. For example FaceNET can be seen as one of the popular projects which benefits from this data set.
+
+\begin{table}[ht]
+    \centering
+    \caption{VGGFace2 data set metrics}
+
+    \begin{tabularx}{0.75\textwidth}{l|l}
+        \toprule
+        Number of subjects & \num{9294} \\
+        Total images & \num{3311286} \\
+        Samples per subject & Varies, 87--843 per subject \\
+        Resolution & Varies, many different sizes \\
+        License & Creative Commons\,\cite{cc_by-sa_40} \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
