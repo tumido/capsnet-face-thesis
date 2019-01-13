@@ -43,7 +43,7 @@ rename:
 	sed -i "s/$(CO)-20-literatura-bibliography/$(NAME)-20-literatura-bibliography/g" $(NAME).tex
 	sed -i "s/$(CO)-30-prilohy-appendices/$(NAME)-30-prilohy-appendices/g" $(NAME).tex
 	sed -i "s/$(CO)/$(NAME)/g" Makefile
-	
+
 # Pozor, vlna neresi vse (viz popis.txt) / Warning - vlna is not solving all problems (see description.txt)
 vlna:
 	vlna -l $(CO)-*.tex
@@ -52,3 +52,6 @@ vlna:
 normostrany:
 	echo "scale=2; `detex -n $(CO)-[01]*.tex | wc -c`/1800;" | bc
 
+# Konverze SVG do PDF
+svg:
+	for i in obrazky-figures/*.svg; do inkscape -z -D --file=$$i --export-pdf=obrazky-figures/$$(basename -s .svg $$i).pdf; done

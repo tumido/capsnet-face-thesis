@@ -1,12 +1,121 @@
-\section{Traditional approach}
+Face detection and recognition is not a new subject to computer science. Through time there were many attempts to provide satisfactory solution and approximation. Techniques used for face detection spans from regular well known image recognition via edge detection, to more advanced, precise, though computationally expensive use of neural networks. This chapter will provide a basic overview of the mainstream approaches, listing the most current state-of-the-art methods and means to the problem.
 
-\subsection{Edge detection}
+Each section in this chapter represents a family of solutions. Providing a full description, explanation and understanding of their respective problem would span a book of its own, hence we aim to cover only a high level walkthough. Though we may revisit certain aspects in more detail in later the text, as well.
+
+\section{Traditional approach fo face detection}
+
+
 
 \section{Convolutional Neural Networks}
 
+There are many kinds of neural networks, one of which is called Convolutional Network, or CNN (Convolutional Neural Network). CNN specialises in processing data of known, grid-like structure. That includes for example time-series data, which can be represented as one dimensional grid of samples taken in regular time intervals. It also includes image data, represented as 2D grid of pixels. As the name suggests, CNNs employs a mathematical operation called \textbf{convolution}. In practical application, that stands for a substitution of a matrix multiplication by this linear mathematical operation - convolution. And this is done so in at least one of the network's layers.
+
+This section aims to explain what convolution is, what are the motivations behind its usage in neural networks. Later we'll describe a \textbf{pooling} operation, which is used in almost all CCNs as well.
+
 \subsection{Convolution}
+
+Convolution as a mathematical operation generally symbolise an operation on two functions of real-valued argument. Let's start with an example of such functions and demonstrate a motivation behind convolution:
+
+Assume we have a vehicle and a laser parking sensor mounted on its front. This sensor is used to measures a distance to some object, let's say a docking station for the vehicle. And we want to park the vehicle at some precise proximity to the object. The sensor provides an single output $p(t)$, which reads as a position of the vehicle at certain time. Both $p$ and $t$ are real-valued, which means that the sensor can provide a different output value at any instance in time.
+
+We also have to count in that our sensor is not always fully precise and reliable, so the measurements provided may be noisy. To obtain a more relevant data we\,--\, less noisy estimate of the position against the object, we can base our measurement on an average of several data samples. Since the vehicle is moving, we have to assume that more recent outputs should provide more relevant reading. So, we can weight our average and give the more recent data points more importance. Let's define this weight function as $w(a)$, where the argument $a$ symbolize age of a measurement.
+
+Calculating the weighted average at every moment, we can get a smoother estimation of the vehicle's position as a new function:
+
+\begin{equation}
+    s(t) = \int p(a) w(t - a) da
+\end{equation}
+
+
+The function $s$ is formally known as \textbf{convolution}. An asterisk symbol is usually used to denote this operation:
+
+\begin{equation}
+    s(t) = (p * w)(t)
+\end{equation}
+
+To complete the definition, we have to note that $w$ has to be a valid probability density function, which in our example has to meet a criteria $a < 0: w(a) = 0$. That limits our function to weight only past samples, since we can's assume that our sensor can look into the future, that would be silly. That is a limitation to our use case only. In general, convolution is defined for all functions where the integral above is defined.
+
+Convolutional neural networks use a bit different terminology, than we used in the example. The function providing data we want to consume ($p$ from the example) is simply called \textbf{input}. The other parameter to the convolution, in our example that was the weight function, is called a \textbf{kernel}. The result of convolution ($s$) of input ($p$) over a kernel ($w$) is simply called \textbf{output} or \textbf{feature map}.
+
+Our expectation that the sensor from example above would provide a measurement continuously, in any instant of time, is not realistic. Time is usually discretized in digital world, therefore it's meaningful to assume the sensor is providing measurements at regular intervals. Therefore instead od integrating over time continuum, we can define discrete convolution as:
+
+\begin{equation}
+    s(t) = \sum_{a=-\infty}^{\infty} p(a) w(t - a) = (p * w)(t)
+\end{equation}
+
+Our example was quite simple and straightforward, usually in artificial inteligence and deep-learning the input is common to be multidimensional array (tensor) of data. Also the kernel happens to be a tensor of parameters which values are often obtained by some learning algorithm.
+
+Finally, when processing multidimensional data convolution is used over multiple axis at the same time. That's important for our application, because processing pictures have more than one dimension. So in case we have an input image $I$\,--\, a two-dimensional bitmap, our convolution should use a two-dimensional kernel $K$ as well:
+
+\begin{equation}
+    S(x,y) = (I * K)(x, y) = \sum_i\sum_j I(m, n) K(x - i)(y - j)
+\end{equation}
+
+\begin{figure}[ht]
+    \includegraphics[width=\textwidth]{obrazky-figures/convolution.pdf}
+    \caption{Convolution operation with 2D input data and 2D kernel}\label{fig:convolution}
+\end{figure}
+
+\subsection{Use of convolution in neural networks}
+
+Im machine learning, we leverage multiple important properties of the convolution operation:
+
+\begin{itemize}
+    \item Sparse interaction
+    \item Sharing of parameters
+    \item Equivariant representation
+    \item Input of variable size
+\end{itemize}
+
+\subsubsection{Sparse Iteraction}
+
+As you can notice in figure \ref{fig:convolution}, kernel can be of different size than input. When the input data is for example an image of millions of pixels, the size of kernel allows convolution to select only specific subset of inputs for each output. In traditional neural networks matrix multiplication is used instead of convolution. That means every output unit interacts with every input unit. In convolutional networks, the kernel size limits that just to certain subset of input units. It is called \textbf{sparse interaction} or \textbf{sparse weights} and it is accomplished by restricting kernel to a smaller size than the input. That results in smaller memory footprint of the model, since it requires fewer parameters to be stored. while at the same time it improves statistical efficiency. It has also impact on performance, since computing the output requires fewer operations compared to matrix multiplication. A graphical demonstration can be seen on figure \ref{fig:sparse_b}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=.6\textwidth]{obrazky-figures/sparse_b.pdf}
+    \caption{\textit{Sparse interaction viewed from below}: The highlighted units demonstrates propagation of one input unit from current layer $s_3$ to the next layer. On the top you can see all the output $n$ units, which are affected by this particular input. On the bottom image, you can see how the same situation is represented in traditional matrix multiplication.}\label{fig:sparse_b}
+\end{figure}
+
+Deep convolutional networks allow indirect interaction between units which would be out of reach for given kernel size. This property is called \textbf{receptive field} of a unit and can be seen when we look at the network from perspective of the output layer (see figure\,\ref{fig:sparse_a}).
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=.6\textwidth]{obrazky-figures/sparse_a.pdf}
+    \caption{\textit{Sparse interaction viewed from above}: Highlighted portion of the image shows all units affecting current layer. The amount of units is smaller on the top picture. That represents sparse interaction. On the bottom is the same situation, when the current layer is formed by matrix multiplication in a traditional network.}\label{fig:sparse_a}
+\end{figure}
+
+However, this view limits us just to direct influence on a unit. Receptive field lists also indirect influence, hence when multiple convolutional layers are used by the network the field grows. The effect can be enhanced when network contains additional features like strided convolution or pooling. This means though the direct influence is very sparse, the final impact through indirect influence can make the units deeper in the network connected to most of the image on input.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=.6\textwidth]{obrazky-figures/receptive.pdf}
+    \caption{Receptive field}\label{fig:receptive}
+\end{figure}
+
+\subsubsection{Parameter sharing}
+
+A feature of convolution referring to a reuse of of parameter in more than one computation. In matrix multiplication, each weight element is calculated and used only once when computing the output. The weight is multiplied by one element of the input and then never used again. In contrast, convolution keeps it's kernel the same an uses its elements for every output calculation. This brings an advantage of learning just one set of weights for the whole input, rather than computing and remembering a set of weights for each output unit. Parameter sharing has no impact on on forward propagation but it does further improve memory efficiency of a stored model.
+
+\subsubsection{Equivariant representation}
+
+A function is equivariant to another when $f(g(x)) = g(f(x))$. Convolution is equivariant for example to translation. Imagine we have an input image and we shift the image some pixels to any direction. When convolution is performed, the same kernel is applied to any set of pixels, therefore the feature the network layer aims to collect can be found in the shifted image as well as in the original. It would just appear shifted in the output feature map. Here we can benefit from parameter sharing in use cases like edge detection. We're interested in the same feature, no matter where it appears on the image. In other use cases, like for example face detection, we might not be interested in the full parameter sharing. Imagine we have a kernel which is trained to detect mouth. In order to work properly, we should restrict this kernel to look for the feature only in bottom portion of the picture, because detecting a mouth on forehead would not result in proper outputs. We'll cover more about multi-kernel convolution layers later.
+
+\subsubsection{Variable size of the input}
+
+Convolution can process data samples of different sizes. When the use case requires to the network to be robust enough to properly process for example images, where each of the sample has different dimensions, this is a problem in matrix multiplication. The network can't apply the fixed size weight matrix on an input of different size. On the other hand, convolution is easy to perform, the situation is really similar to input of a fixed size, just the kernel is applied different amount of times.
 
 \subsection{Pooling}
 
+In neural networks, convolution layer doesn't mean solely convolution is applied. Typically such layer consists of multiple stages:
+
+\begin{enumerate}
+    \item \textbf{Convolution stage}: Multiple paralel convolutions are computed which produces a set of linear activations.
+    \item \textbf{Detector stage}: Each of the linear activations from previous stage is run through a nonlinear activation function.
+    \item \textbf{Pooling stage}: Further modification of the layer.
+\end{enumerate}
+
 \section{Capsule Neural Networks}
+
+
 
