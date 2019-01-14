@@ -1,12 +1,12 @@
 Face detection and recognition is not a new subject to computer science. Through time there were many attempts to provide satisfactory solution and approximation. Techniques used for face detection spans from regular well known image recognition via edge detection, to more advanced, precise, though computationally expensive use of neural networks. This chapter will provide a basic overview of the mainstream approaches, listing the most current state-of-the-art methods and means to the problem.
 
-Each section in this chapter represents a family of solutions. Providing a full description, explanation and understanding of their respective problem would span a book of its own, hence we aim to cover only a high level walkthough. Though we may revisit certain aspects in more detail in later the text, as well.
+Each section in this chapter represents a family of solutions. Providing a full description, explanation and understanding of their respective problem would span a book of its own, hence we aim to cover only a high level walk-though. Though we may revisit certain aspects in more detail in later the text, as well.
 
 \section{Convolutional neural networks}
 
 There are many kinds of neural networks, one of which is called Convolutional Network, or CNN (Convolutional Neural Network). CNN specialises in processing data of known, grid-like structure. That includes for example time-series data, which can be represented as one dimensional grid of samples taken in regular time intervals. It also includes image data, represented as 2D grid of pixels. As the name suggests, CNNs employs a mathematical operation called \textbf{convolution}. In practical application, that stands for a substitution of a matrix multiplication by this linear mathematical operation - convolution. And this is done so in at least one of the network's layers.
 
-This section aims to explain what convolution is, what are the motivations behind its usage in neural networks. Later we'll describe a \textbf{pooling} operation, which is used in almost all CCNs as well.
+This section aims to explain what convolution is, what are the motivations behind its usage in neural networks. Later we'll describe a \textbf{pooling} operation, which is used in almost all CNNs as well.
 
 \subsection{Convolution}
 
@@ -39,7 +39,7 @@ Our expectation that the sensor from example above would provide a measurement c
     s(t) = \sum_{a=-\infty}^{\infty} p(a) w(t - a) = (p * w)(t)
 \end{equation}
 
-Our example was quite simple and straightforward, usually in artificial inteligence and deep-learning the input is common to be multidimensional array (tensor) of data. Also the kernel happens to be a tensor of parameters which values are often obtained by some learning algorithm.
+Our example was quite simple and straightforward, usually in artificial intelligence and deep-learning the input is common to be multidimensional array (tensor) of data. Also the kernel happens to be a tensor of parameters which values are often obtained by some learning algorithm.
 
 Finally, when processing multidimensional data convolution is used over multiple axis at the same time. That's important for our application, because processing pictures have more than one dimension. So in case we have an input image $I$\,--\, a two-dimensional bitmap, our convolution should use a two-dimensional kernel $K$ as well:
 
@@ -54,7 +54,7 @@ Finally, when processing multidimensional data convolution is used over multiple
 
 \subsection{Use of convolution in neural networks}
 
-Im machine learning, we leverage multiple important properties of the convolution operation:
+In machine learning, we leverage multiple important properties of the convolution operation:
 
 \begin{itemize}
     \item Sparse interaction
@@ -106,14 +106,14 @@ Convolution can process data samples of different sizes. When the use case requi
 In neural networks, convolution layer doesn't mean solely convolution is applied. Typically such layer consists of multiple stages:
 
 \begin{enumerate}
-    \item \textbf{Convolution stage}: Multiple paralel convolutions are computed which produces a set of linear activations.
+    \item \textbf{Convolution stage}: Multiple parallel convolutions are computed which produces a set of linear activations.
     \item \textbf{Detector stage}: Each of the linear activations from previous stage is run through a nonlinear activation function.
     \item \textbf{Pooling stage}: Further modification of the layer.
 \end{enumerate}
 
-The last, pooling stage, provides better understanding of the convolution output. Instead of returning a set of features, it reduces redundancy of neighboring outputs and provides a summary statistics. This helps the network to be invariant small transition of the input. This means that if we translate the input of small amount of pixels, the outputs stay the same. This makes such network more robust. In a situations like a face detection, we don't need to know exact pixel coordinates of a feature, eye for example. We just need to define an are where we're looking for such feature.
+The last, pooling stage, provides better understanding of the convolution output. Instead of returning a set of features, it reduces redundancy of neighbouring outputs and provides a summary statistics. This helps the network to be invariant small transition of the input. This means that if we translate the input of small amount of pixels, the outputs stay the same. This makes such network more robust. In a situations like a face detection, we don't need to know exact pixel coordinates of a feature, eye for example. We just need to define an are where we're looking for such feature.
 
-There are many pooling operations, let's list some of the most popular ones like \textbf{max pooling}\,\cite{maxpooling} (reports the maximum output in rectangular neighborhood), average of rectangular neighborhood, $L^2$ norm of the rectangular neighborhood, and weighted average of distance from the central pixel.
+There are many pooling operations, let's list some of the most popular ones like \textbf{max pooling}\,\cite{maxpooling} (reports the maximum output in rectangular neighbourhood), average of rectangular neighbourhood, $L^2$ norm of the rectangular neighbourhood, and weighted average of distance from the central pixel.
 
 Invariance of transition is produced by pooling over spatial regions, though pooling layer can learn an invariance to a transformation of other kinds as well. That happens if we pool over outputs of other separately parametrized convolutions. As an example you can see an invariance to slant in cursive on figure\,\ref{fig:pooling}. This principle is accented mainly in maxout networks\,\cite{maxout}.
 
@@ -123,9 +123,9 @@ Invariance of transition is produced by pooling over spatial regions, though poo
     \caption{\textit{Pooling response with learned invariance to slant}: Here we have 3 filters, where all of them had a task to learn a handwritten number 3. Each of them resulted in learning of different slant of the number. When a number 3 is given as the input, one of the filters will match it and cause a high activation in corresponding detector unit. Due to use of pooling, the max pooling unit has a large activation as well, no matter which filter matched the number.}\label{fig:pooling}
 \end{figure}
 
-Since pooling can summarize a response of layer over whole neighborhood of input units, it's not necessary to have the same amount of pooling units as the detector ones. We can leverage pooling to provide downsampling as can be seen in figure\,\ref{fig:downsample}. That further improves performace of the network since it lowers the amount of inputs for the next layer.
+Since pooling can summarise a response of layer over whole neighbourhood of input units, it's not necessary to have the same amount of pooling units as the detector ones. We can leverage pooling to provide downsampling as can be seen in figure\,\ref{fig:downsample}. That further improves performance of the network since it lowers the amount of inputs for the next layer.
 
-\textbf{Pooling with downsampling} is essential step when dealing with input of variable size. Let's say we want to use the convolution to detect a face on images with different resolution. We've learned our detectors to register mouth in the bottom half of the image and another two sets of detectors to locate eyes, each in ono of the top quarters. We can use convolution layer with downsampling pooling to provide the required clasification. We expect to be provided by 3 activations on the output, and each of the detector has assigned it's portion of the input. It doesn't matter if the portion contains this amount of pixels or much more.
+\textbf{Pooling with downsampling} is essential step when dealing with input of variable size. Let's say we want to use the convolution to detect a face on images with different resolution. We've learned our detectors to register mouth in the bottom half of the image and another two sets of detectors to locate eyes, each in one of the top quarters. We can use convolution layer with downsampling pooling to provide the required classification. We expect to be provided by 3 activations on the output, and each of the detector has assigned it's portion of the input. It doesn't matter if the portion contains this amount of pixels or much more.
 
 \begin{figure}
     \centering
@@ -133,13 +133,13 @@ Since pooling can summarize a response of layer over whole neighborhood of input
     \caption{Pooling with downsampling}\label{fig:downsample}
 \end{figure}
 
-In deep learning this is often the case. We don't refer to convolution as a simple single operation as described in the beginning of this chapter. Such convolution layer with single kernel would be capable of extraction only single feature, although in many spatial locations. Usually many convolutions are applied and performed in paralel. That can provide many different kernels for different features which are interesting for the use case. As a result network can locate many kinds of features at many locations.
+In deep learning this is often the case. We don't refer to convolution as a simple single operation as described in the beginning of this chapter. Such convolution layer with single kernel would be capable of extraction only single feature, although in many spatial locations. Usually many convolutions are applied and performed in parallel. That can provide many different kernels for different features which are interesting for the use case. As a result network can locate many kinds of features at many locations.
 
 \subsection{Strided convolution}
 
 Also when we're already mentioning the downsampling in pooling, this step can be sometimes ommited and simplified even more. Although the result is similar to the pooling with downsample, the logic in based on different assumptions. In pooling we leverage all the information retrieved by the convolutions and simplify the output.
 
-A strided convolution is rather avoiding some of the convolutions at all. Thi further lowers the computational costs, hence at a risk of not extracting all the features in such detail. In this case we sample pixels in every direction with a step $s$. This $s$ is called a \textbf{stride}. It's also possible to define a separate stride for each step direction.
+A strided convolution is rather avoiding some of the convolutions at all. That further lowers the computational costs, hence at a risk of not extracting all the features in such detail. In this case we sample pixels in every direction with a step $s$. This $s$ is called a \textbf{stride}. It's also possible to define a separate stride for each step direction.
 
 \begin{figure}
     \centering
@@ -154,13 +154,13 @@ A strided convolution is rather avoiding some of the convolutions at all. Thi fu
     \caption{Strided convolution}\label{fig:strided}
 \end{figure}
 
-As it can be clearly seen on the images\,\ref{fig:conv_down} and\,\ref{fig:strided} the two step downsampling is computationally more expensive than the strided optimization.
+As it can be clearly seen on the images\,\ref{fig:conv_down} and\,\ref{fig:strided} the two step downsampling is computationally more expensive than the strided optimisation.
 
 \subsection{Zero padding}
 
 Another feature which is essential to CNNs implementation is padding with zeros. This maintains the network's ability to preserve the width of its input if needed. The input tensor is padded with zeros on the ends, so a convolution operation doesn't shrink the size of input vector by a fraction of kernel. Without padding we are forced to either keep kernels small, or let the networks shrink in spatial extent. Both are extreme limitations of network's power. Padding allows to control independently both the size of kernel and resolution of the output.
 
-\subsection{Locally connected}\todo{Describle locally connected}
+\subsection{Locally connected}\todo{Describe locally connected}
 
 
 \subsection{Tiled convolution}\todo{Describe tiled}
@@ -183,7 +183,7 @@ Another feature which is essential to CNNs implementation is padding with zeros.
     \caption{Comparison of layers}
 \end{figure}
 
-\section{Capsule neural networks}\todo{Decribe capsules}
+\section{Capsule neural networks}\todo{Describe capsules}
 
 
 
