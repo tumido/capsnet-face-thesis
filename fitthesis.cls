@@ -243,7 +243,7 @@
 %-----------------------------------------------------------------------------
 % Projectinfo - parametrizace sablony / template parameters
 %-----------------------------------------------------------------------------
-%Parametry 
+%Parametry
 \define@key{projinfo}{title.cs}{\global\def\@title@CS{#1}}
 \define@key{projinfo}{title.en}{\global\def\@title@EN{#1}}
 \define@key{projinfo}{department}{\set@department{#1}}
@@ -270,11 +270,11 @@
 
 %Vychozi hodnoty / Default values
 \setkeys{projinfo}{
-  title.cs={Název práce (česky)},title.en={Název práce(anglicky)}, 
-  date=\today, project=BP, department=UIFS, declaration=, 
+  title.cs={Název práce (česky)},title.en={Název práce(anglicky)},
+  date=\today, project=BP, department=UIFS, declaration=,
   abstract.cs=, abstract.en=, keywords.cs=, keywords.en=,
   author=Jmeno Prijmeni, supervisor=Jmeno Prijmeni,
-  author.name=, author.surname=, supervisor.name=, 
+  author.name=, author.surname=, supervisor.name=,
   supervisor.surname=
 }%
 
@@ -331,7 +331,7 @@
 \thispagestyle{empty}\null%
 
 \fontfamily{qhv}\selectfont%
-%  
+%
 
 \addtolength{\voffset}{-0.95cm}
 
@@ -442,9 +442,9 @@
 
 \mktxt@b{16}{\ifslovak\@cite@SK\else\ifczech\@cite@CS\else\@cite@EN\fi\fi}
 \iftoggle{slovak_used}{
-  \noindent\MakeUppercase{\@author@s}, \@author@n. \it\@title\rm. Brno, \@year. \@projecttype@SK. \@vut@SK, \@fit@SK. {\@supervisor@SK} {\@supervisor@s} {\@supervisor@n}. 
+  \noindent\MakeUppercase{\@author@s}, \@author@n. \it\@title\rm. Brno, \@year. \@projecttype@SK. \@vut@SK, \@fit@SK. {\@supervisor@SK} {\@supervisor@s} {\@supervisor@n}.
 }{
-  \noindent\MakeUppercase{\@author@s}, \@author@n. \it\@title\rm. Brno, \@year. \ifczech\@projecttype@CS\else\@projecttype@EN\fi. \ifczech\@vut@CS\else\@vut@EN\fi, \ifczech\@fit@CS\else\@fit@EN\fi. {\ifczech\@supervisor@CS\else\@supervisor@EN\fi} {\@supervisor@s} {\@supervisor@n}. 
+  \noindent\MakeUppercase{\@author@s}, \@author@n. \it\@title\rm. Brno, \@year. \ifczech\@projecttype@CS\else\@projecttype@EN\fi. \ifczech\@vut@CS\else\@vut@EN\fi, \ifczech\@fit@CS\else\@fit@EN\fi. {\ifczech\@supervisor@CS\else\@supervisor@EN\fi} {\@supervisor@s} {\@supervisor@n}.
 }
 %===================================================
 \newpage
@@ -531,9 +531,9 @@
 
 
 \usebox{\@obrlogo}
-  
+
 \vspace{10mm}
-  
+
 \iftoggle{slovak_used}{
   \mkuctxtt{18}{\@vut@SK}
   \mkuctxtt{11}{\@vut@EN}
@@ -723,7 +723,7 @@
 %
 \csdoublequoteson
 
-% Zarovnání v seznamu typu description 
+% Zarovnání v seznamu typu description
 % Alignment in description list
 % http://tex.stackexchange.com/questions/7008/change-hanging-indent-in-description-list
 \makeatletter
@@ -797,7 +797,7 @@
 
 % Příkazy pro TODO
 % commands for TODO
-\newcommand{\todo}[1]{\textcolor{red}{\textbf{[[#1]]}}}
+%\newcommand{\todo}[1]{\textcolor{red}{\textbf{[[#1]]}}}
 \newcommand{\phony}[1]{\textcolor{gray}{#1}}
 \newcommand{\blind}[1]{\textcolor{gray}{\Blindtext[#1]}}
 

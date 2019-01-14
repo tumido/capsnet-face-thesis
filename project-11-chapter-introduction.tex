@@ -23,9 +23,7 @@ As in any field in computer science, there is an ongoing race to provide better 
 
 There are also different approaches used to create different solutions. Sometimes a naive approach is used, other times the implementation leverages different aspects of Artificial Inteligence, especially Neural Networks.
 
-The aim of this thesis is to construct a very own solution to this problem, relying strictly on Neural Networks. Each part of the problem is explained and implemented. Comparison with existing solution is offered as a part of Discussion chapter
-%~\ref{chapter:discussion}
-, later in this paper.
+The aim of this thesis is to construct a very own solution to this problem, relying strictly on Neural Networks. Each part of the problem is explained and implemented. % Comparison with existing solutions is offered as a part of Discussion chapter\,\ref{chapter:discussion}, later in this paper.
 
 
 \section{Decomposition}
@@ -36,7 +34,11 @@ To recognize a human face is a complex problem. Therefore it's usually divided i
 
 As wide as the use cases, the variety of input data is vast. Some cases depends on frontal pictures of faces, some accents the so-called "pictures in-the-wild". This is a term specifically used for pictures captured without cooperation with the subject on the picture. Person on the picture is captured from an angle, without eye contact with camera, etc. This thesis aims to cover a topic of facial recognition over CCTV data. However it can be said that any in-the-wild pictures are suitable for the the implementation. The sufficient resolution is the most important feature and requirement on the input data. The model has to be able to find a face on the picture. Therefore even it the model would rely solely on CCTV data, the data feed has to provide enough detail of the person's face.
 
-\todo{image}
+\begin{figure}
+    \centering
+    \missingfigure{Sample CCTV data}
+    \caption{Example of image captured by a CCTV camera. Task is to extract face and recognise the person which it does belong to.}
+\end{figure}
 
 CCTV as a source of the input data has some crucial advantages for real world scenarios over any random "pictures in-the-wild". Usually CCTV produces feeds, therefore the subject of recognition is captured on many frames of such video. That means, the model can have multiple images of the same face available and if it is properly configured and trained, it can leverage this aspect. This topic will be elaborated further in the Available data sets chapter.
 
