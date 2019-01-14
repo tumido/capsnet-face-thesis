@@ -2,10 +2,6 @@ Face detection and recognition is not a new subject to computer science. Through
 
 Each section in this chapter represents a family of solutions. Providing a full description, explanation and understanding of their respective problem would span a book of its own, hence we aim to cover only a high level walkthough. Though we may revisit certain aspects in more detail in later the text, as well.
 
-\section{Traditional approach fo face detection}
-
-
-
 \section{Convolutional neural networks}
 
 There are many kinds of neural networks, one of which is called Convolutional Network, or CNN (Convolutional Neural Network). CNN specialises in processing data of known, grid-like structure. That includes for example time-series data, which can be represented as one dimensional grid of samples taken in regular time intervals. It also includes image data, represented as 2D grid of pixels. As the name suggests, CNNs employs a mathematical operation called \textbf{convolution}. In practical application, that stands for a substitution of a matrix multiplication by this linear mathematical operation - convolution. And this is done so in at least one of the network's layers.
@@ -162,11 +158,32 @@ As it can be clearly seen on the images\,\ref{fig:conv_down} and\,\ref{fig:strid
 
 \subsection{Zero padding}
 
-\subsection{Locally connected}
+Another feature which is essential to CNNs implementation is padding with zeros. This maintains the network's ability to preserve the width of its input if needed. The input tensor is padded with zeros on the ends, so a convolution operation doesn't shrink the size of input vector by a fraction of kernel. Without padding we are forced to either keep kernels small, or let the networks shrink in spatial extent. Both are extreme limitations of network's power. Padding allows to control independently both the size of kernel and resolution of the output.
 
-\subsection{Tiled convolution}
+\subsection{Locally connected}\todo{Describle locally connected}
 
-\section{Capsule neural networks}
+
+\subsection{Tiled convolution}\todo{Describe tiled}
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.6\textwidth]{obrazky-figures/locally_connected.pdf} \\
+    Locally connected \\
+    \bigskip
+    \includegraphics[width=.6\textwidth]{obrazky-figures/convolution_tiled.pdf} \\
+    Tiled convolution \\
+    \bigskip
+    \includegraphics[width=.6\textwidth]{obrazky-figures/convolution_std.pdf} \\
+    Standard convolution \\
+    \bigskip
+    \includegraphics[width=.6\textwidth]{obrazky-figures/fully_connected.pdf} \\
+    Fully connected \\
+    \bigskip
+    \caption{Comparison of layers}
+\end{figure}
+
+\section{Capsule neural networks}\todo{Decribe capsules}
 
 
 
