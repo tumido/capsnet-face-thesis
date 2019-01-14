@@ -54,4 +54,6 @@ normostrany:
 
 # Konverze SVG do PDF
 svg:
-	for i in obrazky-figures/*.svg; do inkscape -z -D --file=$$i --export-pdf=obrazky-figures/$$(basename -s .svg $$i).pdf; done
+	for i in obrazky-figures/*.svg; do \
+		[ -f $$(sed 's/svg/pdf/' <<< $$i) ] || inkscape -z -D --file=$$i --export-pdf=$$(sed 's/svg/pdf/' <<< $$i); \
+	done
