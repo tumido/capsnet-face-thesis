@@ -6,7 +6,7 @@ Each section in this chapter represents a family of solutions. Providing a full 
 
 
 
-\section{Convolutional Neural Networks}
+\section{Convolutional neural networks}
 
 There are many kinds of neural networks, one of which is called Convolutional Network, or CNN (Convolutional Neural Network). CNN specialises in processing data of known, grid-like structure. That includes for example time-series data, which can be represented as one dimensional grid of samples taken in regular time intervals. It also includes image data, represented as 2D grid of pixels. As the name suggests, CNNs employs a mathematical operation called \textbf{convolution}. In practical application, that stands for a substitution of a matrix multiplication by this linear mathematical operation - convolution. And this is done so in at least one of the network's layers.
 
@@ -67,9 +67,9 @@ Im machine learning, we leverage multiple important properties of the convolutio
     \item Input of variable size
 \end{itemize}
 
-\subsubsection{Sparse Iteraction}
+\subsubsection{Sparse interaction}
 
-As you can notice in figure \ref{fig:convolution}, kernel can be of different size than input. When the input data is for example an image of millions of pixels, the size of kernel allows convolution to select only specific subset of inputs for each output. In traditional neural networks matrix multiplication is used instead of convolution. That means every output unit interacts with every input unit. In convolutional networks, the kernel size limits that just to certain subset of input units. It is called \textbf{sparse interaction} or \textbf{sparse weights} and it is accomplished by restricting kernel to a smaller size than the input. That results in smaller memory footprint of the model, since it requires fewer parameters to be stored. while at the same time it improves statistical efficiency. It has also impact on performance, since computing the output requires fewer operations compared to matrix multiplication. A graphical demonstration can be seen on figure \ref{fig:sparse_b}.
+As you can notice in figure\,\ref{fig:convolution}, kernel can be of different size than input. When the input data is for example an image of millions of pixels, the size of kernel allows convolution to select only specific subset of inputs for each output. In traditional neural networks matrix multiplication is used instead of convolution. That means every output unit interacts with every input unit. In convolutional networks, the kernel size limits that just to certain subset of input units. It is called \textbf{sparse interaction} or \textbf{sparse weights} and it is accomplished by restricting kernel to a smaller size than the input. That results in smaller memory footprint of the model, since it requires fewer parameters to be stored. while at the same time it improves statistical efficiency. It has also impact on performance, since computing the output requires fewer operations compared to matrix multiplication. A graphical demonstration can be seen on figure\,\ref{fig:sparse_b}.
 
 \begin{figure}[ht]
     \centering
@@ -115,7 +115,58 @@ In neural networks, convolution layer doesn't mean solely convolution is applied
     \item \textbf{Pooling stage}: Further modification of the layer.
 \end{enumerate}
 
-\section{Capsule Neural Networks}
+The last, pooling stage, provides better understanding of the convolution output. Instead of returning a set of features, it reduces redundancy of neighboring outputs and provides a summary statistics. This helps the network to be invariant small transition of the input. This means that if we translate the input of small amount of pixels, the outputs stay the same. This makes such network more robust. In a situations like a face detection, we don't need to know exact pixel coordinates of a feature, eye for example. We just need to define an are where we're looking for such feature.
+
+There are many pooling operations, let's list some of the most popular ones like \textbf{max pooling}\,\cite{maxpooling} (reports the maximum output in rectangular neighborhood), average of rectangular neighborhood, $L^2$ norm of the rectangular neighborhood, and weighted average of distance from the central pixel.
+
+Invariance of transition is produced by pooling over spatial regions, though pooling layer can learn an invariance to a transformation of other kinds as well. That happens if we pool over outputs of other separately parametrized convolutions. As an example you can see an invariance to slant in cursive on figure\,\ref{fig:pooling}. This principle is accented mainly in maxout networks\,\cite{maxout}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.8\textwidth]{obrazky-figures/pooling.pdf}
+    \caption{\textit{Pooling response with learned invariance to slant}: Here we have 3 filters, where all of them had a task to learn a handwritten number 3. Each of them resulted in learning of different slant of the number. When a number 3 is given as the input, one of the filters will match it and cause a high activation in corresponding detector unit. Due to use of pooling, the max pooling unit has a large activation as well, no matter which filter matched the number.}\label{fig:pooling}
+\end{figure}
+
+Since pooling can summarize a response of layer over whole neighborhood of input units, it's not necessary to have the same amount of pooling units as the detector ones. We can leverage pooling to provide downsampling as can be seen in figure\,\ref{fig:downsample}. That further improves performace of the network since it lowers the amount of inputs for the next layer.
+
+\textbf{Pooling with downsampling} is essential step when dealing with input of variable size. Let's say we want to use the convolution to detect a face on images with different resolution. We've learned our detectors to register mouth in the bottom half of the image and another two sets of detectors to locate eyes, each in ono of the top quarters. We can use convolution layer with downsampling pooling to provide the required clasification. We expect to be provided by 3 activations on the output, and each of the detector has assigned it's portion of the input. It doesn't matter if the portion contains this amount of pixels or much more.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.6\textwidth]{obrazky-figures/downsampling.pdf}
+    \caption{Pooling with downsampling}\label{fig:downsample}
+\end{figure}
+
+In deep learning this is often the case. We don't refer to convolution as a simple single operation as described in the beginning of this chapter. Such convolution layer with single kernel would be capable of extraction only single feature, although in many spatial locations. Usually many convolutions are applied and performed in paralel. That can provide many different kernels for different features which are interesting for the use case. As a result network can locate many kinds of features at many locations.
+
+\subsection{Strided convolution}
+
+Also when we're already mentioning the downsampling in pooling, this step can be sometimes ommited and simplified even more. Although the result is similar to the pooling with downsample, the logic in based on different assumptions. In pooling we leverage all the information retrieved by the convolutions and simplify the output.
+
+A strided convolution is rather avoiding some of the convolutions at all. Thi further lowers the computational costs, hence at a risk of not extracting all the features in such detail. In this case we sample pixels in every direction with a step $s$. This $s$ is called a \textbf{stride}. It's also possible to define a separate stride for each step direction.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.6\textwidth]{obrazky-figures/conv_down.pdf}
+    \caption{Convolution and pooling with downsampling}\label{fig:conv_down}
+\end{figure}
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.6\textwidth]{obrazky-figures/strided.pdf}
+    \caption{Strided convolution}\label{fig:strided}
+\end{figure}
+
+As it can be clearly seen on the images\,\ref{fig:conv_down} and\,\ref{fig:strided} the two step downsampling is computationally more expensive than the strided optimization.
+
+\subsection{Zero padding}
+
+\subsection{Locally connected}
+
+\subsection{Tiled convolution}
+
+\section{Capsule neural networks}
 
 
 
