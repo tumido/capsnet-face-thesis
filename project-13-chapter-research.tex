@@ -1,10 +1,10 @@
 Face detection and recognition is not a new subject to computer science. Through time there were many attempts to provide satisfactory solution and approximation. Techniques used for face detection spans from regular well known image recognition via edge detection, to more advanced, precise, though computationally expensive use of neural networks. This chapter will provide a basic overview of the mainstream approaches, listing the most current state-of-the-art methods and means to the problem.
 
-Each section in this chapter represents a family of solutions. Providing a full description, explanation and understanding of their respective problem would span a book of its own, hence we aim to cover only a high level walk-though. Though we may revisit certain aspects in more detail in later the text, as well.
+Each section in this chapter represents a family of solutions. Providing a full description, explanation and understanding of their respective problem would span a book of its own, hence we aim to cover only a high level walk-though. We may also revisit certain aspects in more detail in later the text, as well.
 
 \section{Convolutional neural networks}
 
-There are many kinds of neural networks, one of which is called Convolutional Network, or CNN (Convolutional Neural Network). CNN specialises in processing data of known, grid-like structure. That includes for example time-series data, which can be represented as one dimensional grid of samples taken in regular time intervals. It also includes image data, represented as 2D grid of pixels. As the name suggests, CNNs employs a mathematical operation called \textbf{convolution}. In practical application, that stands for a substitution of a matrix multiplication by this linear mathematical operation - convolution. And this is done so in at least one of the network's layers.
+There are many kinds of neural networks, one of which is called Convolutional Network\,\cite[p.~330]{deeplearningbook}, or CNN (Convolutional Neural Network). CNN specialises in processing data of known, grid-like structure. That includes for example time-series data, which can be represented as one dimensional grid of samples taken in regular time intervals. It also includes image data, represented as 2D grid of pixels. As the name suggests, CNNs employs a mathematical operation called \textbf{convolution}. In practical application, that stands for a substitution of a matrix multiplication by this linear mathematical operation - convolution. And this is done so in at least one of the network's layers.
 
 This section aims to explain what convolution is, what are the motivations behind its usage in neural networks. Later we'll describe a \textbf{pooling} operation, which is used in almost all CNNs as well.
 
@@ -65,7 +65,7 @@ In machine learning, we leverage multiple important properties of the convolutio
 
 \subsubsection{Sparse interaction}
 
-As you can notice in figure\,\ref{fig:convolution}, kernel can be of different size than input. When the input data is for example an image of millions of pixels, the size of kernel allows convolution to select only specific subset of inputs for each output. In traditional neural networks matrix multiplication is used instead of convolution. That means every output unit interacts with every input unit. In convolutional networks, the kernel size limits that just to certain subset of input units. It is called \textbf{sparse interaction} or \textbf{sparse weights} and it is accomplished by restricting kernel to a smaller size than the input. That results in smaller memory footprint of the model, since it requires fewer parameters to be stored. while at the same time it improves statistical efficiency. It has also impact on performance, since computing the output requires fewer operations compared to matrix multiplication. A graphical demonstration can be seen on figure\,\ref{fig:sparse_b}.
+As you can notice in figure\,\ref{fig:convolution}, kernel can be of different size than input. When the input data is for example an image of millions of pixels, the size of kernel allows convolution to select only specific subset of inputs for each output. In traditional neural networks matrix multiplication is used instead of convolution. That means every output unit interacts with every input unit. In convolutional networks, the kernel size limits that just to certain subset of input units. It is called \textbf{sparse interaction}\,\cite[p.~335]{deeplearningbook} or \textbf{sparse weights} and it is accomplished by restricting kernel to a smaller size than the input. That results in smaller memory footprint of the model, since it requires fewer parameters to be stored. while at the same time it improves statistical efficiency. It has also impact on performance, since computing the output requires fewer operations compared to matrix multiplication. A graphical demonstration can be seen on figure\,\ref{fig:sparse_b}.
 
 \begin{figure}[ht]
     \centering
@@ -73,7 +73,7 @@ As you can notice in figure\,\ref{fig:convolution}, kernel can be of different s
     \caption{\textit{Sparse interaction viewed from below}: The highlighted units demonstrates propagation of one input unit from current layer $s_3$ to the next layer. On the top you can see all the output $n$ units, which are affected by this particular input. On the bottom image, you can see how the same situation is represented in traditional matrix multiplication.}\label{fig:sparse_b}
 \end{figure}
 
-Deep convolutional networks allow indirect interaction between units which would be out of reach for given kernel size. This property is called \textbf{receptive field} of a unit and can be seen when we look at the network from perspective of the output layer (see figure\,\ref{fig:sparse_a}).
+Deep convolutional networks allow indirect interaction between units which would be out of reach for given kernel size. This property is called \textbf{receptive field}\,\cite[p.~337]{deeplearningbook} of a unit and can be seen when we look at the network from perspective of the output layer (see figure\,\ref{fig:sparse_a}).
 
 \begin{figure}[ht]
     \centering
@@ -95,7 +95,7 @@ A feature of convolution referring to a reuse of of parameter in more than one c
 
 \subsubsection{Equivariant representation}
 
-A function is equivariant to another when $f(g(x)) = g(f(x))$. Convolution is equivariant for example to translation. Imagine we have an input image and we shift the image some pixels to any direction. When convolution is performed, the same kernel is applied to any set of pixels, therefore the feature the network layer aims to collect can be found in the shifted image as well as in the original. It would just appear shifted in the output feature map. Here we can benefit from parameter sharing in use cases like edge detection. We're interested in the same feature, no matter where it appears on the image. In other use cases, like for example face detection, we might not be interested in the full parameter sharing. Imagine we have a kernel which is trained to detect mouth. In order to work properly, we should restrict this kernel to look for the feature only in bottom portion of the picture, because detecting a mouth on forehead would not result in proper outputs. We'll cover more about multi-kernel convolution layers later.
+A function is equivariant to another when $f(g(x)) = g(f(x))$. Convolution is naturally equivariant for example to translation\,\cite[p.~339]{deeplearningbook} . Imagine we have an input image and we shift the image some pixels to any direction. When convolution is performed, the same kernel is applied to any set of pixels, therefore the feature the network layer aims to collect can be found in the shifted image as well as in the original. It would just appear shifted in the output feature map. Here we can benefit from parameter sharing in use cases like edge detection. We're interested in the same feature, no matter where it appears on the image. In other use cases, like for example face detection, we might not be interested in the full parameter sharing. Imagine we have a kernel which is trained to detect mouth. In order to work properly, we should restrict this kernel to look for the feature only in bottom portion of the picture, because detecting a mouth on forehead would not result in proper outputs. We'll cover more about multi-kernel convolution layers later.
 
 \subsubsection{Variable size of the input}
 
@@ -162,9 +162,9 @@ Another feature which is essential to CNNs implementation is padding with zeros.
 
 \subsection{Other convolution layer types}
 
-Sometimes our desire is to rather use locally connected layers. This resembles a discrete convolution with small kernel, but without parameter sharing. Therefore this layer type is sometimes called \textbf{unshared convolution}. Unshared type of convolutional layer is useful when we aim to detect features which are local and there's no assumption that the same feature should occur across all the input.
+Sometimes our desire is to rather use locally connected layers. This resembles a discrete convolution with small kernel, but without parameter sharing. Therefore this layer type is sometimes called \textbf{unshared convolution}\,\cite{locally_connected}. Unshared type of convolutional layer is useful when we aim to detect features which are local and there's no assumption that the same feature should occur across all the input.
 
-Another type available is \textbf{tiled convolution} layer. A layer type meant to offer compromise between locally connected layers and convolutional layers. Instead of learning a set of weights for every spatial location, this layer type provides tiling. That means a single set of weights is learned and it is later applied in rotation, providing different set of weighs for neighboring locations. This makes the outcome similar to locally connected layer, while keeping a benefit of lower cost of convolutional layer, since requirements to store parameters would grow by factor of kernel set size, instead of size of whole feature map. A comparison overview of different convolution layer types can be seen on figure\,\ref{fig:compare_layers}
+Another type available is \textbf{tiled convolution}\,\cite{tiled_conv} layer. A layer type meant to offer compromise between locally connected layers and convolutional layers. Instead of learning a set of weights for every spatial location, this layer type provides tiling. That means a single set of weights is learned and it is later applied in rotation, providing different set of weighs for neighboring locations. This makes the outcome similar to locally connected layer, while keeping a benefit of lower cost of convolutional layer, since requirements to store parameters would grow by factor of kernel set size, instead of size of whole feature map. A comparison overview of different convolution layer types can be seen on figure\,\ref{fig:compare_layers}
 
 \begin{figure}
     \centering
@@ -186,7 +186,7 @@ Another type available is \textbf{tiled convolution} layer. A layer type meant t
 
 \section{Capsule neural networks}
 
-Convolutional neural networks are a state-of-the-art of current deep learning. They are hugely popular and they can provide great results and solve problems which were unimaginable before. Despite all their power they embody fundamental drawbacks and limitations\,\cite{capsule}. This and availability of grater computational power lead to creation of Capsule neural networks (CapsNET).
+Convolutional neural networks are a state-of-the-art of current deep learning. They are hugely popular and they can provide great results and solve problems which were unimaginable before. Despite all their power they embody fundamental drawbacks and limitations\,\cite{capsule_compare}. This and availability of grater computational power lead to creation of Capsule neural networks (CapsNET)\,\cite{capsule}.
 
 \subsection{Rationale}
 
@@ -220,7 +220,7 @@ So how do we model this hierarchical relationship inside a neural network? Here 
 \begin{figure}[h]
     \centering
     \includegraphics[width=.8\textwidth]{obrazky-figures/duck.pdf}
-    \caption{CNN struggles to recognise this is the same object. Human brain on the other hand immediately recognises that it is the same object, just view from different angles. \textit{Original artwork provided by Freepik\,\cite{freepik}}}
+    \caption{CNN struggles to recognise this is the same object. Human brain, on the other hand, immediately understands that objects on the picture are identical, despite being viewed from multiple different angles. \textit{Original artwork provided by Freepik\,\cite{freepik}}}
     \label{fig:duck}
 \end{figure}
 

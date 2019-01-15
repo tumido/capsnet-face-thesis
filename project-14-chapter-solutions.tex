@@ -4,12 +4,16 @@ Later on you'll stumble upon a list of available face recognition databases and 
 
 \section{Existing implementations}
 
-\subsection{OpenCV and dlib}\todo{OpenCV and dlib}
+
 
 \subsection{Face ID}\todo{Face ID}
 
 \subsection{FaceNET}\todo{Describe facenet}
 
+a\cite{facenet}\cite{vgg_face_reco}
+
+\subsection{SqueezeNet}
+\cite{squeezenet}
 
 \section{Frameworks}
 
@@ -154,7 +158,7 @@ This database is available for research purposes and upon written request to the
 
 Visual Geometry Group produced a second iteration of their face recognition data set\,\cite{VVGFace2}. This is one of the most wide data sets which are publicly available. It provides a wide-scale data for face recognition for over 9000 different identities. Distribution of individuals varies though, with minimal 87 images up to 843 per identity. Average number of images per subject is 362. The data set contains over \num{3.3} milion of images. Subjects varies in ethnicity, age and profession, while the images varies in angles or poses.
 
-The data set is made available under Creative Commons license\,\cite{cc_by-sa_40}, therefore it's available for broad use to any project.
+The data set is made available under Creative Commons license\,\footnote{\url{https://creativecommons.org/licenses/by-sa/4.0/}}, therefore it's available for broad use to any project.
 
 This project also provides sample models trained on this data set. However, the example pre-trained neural network models provided within this project are not the sole example of the data set usage. Many popular face recognition models are trained on this data set. For example FaceNET can be seen as one of the popular projects which benefits from this data set.
 
@@ -168,7 +172,7 @@ This project also provides sample models trained on this data set. However, the 
         Total images & \num{3311286} \\
         Samples per subject & Varies, 87--843 per subject \\
         Resolution & Varies, many different sizes \\
-        License & Creative Commons\,\cite{cc_by-sa_40} \\
+        License & Creative Commons \\
         \bottomrule
     \end{tabularx}
 \end{table}
