@@ -117,7 +117,7 @@ There are many pooling operations, let's list some of the most popular ones like
 
 Invariance of transition is produced by pooling over spatial regions, though pooling layer can learn an invariance to a transformation of other kinds as well. That happens if we pool over outputs of other separately parametrized convolutions. As an example you can see an invariance to slant in cursive on figure\,\ref{fig:pooling}. This principle is accented mainly in maxout networks\,\cite{maxout}.
 
-\begin{figure}
+\begin{figure}[h]
     \centering
     \includegraphics[width=.8\textwidth]{obrazky-figures/pooling.pdf}
     \caption{\textit{Pooling response with learned invariance to slant}: Here we have 3 filters, where all of them had a task to learn a handwritten number 3. Each of them resulted in learning of different slant of the number. When a number 3 is given as the input, one of the filters will match it and cause a high activation in corresponding detector unit. Due to use of pooling, the max pooling unit has a large activation as well, no matter which filter matched the number.}\label{fig:pooling}
@@ -127,7 +127,7 @@ Since pooling can summarise a response of layer over whole neighbourhood of inpu
 
 \textbf{Pooling with downsampling} is essential step when dealing with input of variable size. Let's say we want to use the convolution to detect a face on images with different resolution. We've learned our detectors to register mouth in the bottom half of the image and another two sets of detectors to locate eyes, each in one of the top quarters. We can use convolution layer with downsampling pooling to provide the required classification. We expect to be provided by 3 activations on the output, and each of the detector has assigned it's portion of the input. It doesn't matter if the portion contains this amount of pixels or much more.
 
-\begin{figure}
+\begin{figure}[h]
     \centering
     \includegraphics[width=.6\textwidth]{obrazky-figures/downsampling.pdf}
     \caption{Pooling with downsampling}\label{fig:downsample}
@@ -160,11 +160,11 @@ As it can be clearly seen on the images\,\ref{fig:conv_down} and\,\ref{fig:strid
 
 Another feature which is essential to CNNs implementation is padding with zeros. This maintains the network's ability to preserve the width of its input if needed. The input tensor is padded with zeros on the ends, so a convolution operation doesn't shrink the size of input vector by a fraction of kernel. Without padding we are forced to either keep kernels small, or let the networks shrink in spatial extent. Both are extreme limitations of network's power. Padding allows to control independently both the size of kernel and resolution of the output.
 
-\subsection{Locally connected}\todo{Describe locally connected}
+\subsection{Other convolution layer types}
 
+Sometimes our desire is to rather use locally connected layers. This resembles a discrete convolution with small kernel, but without parameter sharing. Therefore this layer type is sometimes called \textbf{unshared convolution}. Unshared type of convolutional layer is useful when we aim to detect features which are local and there's no assumption that the same feature should occur across all the input.
 
-\subsection{Tiled convolution}\todo{Describe tiled}
-
+Another type available is \textbf{tiled convolution} layer. A layer type meant to offer compromise between locally connected layers and convolutional layers. Instead of learning a set of weights for every spatial location, this layer type provides tiling. That means a single set of weights is learned and it is later applied in rotation, providing different set of weighs for neighboring locations. This makes the outcome similar to locally connected layer, while keeping a benefit of lower cost of convolutional layer, since requirements to store parameters would grow by factor of kernel set size, instead of size of whole feature map. A comparison overview of different convolution layer types can be seen on figure\,\ref{fig:compare_layers}
 
 \begin{figure}
     \centering
@@ -180,10 +180,50 @@ Another feature which is essential to CNNs implementation is padding with zeros.
     \includegraphics[width=.6\textwidth]{obrazky-figures/fully_connected.pdf} \\
     Fully connected \\
     \bigskip
-    \caption{Comparison of layers}
+    \caption{Comparison of convolutional layers}
+    \label{fig:compare_layers}
 \end{figure}
 
-\section{Capsule neural networks}\todo{Describe capsules}
+\section{Capsule neural networks}
 
+Convolutional neural networks are a state-of-the-art of current deep learning. They are hugely popular and they can provide great results and solve problems which were unimaginable before. Despite all their power they embody fundamental drawbacks and limitations\,\cite{capsule}. This and availability of grater computational power lead to creation of Capsule neural networks (CapsNET).
 
+\subsection{Rationale}
 
+CNNs operate with features and their recognition. Deeper convolution layer detect
+simple features, for example edges or color gradients. Layers higher in the network are designed to detect specific combinations of such features and creates more complex ones. And finally on the very top of the network a dense layer takes the very high level features and provide a prediction of a classification. And since many times the convolution is made invariant to different transformations, this can lead to impossible results. Mere presence of an object provides indication of feature presence. Relation between detected features is not considered at all. When simple features are composed to a more complex one, translational or rotational relationship doesn't play any role.
+
+We've already tackled the way CNN is using to deal with this problem. Pooling and more convolutional layers of smaller kernels are applied to reduce spatial size of information lost during each convolution. This aims to increase the field of view for convolutional layers higher in the network, therefore allows them to locate features in larger portion of the input image. Pooling made CNNs surprisingly effective and top performing architecture so far, though still enhancing loss of information.
+
+Prof. Geoffrey Hinton, one of fathers of deep learning and author of many architectures and algorithms is also the author of capsule neural networks. Hinton wrote\,\footnote{\url{https://www.reddit.com/r/MachineLearning/comments/2lmo0l/ama_geoffrey_hinton/clyj4jv/}}:
+\begin{quotation}
+    The pooling operation used in convolutional neural networks is a big mistake and the fact that it works so well is a disaster.
+\end{quotation}
+
+To demonstrate this drawback imagine a CNN face detector. Deeper layers of network detects parts of facial features. The higher layers combines these parts into complex features like an \textit{eye}, \textit{nose} or \textit{mouth}. Our multi-kernel convolution would allow us to define regions where we expect such features, though we can't define the relation between them. The network can simply recognise an image as a valid face, despite for example the \textit{eye} is rotated to the opposite direction than a \textit{mouth}. A demonstration of such problem can be seen on figure\,\ref{fig:capsule_face}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[height=0.3\textwidth]{obrazky-figures/face_normal.pdf}
+    \hspace{10em}
+    \includegraphics[height=0.3\textwidth]{obrazky-figures/face_disorted.pdf}
+    \caption{Both of these images can be evaluated to be a face. Spatial location, relation and pose between simpler features are not considered by this type of network. Both images appear similar to CNN. \textit{Original artwork provided by Freepik\,\cite{freepik}}}
+    \label{fig:capsule_face}
+\end{figure}
+
+\subsection{Inverse graphics}
+
+Hinton, inspired by computer graphics, tried to explain and reconstruct human brain's visual cognitive functions. The brain itself in fact does the opposite process to \textit{rendering}. Hinton calls it \textbf{inverse graphics}. A visual information is decomposed into a hierarchical representation of objects, which are matched against known, learned patterns. This relationship matrix is stored in our brains. One key factor is that object representation is not dependent on view angle.
+
+So how do we model this hierarchical relationship inside a neural network? Here we can learn from solutions already discovered in another field -- in computer graphics. 3D modeling uses something called a \textbf{pose}. This represents relation between 3D objects and provides a rotation and translation transformation matrix. In neural networks we represent that as a 4D \textit{pose matrix}\,\cite{capsule}. This results in combination of information about object relations with internal representation of object data. Hence it becomes easy for a model to recognise that it just sees a different view of something it already saw before.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.8\textwidth]{obrazky-figures/duck.pdf}
+    \caption{CNN struggles to recognise this is the same object. Human brain on the other hand immediately recognises that it is the same object, just view from different angles. \textit{Original artwork provided by Freepik\,\cite{freepik}}}
+    \label{fig:duck}
+\end{figure}
+
+Let's discuss situation on the figure\,\ref{fig:duck}. A human looking at this picture can easily recognise, it is a rubber duck viewed from different angles. Our internal representation of rubber duck is independent on the viewing angle. It may be the first time that these particular pictures are shown to you, although you simply know their meaning. Since there's no internal representation of 3D space in CNNs, it really struggles. On the other hand, for CapsNET, this problem is pretty easy since the 3D relations are explicitly modeled. Experiments shown that usage of capsule neural networks can reduce error rate from $20\%$ to $12\%$\,\cite{capsule_compare}.
+
+And this is not the only benefit of usage of capsules. It also significantly lowers the amount of data required to train such network to achieve comparable performance to a CNN. And this make sense, since capsule theory is much closer to the way how brain does work. If a brain tries to learn to distinguish a horse from a cow, it only needs to be presented with few images, at most couple of dozens. CNN would require to be presented by many thousands of image samples, to achieve comparable performance. In this particular aspect we can compare CNNs to a brute-force approach to deep learning.
