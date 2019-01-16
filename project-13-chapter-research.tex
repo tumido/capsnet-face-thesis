@@ -117,7 +117,7 @@ There are many pooling operations, let's list some of the most popular ones like
 
 Invariance of transition is produced by pooling over spatial regions, though pooling layer can learn an invariance to a transformation of other kinds as well. That happens if we pool over outputs of other separately parametrized convolutions. As an example you can see an invariance to slant in cursive on figure\,\ref{fig:pooling}. This principle is accented mainly in maxout networks\,\cite{maxout}.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=.8\textwidth]{obrazky-figures/pooling.pdf}
     \caption{\textit{Pooling response with learned invariance to slant}: Here we have 3 filters, where all of them had a task to learn a handwritten number 3. Each of them resulted in learning of different slant of the number. When a number 3 is given as the input, one of the filters will match it and cause a high activation in corresponding detector unit. Due to use of pooling, the max pooling unit has a large activation as well, no matter which filter matched the number.}\label{fig:pooling}
@@ -127,7 +127,7 @@ Since pooling can summarise a response of layer over whole neighbourhood of inpu
 
 \textbf{Pooling with downsampling} is essential step when dealing with input of variable size. Let's say we want to use the convolution to detect a face on images with different resolution. We've learned our detectors to register mouth in the bottom half of the image and another two sets of detectors to locate eyes, each in one of the top quarters. We can use convolution layer with downsampling pooling to provide the required classification. We expect to be provided by 3 activations on the output, and each of the detector has assigned it's portion of the input. It doesn't matter if the portion contains this amount of pixels or much more.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=.6\textwidth]{obrazky-figures/downsampling.pdf}
     \caption{Pooling with downsampling}\label{fig:downsample}
@@ -202,7 +202,7 @@ Prof. Geoffrey Hinton, one of fathers of deep learning and author of many archit
 
 To demonstrate this drawback imagine a CNN face detector. Deeper layers of network detects parts of facial features. The higher layers combines these parts into complex features like an \textit{eye}, \textit{nose} or \textit{mouth}. Our multi-kernel convolution would allow us to define regions where we expect such features, though we can't define the relation between them. The network can simply recognise an image as a valid face, despite for example the \textit{eye} is rotated to the opposite direction than a \textit{mouth}. A demonstration of such problem can be seen on figure\,\ref{fig:capsule_face}.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[height=0.3\textwidth]{obrazky-figures/face_normal.pdf}
     \hspace{10em}
@@ -217,7 +217,7 @@ Hinton, inspired by computer graphics, tried to explain and reconstruct human br
 
 So how do we model this hierarchical relationship inside a neural network? Here we can learn from solutions already discovered in another field -- in computer graphics. 3D modeling uses something called a \textbf{pose}. This represents relation between 3D objects and provides a rotation and translation transformation matrix. In neural networks we represent that as a 4D \textit{pose matrix}\,\cite{capsule}. This results in combination of information about object relations with internal representation of object data. Hence it becomes easy for a model to recognise that it just sees a different view of something it already saw before.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=.8\textwidth]{obrazky-figures/duck.pdf}
     \caption{CNN struggles to recognise this is the same object. Human brain, on the other hand, immediately understands that objects on the picture are identical, despite being viewed from multiple different angles. \textit{Original artwork provided by Freepik\,\cite{freepik}}}
