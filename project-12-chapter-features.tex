@@ -1,3 +1,59 @@
-\section{Biometrics}\todo{Biometrics and history}
+\section{Biometrics}
 
-\section{Landmarks}\todo{Facial landmarks}
+The word \textit{Biometrics} comes from greek words \textit{bio} (alive) and \textit{metric} (to measure). In modern sense of this word, it's used to describe a field in science, which focuses on identification by unique features of human body. First systematic approaches to provide metric description of a human body part dates back to mid-19th century.
+
+\subsection{History}
+
+Before we begin to drill down into details of face recognition, let's iterate back and focus on some important steps in history\,\cite{history} which led researchers towards current automated technologies for recognition and identification.
+
+\subsubsection{1858: A first systematic approach to human identification by hand}
+
+The very first recorded attempt to systematically track and identify human beings happened in India. Sir W. J. Hershel used a handprint to distinguish employees of Civil Service on India. Each of the employees had their hand traced on their contract, so mistakes could have been avoided when they were about to receive salary.
+
+\subsubsection{1880: Bertillionage}
+
+Alphonse Bertillon developed a model using anthropometric classification of a human being. He used physical body measurements and photographs to identify criminal offenders. This method aimed to solve a problem when the felons often tend to change their names to avoid harsher sentences for repeated offenders. Bertillion stated that despite different name, they have the same body. This system failed short in 1903 when people with the same set of measurements were objectively found.
+
+\subsubsection{1896: Fingerprint classification system}
+
+Sir Edward Henry and Sir Francis Galton aimed to replace unreliable anthropometric classification. They came up with usage of fingerprints. Henry's employee, Azizul Haque designed a classification and storage system, so scanned fingerprints could be properly and quickly compared. The Henry Classification System was quickly adopted by many criminal justice organisations around the world.
+
+\subsubsection{1936: Conceptual beginings of iris-based identification}
+
+Frank Burch, an ophthalmologist, discovered unique properties of iris patterns and proposed their use to identification.
+
+\subsubsection{1960s: Face recognition}
+
+Starting from 1960, face recognition is being invented. At first, manual extraction of features was required from a picture. Then, a calculated distance between them and rations were used for automated comparison against records. Later, the feature extraction was pushed to more automated solution, though it still required manual intervention of marking the desired spots on the measured subject's face.
+
+\subsubsection{1993: FERET}
+
+DARPA creates and sponsors a program called FacE REcogntion Technology (FERET). This encouraged competition to create face recognition algorithms and automated solutions. As a result first commercial solutions were invented and made available.
+
+\subsubsection{1998: COOIS, a forensic DNA database initiative}
+
+Launched by FBI, the COOIS database desired to digitally store, retrieve and search for DNA information by law enforcement agencies in the USA.
+
+\subsubsection{2002: ISO/IEC committee for biometrics}
+
+The International Organization for Standardization established a committee for standardization of biometrics technologies.
+
+\subsection{Challenges}
+
+Biometrics tries to enhance security by implementing automated recognition and identification systems for humans. As any computer system designed for human interaction, it faces challenges in \textbf{reliability}, \textbf{scalability}, and \textbf{usability}. What is new to biometrics is aspect of \textbf{confidentiality}, since it directly operates with features unique to a specific individual. Any disclosure of such sensitive information results in violation on privacy of the respected individual.
+
+Providing greater reliability is crucial for achieving system responsiveness. To define this aspect we define two distinct metrics \textit{inter-dimensional variability} and its counterpart called \textit{intra-dimensional variability}. The first one ensures that a biometric system applied on two different subjects, no matter how similar they are, would result in two separable profiles. The later, on the other hand, oversees an essential property of consistency: multiple processing of an individual results in the same response from the system.
+
+Scalability aspect is a measure of system capability to provide the same quality of service when up-scaled to greater number of subjects as it behaves for a small group of people. That involves not just an engineering point of view like resource limitations, computational power and system design, moreover a uniqueness of tracked features is in play.
+
+On the other hand, the property of usability requires the biometrics system to be user friendly for the subjects. If a process of identification by certain features is too complicated and invasive for a user, it might not be viewed as an aid, and would be avoided by users. This aspect has to be considered as well when such systems are designed.
+
+\section{Facial landmarks}
+
+In Biometrics and in image processing in general we define a term \textit{landmark}. Biometrics specifically understands this term as of a \textbf{biometric feature}. It is used to describe, represent, a distinct region in certain image which resembles some important property of studied object. Since we're mostly interested in facial recognition in this thesis, we will focus just on this part of human body.
+
+Facial features that are important in face recognition and later in identification of such face are: \textit{Eye, Eyebrow, Nose, Mouth, Chin, Jawline, Ear}.
+
+A shape of feature, their location and topological relation to other features are most important part of face discovery process. Each feature has an unique shape and size. This can help to localize it and decide if the subject image is really the object we are looking for. Their relation, ratio and angle later helps to identify certain individual. Usually presence of a feature is required to happen in a certain part of the image. Later we will discuss, how are these features detected, and what leads to successful identification.
+
+
