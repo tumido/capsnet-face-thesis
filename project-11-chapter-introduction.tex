@@ -34,15 +34,18 @@ To recognise a human face is a complex problem. Therefore it's usually divided i
 
 As wide as the use cases, the variety of input data is vast. Some cases depends on frontal pictures of faces, some accents the so-called "pictures in-the-wild". This is a term specifically used for pictures captured without cooperation with the subject on the picture. Person on the picture is captured from an angle, without eye contact with camera, etc. This thesis aims to cover a topic of facial recognition over CCTV data. However it can be said that any in-the-wild pictures are suitable for the the implementation. The sufficient resolution is the most important feature and requirement on the input data. The model has to be able to find a face on the picture. Therefore even it the model would rely solely on CCTV data, the data feed has to provide enough detail of the person's face.
 
-\begin{figure}
+\begin{figure}[ht]
     \centering
-    \missingfigure{Sample CCTV data}
-    \caption{Example of image captured by a CCTV camera. Task is to extract face and recognise the person which it does belong to.}
+    \includegraphics[height=15em]{obrazky-figures/richard_sutton.jpg}
+    \includegraphics[height=15em]{obrazky-figures/yoshua_bengio.jpg}
+    \includegraphics[height=15em]{obrazky-figures/geoffrey_hinton.jpg}
+    \caption[Example of pictures in{-}the{-}wild]{Example of pictures in{-}the{-}wild. From left: Richard Sutton, Yoshua Bengio, Geoffrey Hinton. \textit{Source: Steve Jurvetson (CC BY 2.0\,\footnotemark)}}
 \end{figure}
 
 CCTV as a source of the input data has some crucial advantages for real world scenarios over any random "pictures in-the-wild". Usually CCTV produces feeds, therefore the subject of recognition is captured on many frames of such video. That means, the model can have multiple images of the same face available and if it is properly configured and trained, it can leverage this aspect. This topic will be elaborated further in the Available data sets chapter.
 
 \subsection{Recognition and identification}
+\footnotetext{\url{https://creativecommons.org/licenses/by/2.0/deed.en}}
 
 Imagine an individual captured on a CCTV footage. To identify the person by face we have to naturally focus the model on a face. Therefore the first step would be to detect where and if the picture captures a face. When such region is found, it's essential to detect all the facial features the models is trained to detect. Not always all features are available (the face can be partially covered, captured from an angle etc.)\,--\,the model has to adapt to such situation. Based on the features detected, the model creates an normalised estimation of the facial features. This normalised template should represent a frontal scan of facial features of the individuals face. When the model has access to multiple images of the face, it can produce multiple templates and combine them into one unique normalised master template unique to the person.
 
