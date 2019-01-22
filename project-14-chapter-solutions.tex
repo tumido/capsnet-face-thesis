@@ -107,18 +107,18 @@ In order to better understand the nature of CCTV imagery, pictures in-the-wild a
 
 This data set provides annotations for Faces in the Wild\,\cite{fiw} database. FDDB\,\cite{fddb} lists coordinates for bounding boxes for over 5 thousands faces located on pictures from Faces in the Wild database. Usually multiple faces are located on a single picture. This data set can provide ground for face detection algorithms and therefore it can be benefited from in the first step of our implementation. For recognition of individuals, whom such face belongs to, another data set has to be used. A great accompanying data set can be the LFW, mentioned in next subsection.
 
+\todo{Fix this table}
 \begin{table}[ht]
     \centering
-    \caption{FDDB data set metrics}
-
     \begin{tabularx}{.8\textwidth}{l|X}
         \toprule
         Number of subjects & \num{5171} \\
         Total images &  \num{28045} \\
         Poses & Varies \\
-        Resolution & All kind, even blurred faces \\
+        Resolution & All kinds, even blurred faces \\
         \bottomrule
     \end{tabularx}
+    \caption{FDDB data set metrics}
 \end{table}
 
 \subsection{LFW: Labeled Faces in the Wild}
@@ -127,8 +127,6 @@ LFW\,\cite{lfw} provides labels for images from Faces in the Wild data set menti
 
 \begin{table}[ht]
     \centering
-    \caption{LWF data set metrics}
-
     \begin{tabularx}{.8\textwidth}{l|X}
         \toprule
         Number of subjects & \num{5749} \\
@@ -138,6 +136,7 @@ LFW\,\cite{lfw} provides labels for images from Faces in the Wild data set menti
         License & Creative Commons \\
         \bottomrule
     \end{tabularx}
+    \caption{LWF data set metrics}
 \end{table}
 
 \subsection{The Extended Yale Face Database B}
@@ -146,8 +145,6 @@ Extended version of original Yale Face Database. The extension was provided by U
 
 \begin{table}[ht]
     \centering
-    \caption{Extended Yale Face Database B metrics}
-
     \begin{tabularx}{.8\textwidth}{l|X}
         \toprule
         Number of subjects & 28 \\
@@ -158,6 +155,7 @@ Extended version of original Yale Face Database. The extension was provided by U
         License & Free to use for research purposes\\
         \bottomrule
     \end{tabularx}
+    \caption{Extended Yale Face Database B metrics}
 \end{table}
 
 \subsection{SCface - Surveillance Cameras Face Database}
@@ -168,8 +166,6 @@ A disadvantage is the size of this data set, where we can find \num{4160} image 
 
 \begin{table}[ht]
     \centering
-    \caption{SCFace data set metrics}
-
     \begin{tabularx}{.8\textwidth}{l|X}
         \toprule
         Number of subjects & 130 \\
@@ -179,6 +175,7 @@ A disadvantage is the size of this data set, where we can find \num{4160} image 
         License & Custom, research purpose only \\
         \bottomrule
     \end{tabularx}
+    \caption{SCFace data set metrics}
 \end{table}
 
 This database is available for research purposes and upon written request to the authors.
@@ -191,8 +188,6 @@ The data set is made available under Creative Commons license\,\footnote{\url{ht
 
 \begin{table}[ht]
     \centering
-    \caption{VGGFace2 data set metrics}
-
     \begin{tabularx}{.8\textwidth}{l|X}
         \toprule
         Number of subjects & \num{9294} \\
@@ -202,6 +197,7 @@ The data set is made available under Creative Commons license\,\footnote{\url{ht
         License & Creative Commons \\
         \bottomrule
     \end{tabularx}
+    \caption{VGGFace2 data set metrics}
 \end{table}
 
 This project also provides sample models trained on their data set. However, the provided example pre-trained neural network models are not the sole representation of its usage. Many popular face recognition models are trained on this data set. For example FaceNET, mentioned before\,\ref{ss:facenet}, can be seen as one of the popular projects which benefits from this data set.
@@ -214,8 +210,6 @@ Subjects vary in all desired aspects and images provide enough variety in poses 
 
 \begin{table}[ht]
     \centering
-    \caption{MSCeleb data set metrics}
-
     \begin{tabularx}{.8\textwidth}{l|X}
         \toprule
         Number of subjects & \num{99892} \\
@@ -225,8 +219,10 @@ Subjects vary in all desired aspects and images provide enough variety in poses 
         License & Research purposes only \\
         \bottomrule
     \end{tabularx}
+    \caption{MSCeleb data set metrics}
 \end{table}
 
+\pagebreak
 \subsection{CelebA}
 
 CelebA\,\cite{celeba} is another large scale database of faces. The focus is on celebrities faces, the same as in the MSCeleb dataset. Pictures cover wide variety of poses and background noises. Each image is provided with 5 landmarks locations and 40 binary attributes.
@@ -235,8 +231,6 @@ Subjects vary in ethnicity, age, sex as well as in appearance. Data set includes
 
 \begin{table}[ht]
     \centering
-    \caption{CelebA data set metrics}
-
     \begin{tabularx}{.8\textwidth}{l|X}
         \toprule
         Number of subjects & \num{10177} \\
@@ -246,4 +240,5 @@ Subjects vary in ethnicity, age, sex as well as in appearance. Data set includes
         License & Research purposes only \\
         \bottomrule
     \end{tabularx}
+    \caption{CelebA data set metrics}
 \end{table}
