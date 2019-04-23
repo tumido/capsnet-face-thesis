@@ -194,9 +194,9 @@ Convolutional neural networks are a state-of-the-art of current deep learning. T
 
 CNNs operate with features and their recognition. Deeper convolution layer detect simple features, for example edges or colour gradients. Layers higher in the network are designed to detect specific combinations of such features and creates more complex ones. And finally, on the very top of the network, a dense layer takes the very high level features and provides a prediction of classification. And since many times the convolution is made invariant to different transformations, this can lead to impossible results. Mere presence of an object provides indication of feature presence. Relation between detected features is not considered at all. When simple features are composed to a more complex ones, translational or rotational relationship does not play any role.
 
-we ha already tackled the way CNN is using to deal with this problem. Pooling and more convolutional layers of smaller kernels are applied to reduce spatial size of information lost during each convolution. This aims to increase the field of view for convolutional layers higher in the network, therefore allowing them to locate features in larger portion of the input image. Pooling made CNNs surprisingly effective and one of the top performing architectures, though still enhancing loss of information.
+We have already tackled the way CNN is using to deal with this problem. Pooling and more convolutional layers of smaller kernels are applied to reduce spatial size of information lost during each convolution. This aims to increase the field of view for convolutional layers higher in the network, therefore allowing them to locate features in larger portion of the input image. Pooling made CNNs surprisingly effective and one of the top performing architectures, though still enhancing loss of information.
 
-Prof. Geoffrey Hinton, one of fathers of deep learning and author of many architectures and algorithms, is also the author of capsule neural networks. Hinton wrote\,\footnote{\url{https://www.reddit.com/r/MachineLearning/comments/2lmo0l/ama_geoffrey_hinton/clyj4jv/}}:
+Prof. Geoffrey Hinton, one of fathers of deep learning and praised founder of many principles and author of algorithms, is also the author of capsule neural networks. Hinton wrote\,\footnote{\url{https://www.reddit.com/r/MachineLearning/comments/2lmo0l/ama_geoffrey_hinton/clyj4jv/}}:
 \begin{quotation}
     The pooling operation used in convolutional neural networks is a big mistake and the fact that it works so well is a disaster.
 \end{quotation}
@@ -228,3 +228,67 @@ So how do we model this hierarchical relationship inside a neural network? Here 
 Let's discuss a situation on the figure\,\ref{fig:duck}. A human looking at this picture can easily recognise, it is a rubber duck viewed from different angles. Our internal representation of a rubber duck is independent on the viewing angle. It may be the first time that these particular pictures are shown to you, although you simply know their meaning. Since there's no internal representation of 3D space in CNNs, it really struggles. On the other hand, for CapsNET, this problem is pretty easy, since the 3D relations are explicitly modelled. Experiments shown that usage of capsule neural networks can further reduce the error rate\,\cite{capsule_compare}.
 
 And this is not the only benefit of usage of capsules. It also significantly lowers the amount of data required to train such network to achieve comparable performance to a CNN. And this make sense, since capsule theory is much closer to the way how brain does work. If a brain tries to learn to distinguish a horse from a cow, it only needs to be presented with few images, at most couple of dozens. CNN would require to be presented by many thousands of image samples, to achieve comparable performance. In this particular aspect we can compare CNNs to a brute-force approach to deep learning.
+
+\subsection{Architecture overview}
+
+Let's step back and introduce capsule networks from the engineering perspective. What does a capsule it actually mean? How we can represent it? How does a network using capsules look like in general? And how should such network look like in our particular use case.
+
+Generally speaking a Capsule network (CapsNET) consists of two parts where each has a distinct use: \textbf{Encoder} and \textbf{Decoder}:
+
+A decoder network is a fully connected (dense) or convolutional network, which purpose is simply to reconstruct an image based on prediction. This is used to provide proper feature adaptive learning experience in order to maximize classification potential of the encoder. Based on recognized features and selected activation in the encoder, decoder attempts to recreate the input object. In simple use cases like MNIST classification a 3 layer dense network can be used. In more feature rich environment with bigger resolution required on input a fully connected layer doesn't provide enough interpolation and resizing capabilities so a convolutional network with resize (enlarge) has to be used. Such network can be of up to 10 layers total. In later chapter we will provide examples of such decoder networks.
+
+Encoder is simply the gro of capsule network. There are many ways to implement capsules and in this example we will follow Hinton\,\cite{capsule} and use a simple, 3 layer shallow capsule network with dynamic routing. As shown later, such shallow network can achieve results comparable to much deeper CNN networks.
+
+As said the 3 layer encoder consist of two convolutional layers (one traditional, one capsule-based) and one capsule-based fully connected layer. The first layer
+\textit{encoder\_conv1} is a traditional 2D convolution. Each pixel intensity of the input image gets converted in this layer to the activation in a detector of local features. Detected local features are used as input for next layer, primary capsules.
+
+\subsection{Primary capsules}
+
+This composite layer encapsulates a convolution with vectorization and \textit{squashing}. It provides knowledge about greater context of each local feature, and makes more abstract detection about overall shape and orientation of such feature. Key factor in this layer is a non-linear activation called \textit{squashing}. It ensures that the length of a vector is converted into a probability score of feature presence in current input kernel. The aim is to resize vector based on their size. Shorter vectors get shrunk to minimal lengths while long vector are shrunk to size around value of 1.
+
+\begin{equation}
+    v_j = \frac{\norm{s_j}^2}{1 + \norm{s_j}^2} \frac{s_j}{\norm{s_j}}
+    \label{eq:squash}
+\end{equation}
+
+\subsection{Prediction capsules}
+
+\subsection{Dynamic routing}
+
+Prediction capsules and primary capsules are required to communicate and rate the activations based on accuracy of the prediction. The algorithm used is called \textbf{dymanic routing by agreement} and is described in greater detail by Hinton in publication \textit{Dynamic routing between capsules}\,\cite{capsule}.
+
+
+\begin{equation}
+    s_j = \sum_{i}c_{ij}\hat{u}_{j|i}
+\end{equation}
+
+\begin{equation}
+    \hat{u}_{j|i} = W_{ij}u_i
+\end{equation}
+
+\begin{equation}
+    c_{ij} = \frac{exp(b_{ij})}{\sum_{k}exp(b_{ik})}
+    \label{eq:softmax}
+\end{equation}
+
+\begin{equation}
+    L_k = T_k max(0, m^+ - \norm{v_k})^2 + \lambda (1 - T_k) max(0, \norm{v_k} - m^-)^2 \\
+\end{equation}
+
+$T_k = 1$ $m^+ = 0.9$ $m^- = 0.1$ $\lambda = 0.5$
+
+\begin{algorithm}[H]
+    \caption{Dynamic routing by agreement}\label{alg:routing}
+    \begin{algorithmic}[1]
+        \Procedure{ROUTING}{$\hat{u}_{j|i}, r, l$}
+        \ForAll{capsule $i$ in layer $j$ and capsule $j$ in layer $(l + 1)$} $b_{ij}\gets 0$ \EndFor
+        \For{$r$ iterations}
+            \ForAll{capsule $i$ in layer $l$} $c_{i}\gets softmax(b_i)$ \Comment{See equation \ref{eq:softmax}}\EndFor
+            \ForAll{capsule $j$ in layer $(l + 1)$} $s_{j}\gets \sum_ic_{ij}\hat{u}_{j|i}$ \EndFor
+            \ForAll{capsule $j$ in layer $(l + 1)$} $v_{j}\gets squash(s_j)$ \Comment{See equation \ref{eq:squash}}\EndFor
+            \ForAll{capsule $i$ in layer $l$ and capsule $j$ in layer $(l + 1)$} $b_{ij}\gets b_{ij} + \hat{u}_{j|i} v_j$ \EndFor
+        \EndFor
+        \State \textbf{return} $v_j$
+    \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
