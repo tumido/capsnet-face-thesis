@@ -23,12 +23,11 @@ As in any other field in computer science, there is an ongoing race to provide b
 
 There are also different approaches used to create and design such solutions. Sometimes a naive approach is used, other times the implementation leverages different aspects of Artificial Intelligence, especially Neural Networks.
 
-The aim of this thesis is to construct a very own solution to this problem, relying strictly on Neural Networks. Each part of the problem is explained and implemented. Comparison with existing solutions is offered as a part of the Available solutions chapter\,\ref{chapter:solutions}, later in this paper.
-
+The aim of this thesis is to construct a very own solution to this problem, relying strictly on Neural Networks. Each part of the problem is explained, while only the later one is the crucial and key deliverable for this thesis. Therefore only the actual facial recognition over already located faces is implemented. Comparison with existing solutions is offered as a part of the Available solutions chapter\,\ref{chapter:solutions}, later in this thesis.
 
 \section{Decomposition}
 
-To recognise a human face is a complex problem. Therefore it is usually divided into smaller sub-tasks, which are easier to comprehend and solve. Firstly, it is required to understand the input data. This understanding provides means to fundamentally divide the problem into easily solvable sub-tasks. Let's define and describe what are the expectations and demands on the input, as well as elaborate the required outputs.
+To recognise a human face in a picture or video is a fairly complex problem. Therefore it is usually divided into smaller sub-tasks, which are easier to comprehend and solve. Firstly, it is required to understand the input data. This understanding provides means to fundamentally divide the problem into easily solvable sub-tasks. Let's define and describe what are the expectations and demands on the input, so we can assess plausible approaches and later understand each subtask as a separate problem. Then we can assume and thoroughly elaborate the desired outputs.
 
 \subsection{In-the-wild pictures}
 
@@ -44,6 +43,8 @@ As wide as the use cases, the variety of input data is vast. Some cases depends 
 
 CCTV as a source of the input data has some crucial advantages for real world scenarios over any random pictures in-the-wild. Usually CCTV produces feeds, therefore the subject of recognition is captured on many frames of a video recording. That means, the model can be provided by many images of the same face and if properly configured and trained, it can leverage this aspect.
 
+In our scenario, this data has to be simplified and preprocessed since our main interest lays in the field of identity mapping for each face. Therefore instead of a full, legit CCTV footage, we will mainly work with already located and isolated, face centered images. More detail elaboration of the input data can be found in chapter \ref{chapter:implementation}.
+
 \subsection{Recognition and identification}
 \footnotetext{\url{https://creativecommons.org/licenses/by/2.0/deed.en}}
 
@@ -51,4 +52,4 @@ Imagine an individual captured on a CCTV footage. To identify a person by face, 
 
 \subsection{Output information}
 
-Last but not least, let's define what is expected to be found in such pictures. A facial identification model aims to come up with a unique vector (face template) for each person. Unique in a sense of minimising inter-dimensionality and maximising intra-dimensionality. That means the vector extracted from a picture is similar to all other vectors for the same person, as much as possible. It is also the most different to vector assigned to other people. Naturally each picture of the same person can result into slightly different template. However this sample specific output vector is expected to be nearly identical to a summarised template for the person. This summarised template is a result of combining many output vectors for the same individual.
+Last but not least, let's define what is expected to be found in such pictures. A facial identification model aims to come up with a unique vector (face template) for each person. Unique in a sense of minimising inter-dimensionality and maximising intra-dimensionality. That means the vector extracted from a picture is similar to all other vectors for the same person, as much as possible. It is also the most different to vector assigned to other people. Naturally each picture of the same person can result into slightly different template. However this sample specific output vector is expected to be nearly identical to a summarised template for the person. This summarised template is a result of combining many output vectors for the same individual. In this thesis we will elaborate more simplistic approach which will result into comparable results, yet more convenient and better consumable output.
