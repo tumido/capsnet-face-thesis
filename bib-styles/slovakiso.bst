@@ -1,11 +1,11 @@
 %%
-%% This is file `czechiso.bst',
+%% This is file `slovakiso.bst',
 %% generated with the docstrip utility.
 %%
 %% The original source files were:
 %%
 %% merlin.mbs  (with options: `head,exlang,lang,vonx,nm-rev,jnrlst,aunm-semi,nmlm,x3,m3,atit-u,vnum-nr,volp-sp,jwdpg,pp-last,jwdvol,num-xser,ser-vol,ser-ed,pg-bk,add-pub,isbn,issn,doi,edpar,edby,blk-tit,au-col,čeština,pp,and-xcom,xand,eprint,url,url-nl,nfss,,{}')
-%% czech.mbs  (with options: `exlang,lang,vonx,nm-rev,jnrlst,aunm-semi,nmlm,x3,m3,atit-u,vnum-nr,volp-sp,jwdpg,pp-last,jwdvol,num-xser,ser-vol,ser-ed,pg-bk,add-pub,isbn,issn,doi,edpar,edby,blk-tit,au-col,čeština,pp,and-xcom,xand,eprint,url,url-nl,nfss,,{}')
+%% slovak.mbs  (with options: `exlang,lang,vonx,nm-rev,jnrlst,aunm-semi,nmlm,x3,m3,atit-u,vnum-nr,volp-sp,jwdpg,pp-last,jwdvol,num-xser,ser-vol,ser-ed,pg-bk,add-pub,isbn,issn,doi,edpar,edby,blk-tit,au-col,čeština,pp,and-xcom,xand,eprint,url,url-nl,nfss,,{}')
 %% merlin.mbs  (with options: `tail,exlang,lang,vonx,nm-rev,jnrlst,aunm-semi,nmlm,x3,m3,atit-u,vnum-nr,volp-sp,jwdpg,pp-last,jwdvol,num-xser,ser-vol,ser-ed,pg-bk,add-pub,isbn,issn,doi,edpar,edby,blk-tit,au-col,čeština,pp,and-xcom,xand,eprint,url,url-nl,nfss,,{}')
 %% ----------------------------------------
 %% *** Styl snažící se být v souladu s normou ISO 690. Pomocí latex makebst vytvořil David Martinek. ***
@@ -222,7 +222,7 @@ FUNCTION {space.word}
  % Each function has a name bbl.xxx where xxx is the English word.
  %-------------------------------------------------------------------
  % Begin module:
- % \ProvidesFile{czech.mbs}[2006/03/31 1.0 (DM)]
+ % \ProvidesFile{slovak.mbs}[2006/03/31 1.0 (DM)]
 
  % The language selected here is CZECH
 FUNCTION {bbl.and}
@@ -232,28 +232,28 @@ FUNCTION {bbl.etal}
 { "aj." }
 
 FUNCTION {bbl.editors}
-{ "editoři" }
+{ "editori" }
 
 FUNCTION {bbl.editor}
 { "editor" }
 
 FUNCTION {bbl.edby}
-{ "editace" }
+{ "edit\'{a}cia" }
 
 FUNCTION {bbl.edition}
-{ "vydání" }
+{ "vydanie" }
 
 FUNCTION {bbl.volume}
-{ "ročník" }
+{ "ro\v{c}n\'{i}k" }
 
 FUNCTION {bbl.of}
 { "" }
 
 FUNCTION {bbl.number}
-{ "číslo" }
+{ "\v{c}\'{i}slo" }
 
 FUNCTION {bbl.nr}
-{ "č." }
+{ "\v{c}." }
 
 FUNCTION {bbl.in}
 { "in" }
@@ -268,28 +268,28 @@ FUNCTION {bbl.chapter}
 { "kapitola" }
 
 FUNCTION {bbl.techrep}
-{ "Technická Zpráva" }
+{ "Technick\'{a} Spr\'{a}va" }
 
 FUNCTION {bbl.mthesis}
-{ "Diplomová práce" }
+{ "Diplomov\'{a} pr\'{a}ca" }
 
 FUNCTION {bbl.phdthesis}
-{ "Dizertační práce" }
+{ "Dizerta\v{c}n\'{a} pr\'{a}ca" }
 
 FUNCTION {bbl.first}
-{ "První" }
+{ "Prv\'{e}" }
 
 FUNCTION {bbl.second}
-{ "Druhé" }
+{ "Druh\'{e}" }
 
 FUNCTION {bbl.third}
-{ "Třetí" }
+{ "Tretie" }
 
 FUNCTION {bbl.fourth}
-{ "Čtvrté" }
+{ "\v{S}tvrt\'{e}" }
 
 FUNCTION {bbl.fifth}
-{ "Páté" }
+{ "Piate" }
 
 FUNCTION {bbl.st}
 { "" }
@@ -303,31 +303,31 @@ FUNCTION {bbl.rd}
 FUNCTION {bbl.th}
 { "" }
 
-MACRO {jan} {"Leden"}
+MACRO {jan} {"Janu\'{a}r"}
 
-MACRO {feb} {"Únor"}
+MACRO {feb} {"Febru\'{a}r"}
 
-MACRO {mar} {"Březen"}
+MACRO {mar} {"Marec"}
 
-MACRO {apr} {"Duben"}
+MACRO {apr} {"Apr\'{i}l"}
 
-MACRO {may} {"Květen"}
+MACRO {may} {"M\'{a}j"}
 
-MACRO {jun} {"Červen"}
+MACRO {jun} {"J\'{u}n"}
 
-MACRO {jul} {"Červenec"}
+MACRO {jul} {"J\'{u}l"}
 
-MACRO {aug} {"Srpen"}
+MACRO {aug} {"August"}
 
-MACRO {sep} {"Září"}
+MACRO {sep} {"September"}
 
-MACRO {oct} {"Říjen"}
+MACRO {oct} {"Okt\'{o}ber"}
 
-MACRO {nov} {"Listopad"}
+MACRO {nov} {"November"}
 
-MACRO {dec} {"Prosinec"}
+MACRO {dec} {"December"}
 
- % End module: czech.mbs
+ % End module: slovak.mbs
 %% Copyright 1994-2004 Patrick W Daly
 MACRO {acmcs} {"ACM Computing Surveys"}
 
@@ -1599,4 +1599,4 @@ FUNCTION {end.bib}
 EXECUTE {end.bib}
 %% End of customized bst file
 %%
-%% End of file `czechiso.bst'.
+%% End of file `slovakiso.bst'.
