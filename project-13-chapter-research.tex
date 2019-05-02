@@ -229,27 +229,49 @@ Let's discuss a situation on the figure\,\ref{fig:duck}. A human looking at this
 
 And this is not the only benefit of usage of capsules. It also significantly lowers the amount of data required to train such network to achieve comparable performance to a CNN. And this make sense, since capsule theory is much closer to the way how brain does work. If a brain tries to learn to distinguish a horse from a cow, it only needs to be presented with few images, at most couple of dozens. CNN would require to be presented by many thousands of image samples, to achieve comparable performance. In this particular aspect we can compare CNNs to a brute-force approach to deep learning.
 
-\subsection{Architecture overview}
+\subsection{Understanding capsules}
 
-Let's step back and introduce capsule networks from the engineering perspective. What does a capsule it actually mean? How we can represent it? How does a network using capsules look like in general? And how should such network look like in our particular use case.
+Let's step back and introduce capsules in the CapsNet networks. What does a term \textit{capsule} actually mean? What is the mathematic representation and what key principles are used? How we can represent it as a neural network architecture? How does a network using capsules look like from the engineering aspect? And how should such network look like in our particular use case?
+
+There are many ways to implement capsules and in this example we will follow Hinton\,\cite{capsule} and use a simple, 3 layer shallow capsule network with dynamic routing. As shown later, such shallow network and straightforward implementation works well when used together with dynamic routing and can achieve results comparable to much deeper CNN networks.
+
+Desired representation of a capsule layer output in CapsNet network represents a probabilistic likelihood of the entity mapped by one particular capsule being present in the current input. To facilitate this we use a non-linear activation called \textbf{squash}\ and is shown as equation \ref{eq:squash}. It ensures that the length of a vector is converted into a probability score of feature presence in current input kernel for each capsule. The aim is to resize vector based on their size. Shorter vectors get shrunk to minimal lengths while long vector are shrunk to size slightly below 1. This non-linearity can be later leveraged in discriminative learning process later.
+
+\begin{equation}
+    v_j = \frac{\norm{s_j}^2}{1 + \norm{s_j}^2} \frac{s_j}{\norm{s_j}}
+    \label{eq:squash}
+\end{equation}
+
+In this equation a squash activation is computed for a capsule $j$ where $v_j$ would represent squashed output and $s_j$ is the total input.
+
+In any later layer except the first layer of capsules the capsule can understand the $s_j$ input as a weighted sum mapping over all prediction vectors $\hat{u_j|i}$ decided by the capsule layer below. This prediction vectors are a product of $u_i$ output of previous capsule layer and its $W_{ij}$ weights matrix.
+
+\begin{equation}
+    s_j = \sum_{i}c_{ij}\hat{u}_{j|i},\quad \hat{u}_{j|i} = W_{ij}u_i
+\end{equation}
+
+Here we are introducing $c_{ij}$ coupling coefficients which are determined by the dynamic routing process in multiple iterations. The $c_{ij}$ coefficients are computed for each capsule $i$ in relation to every capsule $j$ in the layer above. For each capsule $i$ the sum of these coefficients is equal to 1 and represents a special softmax for routing. This activation uses initial logits $b_{ij}$ that are log prior probabilities of the likelihood a capsule $i$ is coupled to capsule $j$. In general, routing provides each capsule $j$ a mean to determine which capsules $i$ are interesting enough for it to base it's prediction upon.
+
+\begin{equation}
+    c_{ij} = \frac{exp(b_{ij})}{\sum_{k}exp(b_{ik})}
+    \label{eq:softmax}
+\end{equation}
+
+
 
 Generally speaking a Capsule network (CapsNET) consists of two parts where each has a distinct use: \textbf{Encoder} and \textbf{Decoder}:
 
 A decoder network is a fully connected (dense) or convolutional network, which purpose is simply to reconstruct an image based on prediction. This is used to provide proper feature adaptive learning experience in order to maximize classification potential of the encoder. Based on recognized features and selected activation in the encoder, decoder attempts to recreate the input object. In simple use cases like MNIST classification a 3 layer dense network can be used. In more feature rich environment with bigger resolution required on input a fully connected layer doesn't provide enough interpolation and resizing capabilities so a convolutional network with resize (enlarge) has to be used. Such network can be of up to 10 layers total. In later chapter we will provide examples of such decoder networks.
 
-Encoder is simply the gro of capsule network. There are many ways to implement capsules and in this example we will follow Hinton\,\cite{capsule} and use a simple, 3 layer shallow capsule network with dynamic routing. As shown later, such shallow network can achieve results comparable to much deeper CNN networks.
+Encoder is simply the gro of capsule network.
 
 As said the 3 layer encoder consist of two convolutional layers (one traditional, one capsule-based) and one capsule-based fully connected layer. The first layer
 \textit{encoder\_conv1} is a traditional 2D convolution. Each pixel intensity of the input image gets converted in this layer to the activation in a detector of local features. Detected local features are used as input for next layer, primary capsules.
 
 \subsection{Primary capsules}
 
-This composite layer encapsulates a convolution with vectorization and \textit{squashing}. It provides knowledge about greater context of each local feature, and makes more abstract detection about overall shape and orientation of such feature. Key factor in this layer is a non-linear activation called \textit{squashing}. It ensures that the length of a vector is converted into a probability score of feature presence in current input kernel. The aim is to resize vector based on their size. Shorter vectors get shrunk to minimal lengths while long vector are shrunk to size around value of 1.
+This composite layer encapsulates a convolution with vectorization and \textit{squashing}. It provides knowledge about greater context of each local feature, and makes more abstract detection about overall shape and orientation of such feature. Key factor in this layer is a non-linear activation called \textit{squashing}.
 
-\begin{equation}
-    v_j = \frac{\norm{s_j}^2}{1 + \norm{s_j}^2} \frac{s_j}{\norm{s_j}}
-    \label{eq:squash}
-\end{equation}
 
 \subsection{Prediction capsules}
 
@@ -258,18 +280,7 @@ This composite layer encapsulates a convolution with vectorization and \textit{s
 Prediction capsules and primary capsules are required to communicate and rate the activations based on accuracy of the prediction. The algorithm used is called \textbf{dymanic routing by agreement} and is described in greater detail by Hinton in publication \textit{Dynamic routing between capsules}\,\cite{capsule}.
 
 
-\begin{equation}
-    s_j = \sum_{i}c_{ij}\hat{u}_{j|i}
-\end{equation}
 
-\begin{equation}
-    \hat{u}_{j|i} = W_{ij}u_i
-\end{equation}
-
-\begin{equation}
-    c_{ij} = \frac{exp(b_{ij})}{\sum_{k}exp(b_{ik})}
-    \label{eq:softmax}
-\end{equation}
 
 \begin{equation}
     L_k = T_k max(0, m^+ - \norm{v_k})^2 + \lambda (1 - T_k) max(0, \norm{v_k} - m^-)^2 \\
