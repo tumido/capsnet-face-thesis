@@ -4,20 +4,241 @@ This chapter aims to show and uncover every detail the author stumbled upon when
 
 \section{Preparation and prerequisites}
 
-Keras with Tensorflow backend was selected as the key framework to use for this implementation. That inherently means, we are bound to use Python as a programming language. However, selection of Python is natural and reasonable anyways, since it is the most used language in the field of machine learning, artificial inteligence experimentation. Moreover due to technical limitation and proven better performance, Anacoda Python distribution is selected as the proper backend. According to various researches\,\todo{cite} and projects, Tensorflow performance fluctuates a lot since the pre-compiled packages are not allowed to use all the capabilities of each and every specific hardware combination. Therefore projects like Thoth\footnote{http://thoth-station.ninja} were created to provide dependency mesh mapping . In our example we can be satisfied by the enhanced performance of Anaconda/Conda Tensorflow distribution (from either Anaconda or Intel channels). Moreover, running Tensorflow locally on CPU is used for quick prototyping. For more demanding executions, Google Colab\footnote{https://colab.research.google.com} is selected as Jupyter notebook execution provider. All source codes to this implementation were released under Apache 2.0 license on Git Hub\footnote{https://github.com/tumido/capsnet-face}.
+\textit{Keras} with \textit{Tensorflow} backend was selected as the key framework to use for this implementation. That inherently means, we are bound to use Python as a programming language. However, selection of Python is natural and reasonable anyways, since it is the most used language in the field of machine learning, artificial inteligence experimentation. Moreover due to technical limitation and proven better performance, Anacoda Python distribution is selected as the proper backend. According to various researches\,\todo{cite} and projects, \textit{Tensorflow} performance fluctuates a lot since the pre-compiled packages are not allowed to use all the capabilities of each and every specific hardware combination. Therefore projects like Thoth\footnote{http://thoth-station.ninja} were created to provide dependency mesh mapping . In our example we can be satisfied by the enhanced performance of Anaconda/Conda \textit{Tensorflow} distribution (from either Anaconda or Intel channels). Moreover, running \textit{Tensorflow} locally on CPU is used for quick prototyping. For more demanding executions, Google Colab\footnote{https://colab.research.google.com} is selected as Jupyter notebook execution provider. All source codes to this implementation were released under Apache 2.0 license on Git Hub\footnote{https://github.com/tumido/capsnet-face}.
 
 \section{Keras on Tensorflow}
 
+\textit{Keras} is a high level API for machine learning. It provides unified means to define and access models and layers as well as most common mathematical principles and functions in a highly polished package. This package relies on a backend provider to implement the solutions behind the scenes. \textit{Tensorflow} is one of these backend. Principles of this cooperation and more elaborate description of other backends and solutions can be found in chapter \ref{chapter:solutions}.
+
+Let's provide a basic overview of the available API and bindings that will be used later on in our implementation:
+
+\begin{lstlisting}[language=Python, caption=Keras example]
+from keras import models, layers
+
+# Procedural model declaration
+model = models.Sequential(
+    name="sequential_model",
+    layers=[
+        layers.Dense(...),
+        layers.Conv2D(...),
+        ...
+    ]
+)
+
+# Functional model definition
+input_layer = layers.Input(shape=(...))
+output = layers.Dense(...)(input_layer)
+output = layers.Conv2D(...)(output)
+...
+final_layer = layers.Conv2D(...)(output)
+
+model = models.Model(
+    name="raw_model",
+    inputs=[x]
+    outputs=[final_layer]
+)
+\end{lstlisting}
+
+As you can see using \textit{Keras} is straightforward. It allows an easy model definition using various approaches. This provides a great benefit, which we will use later on\,--\,it allows model stacking, permutation of layers, combination of layouts while easily sharing parameters and behavior. This gives the researcher a really powerful mean to manipulate a model and shape it to achieve desired behavior, even multiple distinct behaviors for each phase of the model's lifecycle. It allows easy way to inject or extract auxillary inputs and outputs into the model configuration. This is a really important feature especially in our case, as you will learn later on next pages, since we desire a much different model behavior when the network is trained to the one when we ask for a prediction.
+
+In next few paragraphs we will show what network configuration we chose for our CapsNet as well as observe proven and experimental configurations of the layers involved. As you might know, layers are the basic building blocks of neural networks. And stacking these layers one on top of another creates more complex behaviors. Certain patterns of layers usually results into an architecture. Models can use a straight, classic scheme of layering one layer onto one another layer, or it can diverge at certain point and result into multiple behaviors. The first one uses \texttt{keras.models.Sequential} type of neural network. This means a single set of inputs is passed to the model, the model processes the data through each and every layer in the same order, and at the end, the last layer in the sequence, produces the desired output. The later mentioned behavior, required more complex yet precise handling. This allowes the researcher much greater control over what inputs are passed to which layer, and which outputs are collected. \textit{Keras} allows this type of modelling via \texttt{keras.models.Model} class.
+
+Later on, we will find out that even combination of these methods are possible. This allows to inject and join models, reuse a model in multiple parts of the network and most importantly it allows sharing of trained parameters. In our case, we will later on describe \textit{Encoder} and \textit{Decoder} logic as separate models or network prototypes which are combined into a greater models for two distinct purposes, training the network and testing. The trained network has one configuration, while the model used for prediction consists of partially different layers. But since this reuse of network parts is possible, we can leverage the trained parameters from the training phase, and use them in a different network which provides predictions.
+
+\subsection{Layers}
+
+In next few paragraphs we will introduce all the layers used in our solution and get familiar with their respective API first before we start putting them together into an actual network model configuration. Just before we do that, let's describe the common API for all layers:
+
+\begin{lstlisting}[language=Python, caption=Common layer API]
+layers.Layer(
+    name="layer_name",  # Allows to name layer for proper storing
+    input_shape=,       # Required input shape
+    output_shape=,      # Required output shape
+    trainable=,         # Can make the layer static
+    weights=,           # Preset weights
+    ...
+)
+\end{lstlisting}
+
+Most of the arguments above can be defined on the fly, omitted or abstracted. Except for one, which is really important to use, in case we desire to store the model for later use. And that's the \texttt{name} parameter. This string allows user to specify unique name within the architecture for this particular layer. And since we can share layers between models, this feature can be leveraged to load the proper weights data into a different model, despite being exported from another one. This topic will be covered more in the section \ref{ss:save_model}.
+
+\subsubsection{\texttt{layers.Input}}
+
+Fundamental layer which allows to pass input data to a model. This layer has the biggest say in the shape of consumed data.
+
+\begin{lstlisting}[language=Python, caption=Input layer]
+layers.Input(
+    shape=input_shape  # A shape in a tuple format without
+                       # the first batch_size dimension
+)
+\end{lstlisting}
+
+\subsubsection{\texttt{layers.Dense}}
+
+A \textit{Dense} stands for a well known, fully connected neural networks layer. It's product can be represented as equation \ref{eq:dense}, where the \texttt{act} is an activation function. This activation is performed over a element-wise multiplication of the input and a weight matrix kernel with additional bias added. Both kernel and bias are learned through training.
+
+\begin{equation}
+    o_{ij} = act(i_{ij} \times k + b_{ij})
+    \label{eq:dense}
+\end{equation}
+
+This layer provides more extensive API, but in our implementation we will be satisfied with the basics. The example calls for each layer in later text is used directly from our \textit{CapsNet} implementation.
+
+\begin{lstlisting}[language=Python, caption=Dense layer]
+layers.Dense(
+    units=400,          # Sets dimensionality of the output
+    activation='relu',  # Desired activation function
+    input_dim=prediction_caps_dim * bins, # Input dimensionality
+    ...
+)
+\end{lstlisting}
+
+\subsubsection{\texttt{layers.Conv2D}}
+
+Provides a two dimensional convolution. Convolution as operation as well as its meanings were already described in section \ref{ss:conv}. This layer type utilizes these principles in 2D space. \textit{Keras} provides also other layer types for 1D and 3D convolution. However, the matter of our use case lays in image processing. And since images are a spatial two dimensional space, it dictates the use of \texttt{layers.Conv2D}. In \textit{Keras}, there are also other layers like \texttt{layers.Convolution2D}, though this is just an alias which points to the same implementation as \texttt{layers.Conv2D}.
+
+\begin{lstlisting}[language=Python, caption=2D convolution layer]
+layers.Conv2D(
+    filters=init_conv_filters,     # Amount of filters
+    kernel_size=init_conv_kernel,  # Specifies height and weight of
+                                   # kernel matrix
+    strides=1,                     # A number of strides to use
+    padding='valid',               # Sets padding on outer borders
+    activation='relu',             # Desired activation function
+    ...
+)
+\end{lstlisting}
+
+\subsubsection{\texttt{layers.Dropout}}
+
+An overfit prevention layer, which randomly sets each particular input to 0 with probability of \texttt{rate}. This is performed on each update during the training phase.
+
+
+\begin{lstlisting}[language=Python, caption=Dropout layer]
+layers.Dropout(
+    rate=.3  # Fraction of input to drop
+    ...
+)
+\end{lstlisting}
+
+\subsubsection{\texttt{layers.Reshape}}
+
+A simple layer which allows to modify the shape of the input data. The result shape consists of \texttt{batch\_size} as first dimension and \texttt{target\_shape} as the rest. A special value of $-1$ can be used, which is treated as a variable, calculated, dimension.
+
+\begin{lstlisting}[language=Python, caption=Reshape layer]
+layers.Reshape(
+    target_shape=[-1, capsule_dim], # Desired shape on output
+    ...
+)
+\end{lstlisting}
+
+\subsubsection{\texttt{layers.Lambda}}
+
+This is the first more complex layer. it might not seem so, however this layer allows to add custom behavior. Its name is derived from lambda function, anonymous functions which are invoked in situ. The \texttt{layers.Lambda} layer allows user to invoke any operation and transformation defined as a function. We use this type of layer in multiple scenarios, but for clarity we will list here just a single one\,--\,a calculation of length of each vector in the tensor.
+
+\begin{lstlisting}[language=Python, caption=Lambda layer]
+def length(inputs):
+    return k.sqrt(k.sum(k.square(inputs), axis=2))
+
+layers.Lambda(
+    length
+    ...
+)
+\end{lstlisting}
+
+
+\subsubsection{\texttt{layers.Layer}}
+
+This abstract class serves as a base for all standard as well as all any custom layers in \textit{Keras}. It's behavior and shape is fully customizable. Inheritance from this class allows user to invent and define a brand new layer, while maintaining the same API and compilation strategy as for any standard layer. While this might sound confusing the authors of \textit{Keras} framework made it really easy to comprehend and straightforward to implement. Let's take a look:
+
+
+\begin{lstlisting}[language=Python, caption=Custom layer example]
+class PredictionCapsule(layers.Layer):
+    def __init__(self, custom_arg, **kwargs):
+        """Init takes all custom parameters required for the behavior."""
+        self.custom_arg = custom_arg
+
+        # Pass the standard params to base class
+        super(PredictionCapsule, self).__init__(**kwargs)
+
+    def get_config(self):
+        """Configuration of layer, used when saving a model."""
+        return dict(
+            custom_arg=self.custom_arg,
+            **super(PredictionCapsule, self).get_config()
+        )
+
+    def compute_output_shape(self, input):
+        """Allows layer to tell output shape based on input."""
+        return (None, self.custom_arg * 5)
+
+    def build(self, input_shape):
+        """Called when model is created, allows weights init."""
+        assert len(input_shape) == 3, "Wrong shape"
+        self.W = self.add_weight(
+            shape=[1,2,3],
+            name='W',
+            trainable=True,
+        )
+        # Required to be called when done
+        super(PredictionCapsule, self).build(input_shape)
+
+    def call(self, inputs, **kwargs):
+        """Custom behavior. Needs to return agreed output shape."""
+        ...
+        return outputs
+
+\end{lstlisting}
+
+
 \section{Architecture}
+
+Now, when we understand what types of layer we have available, we can dive in and start building from these basic blocks a full \textit{CapsNet} network. As we've already discussed in the chapter \ref{chapter:research}, the base structure of a capsule network is not as complicated as a CNN would be, however it requires some additional, custom entities and treatment as well. Starting from the simple to the more difficult, we are about to discover the overall arcitecture first and granularly enhance and dig deep into detail later.
+
+Overall, the architecture is straightforward, but for good results it requires to be build from two separate distinct units, which when combined can be successfully trained. As per Hinton, we'll use the same naming conventions:
+
+\begin{enumerate}
+    \item \textbf{Encoder} is the actual network of containing capsules. It serves for feature recognition and classification.
+    \item \textbf{Decoder} on the other hand is a helping force in training. It tries to reconstruct the input image based on prediction provided by the encoder.
+\end{enumerate}
+
+Also, it's worth mentioning a \textit{CapsNet} is not a \textit{single-input, single-output} type of network. For training purposes, it consumes both the image and the label and outputs a predicted label along with a reconstructed image. This behavior changes when the network is used for predictions. At that point the neural network is expected to behave and process a single input image and provide one output for it\,--\,the predicted label. However more outputs might be required in inference, since instead of a prediction we can be more interested in a similarity vector, which might be a better fit for unknown indentity description. One way or another, any of these scenarios requires a different model layout. And since it's not possible to achieve a multiple layouts with a single model, we're destined to use multiple models, each with different layer structure. So now, we need to make sure that once we train one model the other one is capable to benefit from it as well. And now it's the right time to use the layer sharing between models as described above.
 
 \subsection{Encoder}
 
+
+
 \subsection{Decoder}
+
+
+
+\subsection{Primary feature capsules layer}
+
+
+
+\subsection{Prediction capsules layer}
+
+
 
 \section{Lifecycle of a model}
 
+Traditionally
+
 \subsection{Train}
+
+
 
 \subsection{Test}
 
+
+
 \subsection{Predict}
+
+
+\subsection{Save and load a model}
+\label{ss:save_model}
+
+
+\section{Model fitting and collected data}
+
+

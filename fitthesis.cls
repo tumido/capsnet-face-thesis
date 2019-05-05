@@ -247,15 +247,15 @@
  \ifEqString{#1}{FIT}{Fakulta informačních technologií}{\@fit@CS}%
  \ifEqString{#1}{FIT}{Fakulta informačních technologií}{\@fit@SK}%
  \ifEqString{#1}{FIT}{Faculty of Information Technology}{\@fit@EN}%
- \ifEqString{#1}{FEKT}{Fakulta elektrotechniky 
+ \ifEqString{#1}{FEKT}{Fakulta elektrotechniky
 a komunikačních technologií}{\@fit@CS}%
- \ifEqString{#1}{FEKT}{Fakulta elektrotechniky 
+ \ifEqString{#1}{FEKT}{Fakulta elektrotechniky
 a komunikačních technologií}{\@fit@SK}%
- \ifEqString{#1}{FEKT}{Faculty of Electrical Engineering 
+ \ifEqString{#1}{FEKT}{Faculty of Electrical Engineering
 and Communication}{\@fit@EN}%
  \ifEqString{#1}{FSI}{Fakulta strojního inženýrství}{\@fit@CS}%
  \ifEqString{#1}{FSI}{Fakulta strojního inženýrství}{\@fit@SK}%
- \ifEqString{#1}{FSI}{Faculty of Mechanical 
+ \ifEqString{#1}{FSI}{Faculty of Mechanical
 Engineering}{\@fit@EN}%
  \ifEqString{#1}{FA}{Fakulta architektury}{\@fit@CS}%
  \ifEqString{#1}{FA}{Fakulta architektury}{\@fit@SK}%
@@ -265,7 +265,7 @@ Engineering}{\@fit@EN}%
  \ifEqString{#1}{FCH}{Faculty of Chemistry}{\@fit@EN}%
  \ifEqString{#1}{FP}{Fakulta podnikatelská}{\@fit@CS}%
  \ifEqString{#1}{FP}{Fakulta podnikatelská}{\@fit@SK}%
- \ifEqString{#1}{FP}{Faculty of Business and 
+ \ifEqString{#1}{FP}{Faculty of Business and
 Management}{\@fit@EN}%
  \ifEqString{#1}{FAST}{Fakulta stavební}{\@fit@CS}%
  \ifEqString{#1}{FAST}{Fakulta stavební}{\@fit@SK}%
@@ -333,7 +333,7 @@ Management}{\@fit@EN}%
 %-----------------------------------------------------------------------------
 % Projectinfo - parametrizace sablony / template parameters
 %-----------------------------------------------------------------------------
-%Parametry 
+%Parametry
 \define@key{projinfo}{title.cs}{\global\def\@title@CS{#1}}
 \define@key{projinfo}{title.en}{\global\def\@title@EN{#1}}
 \define@key{projinfo}{faculty.cs}{\def\@faculty@CS{#1}}
@@ -365,11 +365,11 @@ Management}{\@fit@EN}%
 
 %Vychozi hodnoty / Default values
 \setkeys{projinfo}{
-  title.cs={Název práce (česky)},title.en={Název práce(anglicky)}, 
-  date=\today, project=BP, department=DEF, declaration=, 
+  title.cs={Název práce (česky)},title.en={Název práce(anglicky)},
+  date=\today, project=BP, department=DEF, declaration=,
   abstract.cs=, abstract.en=, keywords.cs=, keywords.en=,
-  author.name=Jméno, author.surname=Příjmení, supervisor.name=Jméno, 
-  supervisor.surname=Příjmení, extendedabstract=, 
+  author.name=Jméno, author.surname=Příjmení, supervisor.name=Jméno,
+  supervisor.surname=Příjmení, extendedabstract=,
   department.cs=,department.en=,title.length=,faculty.cs=,
   faculty.en=,faculty=FIT
 }%
@@ -440,7 +440,7 @@ Management}{\@fit@EN}%
 \setlength{\parskip}{0pt}
 
 \fontfamily{qhv}\selectfont%
-%  
+%
 
 \addtolength{\voffset}{-0.95cm}
 
@@ -671,9 +671,9 @@ Management}{\@fit@EN}%
 
 
 \usebox{\@obrlogo}
-  
+
 \vspace{10mm}
-  
+
 \iftoggle{slovak_used}{
   \mkuctxtt{18}{\@vut@SK}
   \mkuctxtt{11}{\@vut@EN}
@@ -925,7 +925,7 @@ Management}{\@fit@EN}%
 %
 \csdoublequoteson
 
-% Zarovnání v seznamu typu description 
+% Zarovnání v seznamu typu description
 % Alignment in description list
 % http://tex.stackexchange.com/questions/7008/change-hanging-indent-in-description-list
 \makeatletter
@@ -962,7 +962,7 @@ Management}{\@fit@EN}%
 \usepackage{float}
 \usepackage{calc}
 \usepackage{longtable,booktabs}
-\usepackage{xcolor,colortbl}
+\usepackage[dvipsnames]{xcolor,colortbl}
 \usepackage{multirow}
 \usepackage{tabularx}
 \usepackage{graphicx}

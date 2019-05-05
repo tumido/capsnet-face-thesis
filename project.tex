@@ -43,21 +43,21 @@
 % Basic packages are at the bottom of template file fitthesis.cls
 % zde můžeme vložit vlastní balíčky / you can place own packages here
 \usepackage{siunitx}
-\usepackage{amsmath}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
-\usepackage[numbers,sort]{natbib}
-\newenvironment{conditions}[1][kde:]
-  {\begin{minipage}{\textwidth}
-   \vspace*{-.5\belowdisplayskip}%
-   \linespread{1}\selectfont #1 \begin{tabular}[t]{>{$}l<{$} @{${}:{}$} l}}
-  {\end{tabular}\end{minipage}\\[\belowdisplayskip]}
 
-\newenvironment{conditions*}[1][kde:]
-  {\begin{minipage}{\textwidth}
-   \vspace*{-.5\belowdisplayskip}%
-   \linespread{1}\selectfont #1 \begin{tabular}[t]{>{$}l<{$} @{}>{${}}c<{{}$}@{} l}}
-  {\end{tabular}\end{minipage}\\[\belowdisplayskip]}
+\lstdefinestyle{custom}{
+  basicstyle   = \ttfamily\color{black},
+  commentstyle = \color{gray},
+  keywordstyle = \bfseries\color{RoyalBlue},
+  stringstyle  = \color{BurntOrange},
+  frame        = single,
+  columns      = fullflexible,
+  keepspaces   = true,
+  tabsize      = 4,
+  morekeywords={as}
+}
+\lstset{style=custom}
 
 % Kompilace po částech (rychlejší, ale v náhledu nemusí být vše aktuální)
 % Compilation piecewise (faster, but not all parts in preview will be up-to-date)
@@ -133,7 +133,7 @@
   year={2019},             %rok odevzdání / year of submission
   date=\today,           %datum odevzdani / submission date
   %Nazev prace / thesis title
-  title.cs={Deskriptor pro identifikaci osoby podle\\obličeje},  %nazev prace v cestine ci slovenstine (dle zadani) / thesis title in czech language (according to assignment)
+  title.cs={Deskriptor pro identifikaci osoby podle obličeje},  %nazev prace v cestine ci slovenstine (dle zadani) / thesis title in czech language (according to assignment)
   title.en={Descriptor for Identification of a Person by the Face}, %nazev prace v anglictine / thesis title in english
   %title.length={14.5cm}, % nastavení délky bloku s titulkem pro úpravu zalomení řádku (lze definovat zde nebo níže) / setting the length of a block with a thesis title for adjusting a line break (can be defined here or below)
   %Autor / Author
