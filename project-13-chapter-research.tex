@@ -249,6 +249,7 @@ In any later layer except the first layer of capsules the capsule can understand
 
 \begin{equation}
     s_j = \sum_{i}c_{ij}\hat{u}_{j|i},\quad \hat{u}_{j|i} = W_{ij}u_i
+    \label{eq:capsule}
 \end{equation}
 
 Here we are introducing $c_{ij}$ coupling coefficients which are determined by the dynamic routing process in multiple iterations. The $c_{ij}$ coefficients are computed for each capsule $i$ in relation to every capsule $j$ in the layer above. For each capsule $i$ the sum of these coefficients is equal to 1 and represents a special softmax for routing. This activation uses initial logits $b_{ij}$ that are log prior probabilities of the likelihood a capsule $i$ is coupled to capsule $j$. In general, routing provides each capsule $j$ a mean to determine which capsules $i$ are interesting enough for it to base it's prediction upon.

@@ -195,7 +195,7 @@ class PredictionCapsule(layers.Layer):
 
 Now, when we understand what types of layer we have available, we can dive in and start building from these basic blocks a full \textit{CapsNet} network. As we've already discussed in the chapter \ref{chapter:research}, the base structure of a capsule network is not as complicated as a CNN would be, however it requires some additional, custom entities and treatment as well. Starting from the simple to the more difficult, we are about to discover the overall arcitecture first and granularly enhance and dig deep into detail later.
 
-Overall, the architecture is straightforward, but for good results it requires to be build from two separate distinct units, which when combined can be successfully trained. As per Hinton, we'll use the same naming conventions:
+Overall, the architecture is straightforward, but for good results it requires to be build from two separate distinct units, which when combined can be successfully trained. As per Hinton \cite{capsule}, we'll use the same naming conventions:
 
 \begin{enumerate}
     \item \textbf{Encoder} is the actual network of containing capsules. It serves for feature recognition and classification.
@@ -214,9 +214,145 @@ Also, it's worth mentioning a \textit{CapsNet} is not a \textit{single-input, si
 
 \subsection{Primary feature capsules layer}
 
+Name of this layer and expectations set by previous chapters promise that great deal of invention is present n this layer. However that's not entirely true. More interesting begavior can be found in the next prediction capsules layer. The primary capsules are designed for a simple feature extraction as it might be known fro traditional convolutional networks. This feature extraction has a twist to it, though. As prescribed in the chapter \ref{chapter:research}, a non linear \textit{squash} activation is used here. We've already conveyed the equation \ref{eq:squash} describing the real nature of the squash function. Now we have the opportunity to cover this in a code.
 
+The feature capsules layer is in it's true nature a composite layer of three layers stacked and with the squash activation on output.
+
+\begin{enumerate}
+    \item At first a convolutinal layer is present. This ensures extraction of multiple interesting patterns from each image. Patterns like hue, edges, orientation, dark spots etc. are recognized and represented by their belonging kernels. The amount of kernels corresponds to number of desired patters and dimensionality of each capsule.
+    \item As a next step the convoluted vector is reshaped to be bundled by capsule dimensionality. This essentially splits the input tensor into separate capsules.
+    \item And as the last step the \textit{squash} activation is used to provide non-linear normalization of each vector.
+\end{enumerate}
+
+
+\begin{lstlisting}[language=Python, caption=Features capsule with squash activation]
+def squash(inputs, axis=-1):
+    inputs += k.epsilon()   # Avoid ZeroDivisionError
+    s_norm = k.sum(k.square(inputs), axis, keepdims=True)
+    scale = s_norm / (1 + s_norm) / k.sqrt(s_norm)
+    return scale * inputs
+
+# Locate features
+layers.Conv2D(
+    capsule_dim*channels_count,
+    kernel_size,
+    strides=strides,
+    padding=padding,
+    name='feature_capsules_conv2d'
+)(inputs)
+
+# Split into capsules (concatenate kernels for each)
+outputs = layers.Reshape(
+    [-1, capsule_dim],
+    name='feature_capsules_reshape'
+)(outputs)
+
+# Normalize
+outputs = layers.Lambda(
+    squash,
+    name='feature_capsules_squash'
+)(outputs)
+
+# Result tensor
+output
+\end{lstlisting}
+
+As you might see, there's nothing really complex happening in this layer. However when this layer is connected to prediction capsules, interesting things will start happening to properly determine the proper bond between capsules.
 
 \subsection{Prediction capsules layer}
+
+In Hinton's \cite{capsule} architecture suggestion, this is the final capsule layer. Intention is to classify feature capsule activations and provide routes to data from interesting feature capsules
+for each particular label. As this might suggest, each prediction capsule is tightly mapped and bonded to a specific label. Therefore as much labels the network aims to classify, that much prediction capsules it has to contain. This is for sure a great scaling set back and this and few other drawbacks will be discussed as a part of our conclusion. For now, let's focus on how this capsule type is implemented and how we deal with the dynamic routing as described in chapter \ref{chapter:research}.
+
+There are few shared properties in this layer. These are:
+
+\begin{itemize}
+    \item
+    \item
+    \item
+    \item
+    \item
+    \item
+\end{itemize}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabularx}{.8\textwidth}{l|X}
+        \toprule
+        Count of capsules & \texttt{capsule\_count} \\
+        Dimensionality of each capsule & \texttt{capsule\_dim} \\
+        Amount of routing iterations & \texttt{routing\_iters} \\
+        Count of input layer capsules (feature capsules) & \texttt{input\_capsule\_count} \\
+        Dimensionality of input layer capsules & \texttt{input\_capsule\_dim} \\
+        Weight matrix & \texttt{W} \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Prediction capsule layer attributes}
+\end{table}
+
+These are the building blocks and a complete context boundaries in which a prediction capsule is defined.
+
+\begin{enumerate}
+    \item Let's assume we have the input shape for this layer as \texttt{(None, input\_capsule\_count, input\_capsule\_dim)}.
+    \item To allow space for manipulation in the prediction capsule space, we need to inject a new dimension into the input tensor and tile the \texttt{capsule\_count} over it. That way we can achieve a separate set of the initial input for a capsule in the current layer. Now we have shape \texttt{(None, capsule\_count, input\_capsule\_count, input\_capsule\_dim)}.
+    \item Implementing the operation described in equation \ref{eq:capsule} we multiply the weight matrix \texttt{W}
+\end{enumerate}
+
+Now, once more in code:
+
+\begin{lstlisting}[language=Python, caption=Prediction capsule call without routing]
+# Prepare inputs
+# inputs == [None, input_capsule_count, input_capsule_dim]
+u = k.expand_dims(inputs, 1)
+# u == [None, 1, input_capsule_count, input_capsule_dim]
+u = k.tile(u, (1, capsule_count, 1, 1))
+# u == [None, capsule_count, input_capsule_count, input_capsule_dim]
+
+# Perform: inputs x W by scanning on input[0]
+u = tf.einsum('iabc,abdc->iabd', u, W)
+# u == [None, capsule_count, input_capsule_count, capsule_dim]
+\end{lstlisting}
+
+After the initial weight propagation is done, proper activation has to be ensured. Therefore using the dynamic routing is essential. This procedure was already described as algorith \ref{alg:routing}, however implementation-wise in \textit{Keras} it would look more like this:
+
+\begin{lstlisting}[language=Python, caption=Prediction capsule routing]
+# Init log prior probabilities to zeros:
+b = tf.zeros(
+    shape=(k.shape(inputs)[0], capsule_count, input_capsule_count, 1)
+)
+# b == [None, capsule_count, input_capsule_count, 1]
+
+for i in range(routing_iters):
+    with tf.variable_scope(f'routing_{i}'):
+        c = tf.keras.activations.softmax(b, axis=1)
+        # c == [None, capsule_count, input_capsule_count, 1]
+        # Perform: sum(c x u)
+        #
+        # c == [None, capsule_count, input_capsule_count, 1]
+        # u == [None, capsule_count, input_capsule_count, capsule_dim]
+        s = tf.reduce_sum(tf.multiply(c, u), axis=2, keepdims=True)
+        # s == [None, capsule_count, 1, capsule_dim]
+        # Perform: squash
+        v = squash(s)
+        # v == [None, capsule_count, 1, capsule_dim]
+
+        # Perform: sum(output x input)
+        v_tiled = tf.tile(v, (1, 1, input_capsule_count, 1))
+        b += tf.reduce_sum(
+            tf.matmul(u, v_tiled, transpose_b=True),
+            axis=3, keepdims=True
+        )
+        # b == [None, capsule_count, input_capsule_count, 1]
+
+# Squeeze the extra dim (used for manipulation, not needed on output)
+# v == [None, capsule_count, 1, capsule_dim]
+v = tf.squeeze(v, axis=2)
+# v == [None, capsule_count, capsule_dim]
+\end{lstlisting}
+
+The routing eliminates the \texttt{input\_capsule\_count} and \texttt{input\_capsule\_dim} from the tensor and instead provides new dimension of \texttt{capsule\_dim} which applies the attribute of current prediction capsule layer.
+
+\subsection{Masking layer}
 
 
 
@@ -225,6 +361,7 @@ Also, it's worth mentioning a \textit{CapsNet} is not a \textit{single-input, si
 Traditionally
 
 \subsection{Train}
+
 
 
 
