@@ -236,7 +236,7 @@ Let's step back and introduce capsules in the CapsNet networks. What does a term
 
 There are many ways to implement capsules and in this example we will follow Hinton\,\cite{capsule} and use a simple, 3 layer shallow capsule network with dynamic routing. As shown later, such shallow network and straightforward implementation works well when used together with dynamic routing and can achieve results comparable to much deeper CNN networks.
 
-Desired representation of a capsule layer output in CapsNet network represents a probabilistic likelihood of the entity mapped by one particular capsule being present in the current input. To facilitate this we use a non-linear activation called \textbf{squash}\ and is shown as equation \ref{eq:squash}. It ensures that the length of a vector is converted into a probability score of feature presence in current input kernel for each capsule. The aim is to resize vector based on their size. Shorter vectors get shrunk to minimal lengths while long vector are shrunk to size slightly below 1. This non-linearity can be later leveraged in discriminative learning process later.
+Desired representation of a capsule layer output in CapsNet network represents a probabilistic likelihood of the entity mapped by one particular capsule being present in the current input. To facilitate this we use a non-linear activation called \textbf{squash}\ and is shown as equation \ref{eq:squash}. It ensures that the length of a vector is converted into a probability score of feature presence in current input kernel for each capsule. The aim is to resize vector based on their size. Shorter vectors get shrunk to minimal lengths while long vector are shrunk to size slightly below 1. This non-linearity can be later leveraged in discriminative learning process.
 
 \begin{equation}
     v_j = \frac{\norm{s_j}^2}{1 + \norm{s_j}^2} \frac{s_j}{\norm{s_j}}
@@ -252,43 +252,14 @@ In any later layer except the first layer of capsules the capsule can understand
     \label{eq:capsule}
 \end{equation}
 
-Here we are introducing $c_{ij}$ coupling coefficients which are determined by the dynamic routing process in multiple iterations. The $c_{ij}$ coefficients are computed for each capsule $i$ in relation to every capsule $j$ in the layer above. For each capsule $i$ the sum of these coefficients is equal to 1 and represents a special softmax for routing. This activation uses initial logits $b_{ij}$ that are log prior probabilities of the likelihood a capsule $i$ is coupled to capsule $j$. In general, routing provides each capsule $j$ a mean to determine which capsules $i$ are interesting enough for it to base it's prediction upon.
+Here we are introducing $c_{ij}$ coupling coefficients which are determined by the dynamic routing process in multiple iterations. The $c_{ij}$ coefficients are computed for each capsule $i$ in relation to every capsule $j$ in the layer above. For each capsule $i$ the sum of these coefficients is equal to 1 and represents a special softmax for routing. This activation uses initial logits $b_{ij}$ that are log prior probabilities of the likelihood a capsule $i$ is coupled to capsule $j$. In general, routing provides each capsule $j$ a mean to determine which capsules $i$ are interesting enough and aligned in the same fashion for it to base its prediction upon. This coupling is determined independently on current input.
 
 \begin{equation}
     c_{ij} = \frac{exp(b_{ij})}{\sum_{k}exp(b_{ik})}
     \label{eq:softmax}
 \end{equation}
 
-
-
-Generally speaking a Capsule network (CapsNET) consists of two parts where each has a distinct use: \textbf{Encoder} and \textbf{Decoder}:
-
-A decoder network is a fully connected (dense) or convolutional network, which purpose is simply to reconstruct an image based on prediction. This is used to provide proper feature adaptive learning experience in order to maximize classification potential of the encoder. Based on recognized features and selected activation in the encoder, decoder attempts to recreate the input object. In simple use cases like MNIST classification a 3 layer dense network can be used. In more feature rich environment with bigger resolution required on input a fully connected layer doesn't provide enough interpolation and resizing capabilities so a convolutional network with resize (enlarge) has to be used. Such network can be of up to 10 layers total. In later chapter we will provide examples of such decoder networks.
-
-Encoder is simply the gro of capsule network.
-
-As said the 3 layer encoder consist of two convolutional layers (one traditional, one capsule-based) and one capsule-based fully connected layer. The first layer
-\textit{encoder\_conv1} is a traditional 2D convolution. Each pixel intensity of the input image gets converted in this layer to the activation in a detector of local features. Detected local features are used as input for next layer, primary capsules.
-
-\subsection{Primary capsules}
-
-This composite layer encapsulates a convolution with vectorization and \textit{squashing}. It provides knowledge about greater context of each local feature, and makes more abstract detection about overall shape and orientation of such feature. Key factor in this layer is a non-linear activation called \textit{squashing}.
-
-
-\subsection{Prediction capsules}
-
-\subsection{Dynamic routing}
-
-Prediction capsules and primary capsules are required to communicate and rate the activations based on accuracy of the prediction. The algorithm used is called \textbf{dymanic routing by agreement} and is described in greater detail by Hinton in publication \textit{Dynamic routing between capsules}\,\cite{capsule}.
-
-
-
-
-\begin{equation}
-    L_k = T_k max(0, m^+ - \norm{v_k})^2 + \lambda (1 - T_k) max(0, \norm{v_k} - m^-)^2 \\
-\end{equation}
-
-$T_k = 1$ $m^+ = 0.9$ $m^- = 0.1$ $\lambda = 0.5$
+Later on we will define two distinct layer types: \textit{prediction capsules} and \textit{primary capsules}. These are required to communicate and rate the activations based on accuracy of the prediction. The algorithm used is called \textbf{dynamic routing by agreement} and is described in greater detail by Hinton in publication \textit{Dynamic routing between capsules}\,\cite{capsule}. It utilizes the already described coupling coefficients and log prior. The algorithm goes as this:
 
 \begin{algorithm}[H]
     \caption{Dynamic routing by agreement}\label{alg:routing}
@@ -296,12 +267,75 @@ $T_k = 1$ $m^+ = 0.9$ $m^- = 0.1$ $\lambda = 0.5$
         \Procedure{ROUTING}{$\hat{u}_{j|i}, r, l$}
         \ForAll{capsule $i$ in layer $j$ and capsule $j$ in layer $(l + 1)$} $b_{ij}\gets 0$ \EndFor
         \For{$r$ iterations}
-            \ForAll{capsule $i$ in layer $l$} $c_{i}\gets softmax(b_i)$ \Comment{See equation \ref{eq:softmax}}\EndFor
+            \ForAll{capsule $i$ in layer $l$} $c_{i}\gets softmax(b_i)$ \EndFor
             \ForAll{capsule $j$ in layer $(l + 1)$} $s_{j}\gets \sum_ic_{ij}\hat{u}_{j|i}$ \EndFor
-            \ForAll{capsule $j$ in layer $(l + 1)$} $v_{j}\gets squash(s_j)$ \Comment{See equation \ref{eq:squash}}\EndFor
+            \ForAll{capsule $j$ in layer $(l + 1)$} $v_{j}\gets squash(s_j)$ \EndFor
             \ForAll{capsule $i$ in layer $l$ and capsule $j$ in layer $(l + 1)$} $b_{ij}\gets b_{ij} + \hat{u}_{j|i} v_j$ \EndFor
         \EndFor
         \State \textbf{return} $v_j$
     \EndProcedure
     \end{algorithmic}
 \end{algorithm}
+
+The aim is simple, yet harder to achieve. All and every capsule in \textit{primary capsule} and \textit{prediction capsule} layers are made to agree on the location of the features in space and their orientation. At first all the routing logits $b_{ij}$ are initialized to zero. That means each input capule's ouput is sent to the next layer's capsules with equal probability $c_{ij}$. In time the logits are learned and since they are independent on the current image\footnote{Each image is expected to include one and just one face, not more.}, they can be discriminatively trained at the same time as all the other weights. Their only dependency is the type and location of the capsules involved. Its training process involves iteratively adjusting and refining the logits based on measurement of agreement between the prediction $\hat{u}_{j|i}$ made by capsule $i$ in the underlying layer and current output $v_j$ of each capsule $j$ in the layer above.
+
+\begin{equation}
+    a_{ij} = v_j \cdot \hat{u}_{j|i}
+    \label{eq:agreement}
+\end{equation}
+
+The measuring of agreement is simplified to a scalar product as per equation\,\ref{eq:agreement}. This rate is used to as an addend to the log prior $b_{ij}$ and used to compute new value of the coupling coefficient $c_{ij}$.
+
+
+\subsection{Architecture using capsules}
+
+Before we move on and utilize this principles, we need to step back and understand the capsule networks as whole. Generally speaking a Capsule network (CapsNET) consists of two parts where each has a distinct use: \textbf{Encoder} and \textbf{Decoder}:
+
+A decoder network is a fully connected (dense) or convolutional network, which purpose is simply to reconstruct an image based on prediction. This is used to provide proper feature adaptive learning experience in order to maximize classification potential of the encoder, in other words its a regularization method for capsule networks to reach valid conclusions. Based on recognized features and selected activation in the encoder, decoder attempts to recreate the input object. In simple use cases like MNIST classification a 3 layer dense network can be used. This was demonstrated by Hinton and can be seen on figure\,\ref{im:decoder}. In more feature rich environment with bigger resolution required on input a fully connected layer doesn't provide enough interpolation and resizing capabilities so a convolutional network with resize (enlarge) has to be used. Such network can be of up to 10 layers total. In later chapter we will provide examples of such decoder networks.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[height=11em]{obrazky-figures/reconsArch.png}
+    \caption{Decoder architecture as per Hinton\,\cite{capsule}}
+    \label{im:decoder}
+\end{figure}
+
+Encoder is simply the gro of capsule network. This is the truly capsulized network. There are many configurations available, though with growing complexity\,--\,meaning adding capsule layers, the computational complexity grows exponentially. This is due to routing and amount of connections required between each capsule. In this thesis, we will be using the Hinton's hinted layering with a slight twist to facilitate more detailed and granular feature recognition across much wider space.
+
+As said the 3 layer encoder consist of two convolutional layers (one traditional, one capsule-based) and one capsule-based fully connected layer. The first layer
+\textit{encoder\_conv1} is a traditional 2D convolution. Each pixel intensity of the input image gets converted in this layer to the activation in a detector of local features. Detected local features are used as input for next layer, primary capsules.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{obrazky-figures/capsulearch.png}
+    \caption{Encoder architecture as per Hinton\,\cite{capsule}}
+    \label{im:encoder}
+\end{figure}
+
+Naturally each of these parts of the network can be assigned their own loss function. A different balance\,--\,loss weight enforced over each of these functions can greatly improve the overall loss of the network. For \textit{decoder} a loss function would be straightforward to guess. Since we're dealing with images, 2D data comparison, for example a simple \textit{mean squared error} is a suitable metric.
+
+\begin{equation}
+    MSE = \frac{1}{n} \sum_{i=0}^{n} (Y_{i} - \hat{Y}_{i})^2
+\end{equation}
+
+On the other hand, the encoder part required more sophisticated mean to compute its inconsistency between the predicted value and its ground truth. Therefore a \textit{margin loss} is used for each label in which we're classifying the images. For each of them and individual loss is calculated and the total loss is said to be a simple sum of these partial losses:
+
+\begin{equation}
+    L_k = T_k max(0, m^+ - \norm{v_k})^2 + \lambda (1 - T_k) max(0, \norm{v_k} - m^-)^2
+\end{equation}
+
+where, $T_k = 1$ is a hot one encoded truth of the capsule belonging to that particular label. Then $m^+ = 0.9$ and $m^- = 0.1$ are the loss boundaries and we use the down-weighting factor of $\lambda = 0.5$ to stop shrinking in lengths of activation vectors when initial learning happens\,\cite{capsule}.
+
+\subsection{Primary capsules}
+
+This composite layer encapsulates a convolution with vectorization and \textit{squashing}. Therefore this layer is also called \textit{convolutional capsule layer}. It provides knowledge about greater context of each local feature, and makes more abstract detection about overall shape and orientation of such feature. Key factor in this layer is a non-linear activation called \textit{squashing}. We've already covered the squashing function by equation\,\ref{eq:squash}. Hinton, describes this layer\,\cite{capsule} as:
+
+\begin{quotation}
+    In convolutional capsule layers each unit in a capsule is a convolutional unit. Therefore, each capsule will output a grid of vectors rather than a single output vector.
+\end{quotation}
+
+The quoted statement stipulates boundaries by which this layer is different to a standard convolution. Since we're not interested in a scalar feature identity, and require more complex result, a whole vector of attributes that holds much broader context of the feature location. This brings couple of limitations of the convolution itself though. For example a strided convolution or pooling would mean disaster for the spatial collocation of a feature. Therefore we eliminate our use of these advanced convolutional optimizations and we are obliged to use a convolution in its most simple and pure form.
+
+\subsection{Prediction capsules}
+
+Next layer is understood to be a fully connected capsule layer, which purpose is to rate the features located by the previous \textit{primary capsule} layer and bundle the smallest amount of unique activation per label. As it may sound confusing, we need to elaborate further and step by step. We already know, that the output of previous layer in each of its capsules is a local grid of vectors which are unique to each its member as well as for each capsule. Key word is "grid". It signifies the output is three dimensional. However traditionally a feature is understood as a 2D location. Our primary capsules holds also another interesting factor to this. We can now understand and recognize a feature in relation to others. And that's precisely what is done in this layer. The amount of prediction capsules corresponds to the amount of target labels. Therefore each capsule is mapped to one particular label, in our case an identity, and is expected to locate the features which are unique to this particular identity as well as all the common features which define a face. However this is not an easy task, and a simple weighted multiplication over a kernel would not provide enough insight into the complicated data. Therefore an algorithm called \textit{dynamic routing} is used. The main purpose is to recognise that particular features which holds the same or similar context as the others for each particular label. The context can be of many different types, from simple distance of multiple features in 3D space, over a consistent angle hold between two features, to for instance a simple contextualized location relative to other features.
