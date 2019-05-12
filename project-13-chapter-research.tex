@@ -291,13 +291,13 @@ The measuring of agreement is simplified to a scalar product as per equation\,\r
 
 Before we move on and utilize this principles, we need to step back and understand the capsule networks as whole. Generally speaking a Capsule network (CapsNET) consists of two parts where each has a distinct use: \textbf{Encoder} and \textbf{Decoder}:
 
-A decoder network is a fully connected (dense) or convolutional network, which purpose is simply to reconstruct an image based on prediction. This is used to provide proper feature adaptive learning experience in order to maximize classification potential of the encoder, in other words its a regularization method for capsule networks to reach valid conclusions. Based on recognized features and selected activation in the encoder, decoder attempts to recreate the input object. In simple use cases like MNIST classification a 3 layer dense network can be used. This was demonstrated by Hinton and can be seen on figure\,\ref{im:decoder}. In more feature rich environment with bigger resolution required on input a fully connected layer doesn't provide enough interpolation and resizing capabilities so a convolutional network with resize (enlarge) has to be used. Such network can be of up to 10 layers total. In later chapter we will provide examples of such decoder networks.
+A decoder network is a fully connected (dense) or convolutional network, which purpose is simply to reconstruct an image based on prediction. This is used to provide proper feature adaptive learning experience in order to maximize classification potential of the encoder, in other words its a regularization method for capsule networks to reach valid conclusions. Based on recognized features and selected activation in the encoder, decoder attempts to recreate the input object. In simple use cases like MNIST classification a 3 layer dense network can be used. This was demonstrated by Hinton and can be seen on figure\,\ref{fig:decoder}. In more feature rich environment with bigger resolution required on input a fully connected layer doesn't provide enough interpolation and resizing capabilities so a convolutional network with resize (enlarge) has to be used. Such network can be of up to 10 layers total. In later chapter we will provide examples of such decoder networks.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[height=11em]{obrazky-figures/reconsArch.png}
     \caption{Decoder architecture as per Hinton\,\cite{capsule}}
-    \label{im:decoder}
+    \label{fig:decoder}
 \end{figure}
 
 Encoder is simply the gro of capsule network. This is the truly capsulized network. There are many configurations available, though with growing complexity\,--\,meaning adding capsule layers, the computational complexity grows exponentially. This is due to routing and amount of connections required between each capsule. In this thesis, we will be using the Hinton's hinted layering with a slight twist to facilitate more detailed and granular feature recognition across much wider space.
@@ -309,7 +309,7 @@ As said the 3 layer encoder consist of two convolutional layers (one traditional
     \centering
     \includegraphics[width=\textwidth]{obrazky-figures/capsulearch.png}
     \caption{Encoder architecture as per Hinton\,\cite{capsule}}
-    \label{im:encoder}
+    \label{fig:encoder}
 \end{figure}
 
 Naturally each of these parts of the network can be assigned their own loss function. A different balance\,--\,loss weight enforced over each of these functions can greatly improve the overall loss of the network. For \textit{decoder} a loss function would be straightforward to guess. Since we're dealing with images, 2D data comparison, for example a simple \textit{mean squared error} is a suitable metric.

@@ -2,7 +2,7 @@ Before implementing an own solution, let's uncover some available and current im
 
 Later on you'll stumble upon a list of available face recognition databases and data sets, which can be used for training and evaluating our implementation. Each of the data set description is accompanied by a short list of their respective metrics.
 
-\section{Existing implementations}
+\section{Existing CNN implementations}
 
 There are many available solution and existing implementations. They naturally differs, models compete and cover different use cases. We have already established, that the face recognition is a dynamic field with competitive nature. Open challenges and competitions are enabling greater progress in the field. However that makes it impossible to provide an always up-to-date review of available solutions and implementations.
 
@@ -43,6 +43,40 @@ SqueezeNet\,\cite{squeezenet} is a totally different architecture of deep neural
 Initially this network was released in 2016 as a Caffe implementation. Later it found its way into other frameworks and was hugely adopted in use cases with limited resources. Therefore it makes applications, which would require a model to be run on low-powered processing platforms like FPGAs and smartphones, available.
 
 It is capable of optimizations like \textit{Deep Compression}\,\cite{compression}, which allows trained models to be compressed. In case of SqueezeNet it can reduce model size $10\times$.
+
+\section{Experimantal implementations of CapsNet}
+
+Convolutional neural networks are already heavily established in the field, and since \textit{CapsNet} is a new and emerging architecture, it haven't proved itself in this particular field. Couple of different implementations exists, though only few are aiming for the facial recognition. However this architecture is the key delivery for this thesis, so it would be beneficial at least list the solutions and attempts to provide a reader more comprehensive view. First, we're will list the solutions to our problem and later focus better and more detail implementations which are more generic \textit{CapsNet}s or tackles different areas.
+
+\subsection{CapsNet4Faces}
+
+The only attempt I was able to locate at the time of publishing this thesis, which aims to solve the same problem as this thesis does. However the implementation\,\cite{capsnet4faces} seems incomplete and is based on the later mentioned traffic signs classifier\,\ref{ss:traffic_signs}. The basic description states 100\% accuracy although I was not able to replicate that and moreover all listed example Jupyter notebooks are faulty and do not contain expected outputs. In many places outdated results from Thibault Neveu's traffic sign classifier is shown. Despite the fact this solution is most likely not complete, it has to be listed, since it's the only publicly available solution using the same architecture found.
+
+
+\subsection{CapsNet\,--\,Traffic sign classifier}
+\label{ss:traffic_signs}
+
+The most complete implementation of capsule network on a more complex problem than a MNIST data set. This particular implementation\,\cite{capsnet_traffic} focuses to create a German traffic signs classifier. A network of 42 prediction capsules is able to assign correct label to a traffic sign with 98\% validation accuracy (97\% for testing). It follows similar architecture pattern as described above, at least for the \textit{encoder} part. The decoder is made differently, since a fully connected 3 layer decoding is not considered helpful for a image data in color. Instead a convolutional decoder with resizing\,--\,upscaling to nearest neighbor is used to provide reconstruction network. As per the documentation, this proved much more useful along with reduction in routing. The network is implemented in pure \textit{Tensorflow} framework. In our own solution later, we will use this network as a guidance and great inspiration for our work. The implementation is not very clean, though provide great insight into how one can manipulate and classify RGB data with emphasis on small feature size. We will borrow some visualization methods later in our example notebooks as well.
+
+\subsection{CapsNet-Keras}
+
+A thoughtful implementation\,\cite{capsnet_keras} of a capsule network in \textit{Keras} using \textit{Tensorflow} as backend. Despite it sole focus on MNIST data set, it provides the most understandable and cleanest implementation of such network. As we will talk about later the chosen framework is a great advantage here. It follows very closely the implementation accented by Hinton\,\cite{capsule}. It features a 3 layer encoder with one composite primary capsules layer and one layer of prediction capsules, each per a digit. The architecture shown on figures\,\ref{fig:encoder} and\,\ref{fig:decoder} applies. As you may already recognize, that means this network has 10 prediction capsules, which greatly affects its size and keep it fairly small.
+
+
+% \begin{table}[ht]
+%     \centering
+%     \begin{tabularx}{\textwidth}{X|ll|rrr}
+%         & & & \multicolumn{3}{c}{Accuracy} \\
+%         Name & Data set & License & Train & Validation & Test \\
+%         \toprule
+%         CapsNet4Faces & LFW & Apache 2.0 & 100\% & - & 93.7\% \\
+%         Traffic sign classifier & Custom & Apache 2.0 & 99\% & 98\% & 97\% \\
+
+%         \bottomrule
+%     \end{tabularx}
+%     \caption{Capsule networks comparison}
+% \end{table}
+
 
 \section{Frameworks}
 
@@ -244,7 +278,7 @@ Subjects vary in ethnicity, age, sex as well as in appearance. Data set includes
 
 \subsection{Aligned Face Dataset from Pinterest}
 
-Aligned Face Dataset from Pinterest (PINS)
+Aligned Face Dataset from Pinterest (PINS) is a custom dataset available on Kaggle\,\cite{pins}. It provides normalized, aligned and feature centered image data collected from Pinterest and processed via \textit{dlib}. The image distribution is not strictly uniform, although it provides at least 100 images per identity. The only drawback is that images listed are not always in-the-wild. Many times it include stages photos, many of them post processed and modified. Therefore despite interesting metrics, the data set proved unusable because of it great great inconsistency within each identity domain.
 
 \begin{table}[ht]
     \centering
