@@ -687,6 +687,94 @@ with open('test.yml', 'r') as f:
 testing_model.load_weights('weights.h5', by_name=True)
 \end{lstlisting}
 
-\section{Experiment}
+\section{Running an experiment}
 
-Based on previous sections we have prepared our network to be successfully trained.
+Based on previous sections we have prepared our network to be successfully trained and evaluated. This can be either initiated locally, or via a hosted \textit{Jupyter} hub. In this case, we used \textit{Google Colab} as a \textit{Jupyter} hosted runtime. Notebooks with execution details are provided as part of the \texttt{capsnet} package sources. Our library provides all necessary APIs to maximize user friendliness:
+
+\begin{lstlisting}[language=Python, caption=Running an experiment using \texttt{capsnet}]
+model = CapsNet(
+    x_train.shape[1:],
+    len(np.unique(y_train, axis=0)),
+    routing_iters=3,
+    kernel_initializer=initializers.random_normal(stddev=0.01, seed=0),
+    dropout_rate=.7,
+    init_conv_filters=256,
+    init_conv_kernel=9,
+    feature_caps_kernel=5,
+    feature_caps_dim=16,
+    feature_caps_channels=16,
+    prediction_caps_dim=32,
+    image_size=(32, 32)
+)
+
+model.train(data, batch_size=10)
+
+model.test(x_test, y_test)
+
+model.predict(x_test)
+\end{lstlisting}
+
+\subsection{Model evaluation}
+
+The model has been trained in different conditions and settings and multiple times. The mean values of accuracy and loss is listed in the following Table\,\ref{tab:eval} .In this case we experimented with routing iterations and comparing 1 routing to 3 consecutive ones. As proved by Hinton\,\cite{capsule} the amount of iterations has impact on network accuracy and can make the training converge faster. Each model was trained 3 times and the accuracy and loss values are calculated as ann average.
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{l|l|l|rrr|r}
+        \toprule
+                   &                   &                    & \multicolumn{3}{c|}{Accuracy}             & \\
+        Identities & Data set (images) & Routing iterations & Train        & Validation   & Test        & Loss \\
+        \midrule
+        \num{42}   & LFW (\num{2588})  & 1                  & \num{46.2}\% & \num{42.5}\% & \num{42.5}\% & \num{0.5002} \\
+        \num{42}   & LFW (\num{2588})  & 3                  & \num{56.4}\% & \num{53.7}\% & \num{42.5}\% & \num{0.3915} \\
+        \num{12}   & LFW (\num{1560})  & 1                  & \num{52.6}\% & \num{63.2}\% & \num{61.5}\% & \num{0.2952} \\
+        \num{12}   & LFW (\num{1560})  & 3                  & \num{69.3}\% & \num{75.0}\% & \num{73.7}\% & \num{0.2013} \\
+        \bottomrule
+    \end{tabular}
+    \caption{Model evaluations when trained with focus on different amount of identities and routing iterations impact.}
+    \label{tab:eval}
+\end{table}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=.5\textwidth]{obrazky-figures/training.pdf}
+    \caption{History of training of a 11 identities model showing the testing and training accuracy development.}
+    \label{fig:accuracy}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[height=12em]{obrazky-figures/predicted_131_fail.pdf}
+    \vspace{1em}
+    \includegraphics[height=12em]{obrazky-figures/predicted_116_ok.pdf}
+    \caption{\textit{Top}: Tony Blair predicted, while correct is George W. Bush. As you may notice the correct capsule holds the 4th largest activation, however the result is strongly in favor of the faulty label. The faulure may seem to occur despite the fact that George W. Bush has the most images in data set and may be due to the bright spots and overall pale appearance which may remind Tony Blair. \textit{Bottom}: This time George W. Bush is predicted correctly. Activations taken from 42 identities model.}
+    \label{fig:bush}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[height=12em]{obrazky-figures/predicted_316_ok.pdf}
+    \vspace{1em}
+    \includegraphics[height=12em]{obrazky-figures/predicted_218_ok.pdf}
+    \vspace{1em}
+    \includegraphics[height=12em]{obrazky-figures/predicted_255_ok.pdf}
+    \caption{Both images show the network can handle people of various ethnicities fine. \textit{Top}: Serena Williams. \textit{Middle}: Gloria Macapagal Arroyo. \textit{Bottom}: Junichiro Koizumi. What seems to matter more is the actual settings and lightning of the input image, in which many features may stood out better or fade away and blend with the rest of the image. Activations taken from 42 identities model.}
+    \label{fig:serena}
+\end{figure}
+
+The show image evaluations are just samples of the whole testing scenarion. To better understand the whole picture we should consider a confusion matrix, which shows, how was each image belonging to a label actually classified. Due to readability we are listing only the confusion matrix for the model of 12 individuals in this paper. The confusion matrix for the 42 identities is available as part of the notebooks provided along with this thesis.
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=\textwidth]{obrazky-figures/confusion.pdf}
+    \caption{Confusion matrix for the smaller model which identifies 11 individuals.}
+    \label{fig:confusion1}
+\end{figure}
+
+The confusion matrix states some interesting findings. First of all \textit{George W. Bush} and \textit{Colin Powell} are over-fitting labels. \textit{John Ashcroft} is not recognized on any of his photos, \textit{Hugo Chaves} successfully blends in the crowd as well as \textit{Gerhard Schroeder}. The reasons varies, each may have different explanation:
+
+\begin{enumerate}
+    \item \textit{George W. Bush}: It is the label with the biggest number of images in the data set. Therefore it is likely that this identity would over-fit.
+    \item \textit{Colin Powell}: This identity features significant amount wrinkles. Therefore it may be easy to match on this character, since it would provide high activation by default when wrinkles are present.
+    \item \textit{John Ashcroft}: This individual's face doesnt' hold many characteristic markers at this resolution. Unfortunately his face at $32\times32$ pixels seems generic and blends with others, for instance with \textit{Colin Powell}.
+\end{enumerate}
