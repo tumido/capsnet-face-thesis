@@ -44,7 +44,7 @@ Initially this network was released in 2016 as a Caffe implementation. Later it 
 
 It is capable of optimizations like \textit{Deep Compression}\,\cite{compression}, which allows trained models to be compressed. In case of SqueezeNet it can reduce model size $10\times$.
 
-\section{Experimantal implementations of CapsNet}
+\section{Experimental implementations of CapsNet}
 
 Convolutional neural networks are already heavily established in the field, and since \textit{CapsNet} is a new and emerging architecture, it haven't proved itself in this particular field. Couple of different implementations exists, though only few are aiming for the facial recognition. However this architecture is the key delivery for this thesis, so it would be beneficial at least list the solutions and attempts to provide a reader more comprehensive view. First, we're will list the solutions to our problem and later focus better and more detail implementations which are more generic \textit{CapsNet}s or tackles different areas.
 
@@ -56,11 +56,11 @@ The only attempt I was able to locate at the time of publishing this thesis, whi
 \subsection{CapsNet\,--\,Traffic sign classifier}
 \label{ss:traffic_signs}
 
-The most complete implementation of capsule network on a more complex problem than a MNIST data set. In this particular implementation\,\cite{capsnet_traffic}, the author Thibault Neveu focuses to create a German traffic signs classifier. A network of 42 prediction capsules is able to assign correct label to a traffic sign with 98\% validation accuracy (97\% for testing). It follows similar architecture pattern as described above, at least for the \textit{encoder} part. The decoder is made differently, since a fully connected 3 layer decoding is not considered helpful for a image data in color. Instead a convolutional decoder with resizing\,--\,upscaling to nearest neighbor is used to provide reconstruction network. As per the documentation, this proved much more useful along with reduction in routing. The network is implemented in pure \textit{Tensorflow} framework. In our own solution later, we will use this network as a guidance and great inspiration for our work. The implementation is not very clean, though provide great insight into how one can manipulate and classify RGB data with emphasis on small feature size. We will borrow some visualization methods later in our example notebooks as well.
+The most complete implementation of capsule network on a more complex problem than a MNIST data set. In this particular implementation\,\cite{capsnet_traffic}, the author Thibault Neveu focuses to create a German traffic signs classifier. A network of 42 prediction capsules is able to assign correct label to a traffic sign with 98\% validation accuracy (97\% for testing). It follows similar architecture pattern as described above, at least for the \textit{encoder} part. The decoder is made differently, since a fully connected 3 layer decoding is not considered helpful for a image data in colour. Instead a convolutional decoder with resizing\,--\,up-scaling to nearest neighbour is used to provide reconstruction network. As per the documentation, this proved much more useful along with reduction in routing. The network is implemented in pure \textit{TensorFlow} framework. In our own solution later, we will use this network as a guidance and great inspiration for our work. The implementation is not very clean, though provide great insight into how one can manipulate and classify RGB data with emphasis on small feature size. We will borrow some visualization methods later in our example notebooks as well.
 
 \subsection{CapsNet-Keras}
 
-A thoughtful implementation\,\cite{capsnet_keras} of a capsule network in \textit{Keras} using \textit{Tensorflow} as backend. Despite it sole focus on MNIST data set, it provides the most understandable and cleanest implementation of such network. As we will talk about later the chosen framework is a great advantage here. It follows very closely the implementation accented by Hinton\,\cite{capsule}. It features a 3 layer encoder with one composite primary capsules layer and one layer of prediction capsules, each per a digit. The architecture shown on figures\,\ref{fig:encoder} and\,\ref{fig:decoder} applies. As you may already recognize, that means this network has 10 prediction capsules, which greatly affects its size and keep it fairly small.
+A thoughtful implementation\,\cite{capsnet_keras} of a capsule network in \textit{Keras} using \textit{TensorFlow} as back-end. Despite it sole focus on MNIST data set, it provides the most understandable and cleanest implementation of such network. As we will talk about later the chosen framework is a great advantage here. It follows very closely the implementation accented by Hinton\,\cite{capsule}. It features a 3 layer encoder with one composite primary capsules layer and one layer of prediction capsules, each per a digit. The architecture shown on figures\,\ref{fig:encoder} and\,\ref{fig:decoder} applies. As you may already recognize, that means this network has 10 prediction capsules, which greatly affects its size and keep it fairly small.
 
 
 % \begin{table}[ht]
@@ -98,9 +98,9 @@ Torch is a deep-learning and computational framework written in Lua. While very 
     \item[$\boldsymbol{-}$] Requires custom training code
 \end{itemize}
 
-\subsection{Tesorflow}
+\subsection{TensorFlow}
 
-This library created by Google was designed as a replacement for their previous project called Theano. Tensorflow\,\footnote{\url{https://www.tensorflow.org/}} is a heavyweight framework written as a Python API in C/C++. It simplifies researcher's task in many ways better than other framework. For example it generates a computational graph and performs automatic differentiation. That means the user is not required to write a training code (back-propagation) every time, he's experimenting with a new network topology. Since this framework is backed by Google, it thrives in many different applications and can scale across devices. Many possibilities for applying saved models in different environment enables use of AI in mobile devices and even in web browsers. However it is broad possibilities and options make this framework hard to understand and for newcomers it can be confusing and too complex. Therefore an abstraction layer above Tensorflow had been created, but more about that in the \textit{Keras} subsection below.
+This library created by Google was designed as a replacement for their previous project called Theano. TensorFlow\,\footnote{\url{https://www.tensorflow.org/}} is a heavyweight framework written as a Python API in C/C++. It simplifies researcher's task in many ways better than other framework. For example it generates a computational graph and performs automatic differentiation. That means the user is not required to write a training code (back-propagation) every time, he's experimenting with a new network topology. Since this framework is backed by Google, it thrives in many different applications and can scale across devices. Many possibilities for applying saved models in different environment enables use of AI in mobile devices and even in web browsers. However it is broad possibilities and options make this framework hard to understand and for newcomers it can be confusing and too complex. Therefore an abstraction layer above TensorFlow had been created, but more about that in the \textit{Keras} subsection below.
 
 \begin{itemize}
     \item[$\boldsymbol{+}$] Native Python and Numpy integration
@@ -123,7 +123,7 @@ Caffe is another competition framework, which is widely popular among researcher
 
 \subsection{Keras}
 
-A modern abstraction layer above Tensorflow. Authors and users of Tensorflow suffered from heavy and complex code structures and when PyTorch appeared with their light and straightforward Python API, they have started adopting the same principles for the Tensorflow as well. Therefore a project named Keras\,\footnote{\url{https://keras.io/}} was created. It provides intuitive API inspired by Torch and while starting from Tensorflow it outgrown this base and spread across many deep learning libraries as its back-ends - Theano, Deeplearning4j, and CNTK. In addition to its high level abstraction over the back-ends, Keras also provides means to drill down and optimize and manipulate the underlying code.
+A modern abstraction layer above TensorFlow. Authors and users of TensorFlow suffered from heavy and complex code structures and when PyTorch appeared with their light and straightforward Python API, they have started adopting the same principles for the TensorFlow as well. Therefore a project named Keras\,\footnote{\url{https://keras.io/}} was created. It provides intuitive API inspired by Torch and while starting from TensorFlow it outgrown this base and spread across many deep learning libraries as its back-ends - Theano, Deeplearning4j, and CNTK. In addition to its high level abstraction over the back-ends, Keras also provides means to drill down and optimize and manipulate the underlying code.
 
 \begin{itemize}
     \item[$\boldsymbol{+}$] Intuitive API
@@ -259,7 +259,7 @@ Subjects vary in all desired aspects and images provide enough variety in poses 
 
 \subsection{CelebA}
 
-CelebA\,\cite{celeba} is another large scale database of faces. The focus is on celebrities faces, the same as in the MSCeleb dataset. Pictures cover wide variety of poses and background noises. Each image is provided with 5 landmarks locations and 40 binary attributes.
+CelebA\,\cite{celeba} is another large scale database of faces. The focus is on celebrities faces, the same as in the MSCeleb data set. Pictures cover wide variety of poses and background noises. Each image is provided with 5 landmarks locations and 40 binary attributes.
 
 Subjects vary in ethnicity, age, sex as well as in appearance. Data set includes faces with facial hair, poses and with different emotions.
 
@@ -280,7 +280,7 @@ Subjects vary in ethnicity, age, sex as well as in appearance. Data set includes
 \subsection{Aligned Face Dataset from Pinterest}
 \label{ss:pins}
 
-Aligned Face Dataset from Pinterest (PINS) is a custom dataset available on Kaggle\,\cite{pins}. It provides normalized, aligned and feature centered image data collected from Pinterest and processed via \textit{dlib}. The image distribution is not strictly uniform, although it provides at least 100 images per identity. The only drawback is that images listed are not always in-the-wild. Many times it include stages photos, many of them post processed and modified. Therefore despite interesting metrics, the data set proved unusable because of it great great inconsistency within each identity domain.
+Aligned Face Dataset from Pinterest (PINS) is a custom data set available on Kaggle\,\cite{pins}. It provides normalized, aligned and feature centred image data collected from Pinterest and processed via \textit{dlib}. The image distribution is not strictly uniform, although it provides at least 100 images per identity. The only drawback is that images listed are not always in-the-wild. Many times it include stages photos, many of them post processed and modified. Therefore despite interesting metrics, the data set proved unusable because of it great great inconsistency within each identity domain.
 
 \begin{table}[ht]
     \centering

@@ -27,7 +27,7 @@ The aim of this thesis is to construct a very own solution to this problem, rely
 
 \section{Decomposition}
 
-To recognise a human face in a picture or video is a fairly complex problem. Therefore it is usually divided into smaller sub-tasks, which are easier to comprehend and solve. Firstly, it is required to understand the input data. This understanding provides means to fundamentally divide the problem into easily solvable sub-tasks. Let's define and describe what are the expectations and demands on the input, so we can assess plausible approaches and later understand each subtask as a separate problem. Then we can assume and thoroughly elaborate the desired outputs.
+To recognise a human face in a picture or video is a fairly complex problem. Therefore it is usually divided into smaller sub-tasks, which are easier to comprehend and solve. Firstly, it is required to understand the input data. This understanding provides means to fundamentally divide the problem into easily solvable sub-tasks. Let's define and describe what are the expectations and demands on the input, so we can assess plausible approaches and later understand each sub-task as a separate problem. Then we can assume and thoroughly elaborate the desired outputs.
 
 \subsection{In-the-wild pictures}
 
@@ -43,7 +43,7 @@ As wide as the use cases, the variety of input data is vast. Some cases depends 
 
 CCTV as a source of the input data has some crucial advantages for real world scenarios over any random pictures in-the-wild. Usually CCTV produces feeds, therefore the subject of recognition is captured on many frames of a video recording. That means, the model can be provided by many images of the same face and if properly configured and trained, it can leverage this aspect.
 
-In our scenario, this data has to be simplified and preprocessed since our main interest lays in the field of identity mapping for each face. Therefore instead of a full, legit CCTV footage, we will mainly work with already located and isolated, face centered images. More detail elaboration of the input data can be found in chapter \ref{chapter:implementation}.
+In our scenario, this data has to be simplified and preprocessed since our main interest lays in the field of identity mapping for each face. Therefore instead of a full, legit CCTV footage, we will mainly work with already located and isolated, face centred images. More detail elaboration of the input data can be found in chapter \ref{chapter:implementation}.
 
 \subsection{Recognition and identification}
 \footnotetext{\url{https://creativecommons.org/licenses/by/2.0/deed.en}}

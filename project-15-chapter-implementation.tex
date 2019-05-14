@@ -1,14 +1,14 @@
 Implementation chapter is meant to cover the actual experimentation and programming part of this thesis. Reader of this document is lead through series of experiments and examples and is taken on journey to a reliable solution of the matter. On following pages you will find and reveal complexity of this problem.
 
-This chapter aims to show and uncover every detail the author stumbled upon when he tried to implement the solutions proposed by Hinton\,\cite{capsule}, which we elaborated in detail in Chapter \ref{chapter:research}. Moreover we will discuss the differences when this solution is compared to other, related implemetations mentinoed in the Chapter \ref{chapter:solutions}.
+This chapter aims to show and uncover every detail the author stumbled upon when he tried to implement the solutions proposed by Hinton\,\cite{capsule}, which we elaborated in detail in Chapter \ref{chapter:research}. Moreover we will discuss the differences when this solution is compared to other, related implementations mentioned in the Chapter \ref{chapter:solutions}.
 
 \section{Preparation and prerequisites}
 
-\textit{Keras} with \textit{Tensorflow} backend was selected as the key framework to use for this implementation. That inherently means, we are bound to use Python as a programming language. However, selection of Python is natural and reasonable anyways, since it is the most used language in the field of machine learning, artificial inteligence experimentation. Moreover due to technical limitation and proven better performance, Anacoda Python distribution is selected as the proper backend. According to various researches\,\todo{cite} and projects, \textit{Tensorflow} performance fluctuates a lot since the pre-compiled packages are not allowed to use all the capabilities of each and every specific hardware combination. Therefore projects like Thoth\footnote{http://thoth-station.ninja} were created to provide dependency mesh mapping . In our example we can be satisfied by the enhanced performance of Anaconda/Conda \textit{Tensorflow} distribution (from either Anaconda or Intel channels). Moreover, running \textit{Tensorflow} locally on CPU is used for quick prototyping. For more demanding executions, Google Colab\footnote{https://colab.research.google.com} is selected as Jupyter notebook execution provider. All source codes to this implementation were released under Apache 2.0 license on Git Hub\footnote{https://github.com/tumido/capsnet-face}.
+\textit{Keras} with \textit{TensorFlow} back-end was selected as the key framework to use for this implementation. That inherently means, we are bound to use Python as a programming language. However, selection of Python is natural and reasonable anyways, since it is the most used language in the field of machine learning, artificial intelligence experimentation. Moreover due to technical limitation and proven better performance, Anacoda Python distribution is selected as the proper back-end. According to various researches\,\todo{cite} and projects, \textit{TensorFlow} performance fluctuates a lot since the pre-compiled packages are not allowed to use all the capabilities of each and every specific hardware combination. Therefore projects like Thoth\footnote{http://thoth-station.ninja} were created to provide dependency mesh mapping . In our example we can be satisfied by the enhanced performance of Anaconda/Conda \textit{TensorFlow} distribution (from either Anaconda or Intel channels). Moreover, running \textit{TensorFlow} locally on CPU is used for quick prototyping. For more demanding executions, Google Colab\footnote{https://colab.research.google.com} is selected as Jupyter notebook execution provider. All source codes to this implementation were released under Apache 2.0 license on Git Hub\footnote{https://github.com/tumido/capsnet-face}.
 
-\section{Keras on Tensorflow}
+\section{Keras on TensorFlow}
 
-\textit{Keras} is a high level API for machine learning. It provides unified means to define and access models and layers as well as most common mathematical principles and functions in a highly polished package. This package relies on a backend provider to implement the solutions behind the scenes. \textit{Tensorflow} is one of these backend. Principles of this cooperation and more elaborate description of other backends and solutions can be found in chapter \ref{chapter:solutions}.
+\textit{Keras} is a high level API for machine learning. It provides unified means to define and access models and layers as well as most common mathematical principles and functions in a highly polished package. This package relies on a back-end provider to implement the solutions behind the scenes. \textit{TensorFlow} is one of these back-end. Principles of this cooperation and more elaborate description of other back-ends and solutions can be found in chapter \ref{chapter:solutions}.
 
 Let's provide a basic overview of the available API and bindings that will be used later on in our implementation:
 
@@ -39,9 +39,9 @@ model = models.Model(
 )
 \end{lstlisting}
 
-As you can see using \textit{Keras} is straightforward. It allows an easy model definition using various approaches. This provides a great benefit, which we will use later on\,--\,it allows model stacking, permutation of layers, combination of layouts while easily sharing parameters and behavior. This gives the researcher a really powerful mean to manipulate a model and shape it to achieve desired behavior, even multiple distinct behaviors for each phase of the model's lifecycle. It allows easy way to inject or extract auxillary inputs and outputs into the model configuration. This is a really important feature especially in our case, as you will learn later on next pages, since we desire a much different model behavior when the network is trained to the one when we ask for a prediction.
+As you can see using \textit{Keras} is straightforward. It allows an easy model definition using various approaches. This provides a great benefit, which we will use later on\,--\,it allows model stacking, permutation of layers, combination of layouts while easily sharing parameters and behaviour. This gives the researcher a really powerful mean to manipulate a model and shape it to achieve desired behaviour, even multiple distinct behaviours for each phase of the model's life cycle. It allows easy way to inject or extract auxiliary inputs and outputs into the model configuration. This is a really important feature especially in our case, as you will learn later on next pages, since we desire a much different model behaviour when the network is trained to the one when we ask for a prediction.
 
-In next few paragraphs we will show what network configuration we chose for our CapsNet as well as observe proven and experimental configurations of the layers involved. As you might know, layers are the basic building blocks of neural networks. And stacking these layers one on top of another creates more complex behaviors. Certain patterns of layers usually results into an architecture. Models can use a straight, classic scheme of layering one layer onto one another layer, or it can diverge at certain point and result into multiple behaviors. The first one uses \texttt{keras.models.Sequential} type of neural network. This means a single set of inputs is passed to the model, the model processes the data through each and every layer in the same order, and at the end, the last layer in the sequence, produces the desired output. The later mentioned behavior, required more complex yet precise handling. This allowes the researcher much greater control over what inputs are passed to which layer, and which outputs are collected. \textit{Keras} allows this type of modelling via \texttt{keras.models.Model} class.
+In next few paragraphs we will show what network configuration we chose for our CapsNet as well as observe proven and experimental configurations of the layers involved. As you might know, layers are the basic building blocks of neural networks. And stacking these layers one on top of another creates more complex behaviours. Certain patterns of layers usually results into an architecture. Models can use a straight, classic scheme of layering one layer onto one another layer, or it can diverge at certain point and result into multiple behaviours. The first one uses \texttt{keras.models.Sequential} type of neural network. This means a single set of inputs is passed to the model, the model processes the data through each and every layer in the same order, and at the end, the last layer in the sequence, produces the desired output. The later mentioned behaviour, required more complex yet precise handling. This allows the researcher much greater control over what inputs are passed to which layer, and which outputs are collected. \textit{Keras} allows this type of modelling via \texttt{keras.models.Model} class.
 
 Later on, we will find out that even combination of these methods are possible. This allows to inject and join models, reuse a model in multiple parts of the network and most importantly it allows sharing of trained parameters. In our case, we will later on describe \textit{Encoder} and \textit{Decoder} logic as separate models or network prototypes which are combined into a greater models for two distinct purposes, training the network and testing. The trained network has one configuration, while the model used for prediction consists of partially different layers. But since this reuse of network parts is possible, we can leverage the trained parameters from the training phase, and use them in a different network which provides predictions.
 
@@ -111,7 +111,7 @@ layers.Conv2D(
 
 \subsubsection{\texttt{keras.layers.Dropout}}
 
-An overfit prevention layer, which randomly sets each particular input to 0 with probability of \texttt{rate}. This is performed on each update during the training phase.
+An over-fit prevention layer, which randomly sets each particular input to 0 with probability of \texttt{rate}. This is performed on each update during the training phase.
 
 
 \begin{lstlisting}[language=Python, caption=Dropout layer]
@@ -134,7 +134,7 @@ layers.Reshape(
 
 \subsubsection{\texttt{keras.layers.Lambda}}
 
-This is the first more complex layer. it might not seem so, however this layer allows to add custom behavior. Its name is derived from lambda function, anonymous functions which are invoked in situ. The \texttt{keras.layers.Lambda} layer allows user to invoke any operation and transformation defined as a function. We use this type of layer in multiple scenarios, but for clarity we will list here just a single one\,--\,a calculation of length of each vector in the tensor.
+This is the first more complex layer. it might not seem so, however this layer allows to add custom behaviour. Its name is derived from lambda function, anonymous functions which are invoked in situ. The \texttt{keras.layers.Lambda} layer allows user to invoke any operation and transformation defined as a function. We use this type of layer in multiple scenarios, but for clarity we will list here just a single one\,--\,a calculation of length of each vector in the tensor.
 
 \begin{lstlisting}[language=Python, caption=Lambda layer]
 def length(inputs):
@@ -149,7 +149,7 @@ layers.Lambda(
 
 \subsubsection{\texttt{keras.layers.Layer}}
 
-This abstract class serves as a base for all standard as well as all any custom layers in \textit{Keras}. It's behavior and shape is fully customizable. Inheritance from this class allows user to invent and define a brand new layer, while maintaining the same API and compilation strategy as for any standard layer. While this might sound confusing the authors of \textit{Keras} framework made it really easy to comprehend and straightforward to implement. Let's take a look:
+This abstract class serves as a base for all standard as well as all any custom layers in \textit{Keras}. It's behaviour and shape is fully customizable. Inheritance from this class allows user to invent and define a brand new layer, while maintaining the same API and compilation strategy as for any standard layer. While this might sound confusing the authors of \textit{Keras} framework made it really easy to comprehend and straightforward to implement. Let's take a look:
 
 
 \begin{lstlisting}[language=Python, caption=Custom layer example]
@@ -202,7 +202,7 @@ Overall, the architecture is straightforward, but for good results it requires t
     \item \textbf{Decoder} on the other hand is a helping force in training. It tries to reconstruct the input image based on prediction provided by the encoder.
 \end{enumerate}
 
-Also, it's worth mentioning a \textit{CapsNet} is not a \textit{single-input, single-output} type of network. For training purposes, it consumes both the image and the label and outputs a predicted label along with a reconstructed image. This behavior changes when the network is used for predictions. At that point the neural network is expected to behave and process a single input image and provide one output for it\,--\,the predicted label. However more outputs might be required in inference, since instead of a prediction we can be more interested in a similarity vector, which might be a better fit for unknown indentity description. One way or another, any of these scenarios requires a different model layout. And since it's not possible to achieve a multiple layouts with a single model, we're destined to use multiple models, each with different layer structure. So now, we need to make sure that once we train one model the other one is capable to benefit from it as well. And now it's the right time to use the layer sharing between models as described above.
+Also, it's worth mentioning a \textit{CapsNet} is not a \textit{single-input, single-output} type of network. For training purposes, it consumes both the image and the label and outputs a predicted label along with a reconstructed image. This behavior changes when the network is used for predictions. At that point the neural network is expected to behave and process a single input image and provide one output for it\,--\,the predicted label. However more outputs might be required in inference, since instead of a prediction we can be more interested in a similarity vector, which might be a better fit for unknown identity description. One way or another, any of these scenarios requires a different model layout. And since it's not possible to achieve a multiple layouts with a single model, we're destined to use multiple models, each with different layer structure. So now, we need to make sure that once we train one model the other one is capable to benefit from it as well. And now it's the right time to use the layer sharing between models as described above.
 
 \section{Encoder}
 
@@ -292,7 +292,7 @@ Name of this layer and expectations set by previous chapters promise that great 
 The feature capsules layer is in it's true nature a composite layer of three layers stacked and with the squash activation on output.
 
 \begin{enumerate}
-    \item At first a convolutinal layer is present. This ensures extraction of multiple interesting patterns from each image. Patterns like hue, edges, orientation, dark spots etc. are recognized and represented by their belonging kernels. The amount of kernels corresponds to number of desired patters and dimensionality of each capsule.
+    \item At first a convolutional layer is present. This ensures extraction of multiple interesting patterns from each image. Patterns like hue, edges, orientation, dark spots etc. are recognized and represented by their belonging kernels. The amount of kernels corresponds to number of desired patters and dimensionality of each capsule.
     \item As a next step the convoluted vector is reshaped to be bundled by capsule dimensionality. This essentially splits the input tensor into separate capsules.
     \item And as the last step the \textit{squash} activation is used to provide non-linear normalization of each vector.
 \end{enumerate}
@@ -340,12 +340,10 @@ for each particular label. As this might suggest, each prediction capsule is tig
 There are few shared properties in this layer. These are:
 
 \begin{itemize}
-    \item
-    \item
-    \item
-    \item
-    \item
-    \item
+    \item \texttt{capsule\_count} is a mandatory argument responsible for setting th amount of capsules available in this layer. This number corresponds to the labels we want the network to classify to.
+    \item \texttt{capsule\_dim} is a second mandatory parameter defining dimensionality of each capsule. Recommended settings is 32 or greater. Increasing any of these two parameters has a great impact on size of the network.
+    \item \texttt{kernel\_initializer} provides a string pointer or a object from \texttt{keras.initializers}. This parameter allows user to define initial values of capsule's weight matrices.
+    \item \texttt{routing\_iters} allows to change and experiment with the amount of iterations of \textit{dynamic routing}. Default value is 3, although the best value may differ.
 \end{itemize}
 
 \begin{table}[ht]
@@ -427,7 +425,7 @@ The routing eliminates the \texttt{input\_capsule\_count} and \texttt{input\_cap
 
 \section{Decoder}
 
-Based on the findings in Chapter\,\ref{chapter:research}, a decoder is a sequential model meant to provide an image reconstruction feedback. The gro is to implement a training helper, which covers the key spatial feature areas of a particular identity, so we can later compare and match the input image to measure accuracy of our prediction. In case of a MNIST dataset this factor is of a great help, though in case of coherent input data with small difference on large spatial feature scale, as a human face image is, the importance of a decoder seems diminished. Moreover a simple 3 layers deep decoder comprising of fully connected layers offered by research on MNIST can't be successfully used on RGB data with granular features. Therefore we leverage a solution introduced by Thibault Neveu in his traffic signs classifier\,\ref{ss:traffic_signs}. We will build a convoluted reconstruction model, which essential building blocks are a dense layer, resizing layers and convolutional layers. In the end this forms a neural network of 10 layers, which provides more detail than a 3 layer model of fully connected layers.
+Based on the findings in Chapter\,\ref{chapter:research}, a decoder is a sequential model meant to provide an image reconstruction feedback. The gro is to implement a training helper, which covers the key spatial feature areas of a particular identity, so we can later compare and match the input image to measure accuracy of our prediction. In case of a MNIST data-set this factor is of a great help, though in case of coherent input data with small difference on large spatial feature scale, as a human face image is, the importance of a decoder seems diminished. Moreover a simple 3 layers deep decoder comprising of fully connected layers offered by research on MNIST can't be successfully used on RGB data with granular features. Therefore we leverage a solution introduced by Thibault Neveu in his traffic signs classifier\,\ref{ss:traffic_signs}. We will build a convoluted reconstruction model, which essential building blocks are a dense layer, resizing layers and convolutional layers. In the end this forms a neural network of 10 layers, which provides more detail than a 3 layer model of fully connected layers.
 
 The decoder consumes a prediction provided by \textit{encoder} as well as the true image and aims to recreate a image of a face based on the feature grid activations in the prediction. The result can be understood as a master template for that particular identity. We will look into that in our model evaluation later.
 
@@ -436,8 +434,8 @@ Now, let's describe the flow we want the layers to convey in our decoder unit:
 \begin{enumerate}
     \item \texttt{keras.layers.Dense} which normalizes and unifies the input mapping enabling later convolutions to run efficiently and select proper input activations.
     \item \texttt{keras.layers.Reshape} layer converts the fully connected output from one dimensional array to a base image matrix with $5\times5$ pixels over 16 channels.
-    \item Now an alternating pattern of \texttt{keras.layers.Conv2D} and \texttt{keras.layers.Lambda} with \texttt{resize} function provides a resizing, upscaling of the image, while interpolating its properties back to $32\times32$ pixels in a convoluted fashion.
-    \item Before we finalize the decoder, another \texttt{keras.layers.Conv2D} convolutinal layer is used to reduce populated channels and provide only one best channel for each color.
+    \item Now an alternating pattern of \texttt{keras.layers.Conv2D} and \texttt{keras.layers.Lambda} with \texttt{resize} function provides a resizing, up-scaling of the image, while interpolating its properties back to $32\times32$ pixels in a convoluted fashion.
+    \item Before we finalize the decoder, another \texttt{keras.layers.Conv2D} convolutional layer is used to reduce populated channels and provide only one best channel for each colour.
     \item As the last layer we chose to chain an activation layer \texttt{keras.layers.Activation} transforming our matrices to a ReLU activated image data.
 \end{enumerate}
 
@@ -457,7 +455,7 @@ Since we want our \textit{decoder} to provide as accurate reconstruction we need
 \begin{figure}[ht]
     \centering
     \includegraphics[height=14em]{obrazky-figures/my_mask.pdf}
-    \caption{Graphical representation of the masking layer. Color coded in blue is the reconstruction target, while in gray are the suppressed inputs.}
+    \caption{Graphical representation of the masking layer. Colo coded in blue is the reconstruction target, while in gray are the suppressed inputs.}
     \label{fig:mask}
 \end{figure}
 
@@ -526,12 +524,12 @@ Then we can expect the \textit{encoder} to adhere to the architecture shown on F
     \caption{Implemented CapsNet architecture: Each model in different conditions can differ in number of parameters and and each layer shapes. For example initial convolution can be set to different amount of filters which is determined by experiment. Other example can be the amount of capsules in prediction layer (and its output shape) since that is tightly bonded to the amount of identity bins. Listed layer types are understood to belong to \texttt{keras.layers} namespace. In case of \texttt{Lambda} layers, the function in use is listed in parenthesis.}
 \end{table}
 
-\section{Lifecycle of a model}
+\section{Life cycle of a model}
 
 Traditionally in machine learning a model needs to be trained, then it is tested and validated. Since there's no reason to change this workflow this section will follow the established scheme and walk you through the required steps in the particular order in which they need to be examined:
 
 \begin{enumerate}
-    \item Data set selection, collection and preprocessing
+    \item Data set selection, collection and pre-processing
     \item Establishing model
     \item Training a model
     \item Validation of trained accuracy
@@ -540,11 +538,11 @@ Traditionally in machine learning a model needs to be trained, then it is tested
 
 \subsection{Data set preparation}
 
-In previous chapters suitable data sets were already mentioned and elaborated. Since size of our solution is greatly dependent on the amount of identities, we need to select a dataset with fair ratio between the size of labels vector and amount of samples per each identity. For this particular demonstration we chose the \textit{Labeled Faces in the Wild}\,\ref{ss:lfw} due to fair distribution when limited to 25 samples per label or greater, and its simplicity to collect via \textit{scikit-learn}\footnote{\url{https://scikit-learn.org}} library. We also tried and demonstrated in our Jupyter notebooks the \textit{PINS}\,\ref{ss:pins} data set, but the diversity in data proved itself to be of no use. However the collection code remains in the thesis sources and in the notebooks, so it is available to be experimented with.
+In previous chapters suitable data sets were already mentioned and elaborated. Since size of our solution is greatly dependent on the amount of identities, we need to select a data set with fair ratio between the size of labels vector and amount of samples per each identity. For this particular demonstration we chose the \textit{Labeled Faces in the Wild}\,\ref{ss:lfw} due to fair distribution when limited to 25 samples per label or greater, and its simplicity to collect via \textit{scikit-learn}\footnote{\url{https://scikit-learn.org}} library. We also tried and demonstrated in our Jupyter notebooks the \textit{PINS}\,\ref{ss:pins} data set, but the diversity in data proved itself to be of no use. However the collection code remains in the thesis sources and in the notebooks, so it is available to be experimented with.
 
-For next parts of this text, we will continue to use the \textit{LFW} data set as the sole example for input data. In order to collect this dataset we don't need to be inventing the wheel again and we can leverage the capabilities granted via \texttt{sklearn} library.
+For next parts of this text, we will continue to use the \textit{LFW} data set as the sole example for input data. In order to collect this data set we don't need to be inventing the wheel again and we can leverage the capabilities granted via \texttt{sklearn} library.
 
-\begin{lstlisting}[language=Python, caption=Collect Labeled Faces in the Wild dataset]
+\begin{lstlisting}[language=Python, caption=Collect Labeled Faces in the Wild data set]
 people = fetch_lfw_people(
     color=True,
     min_faces_per_person=25,
@@ -553,7 +551,7 @@ people = fetch_lfw_people(
 
 By default the images are $300\times300$ pixels big, though since we aim to process images as small as $32\times32$ pixels we need to resize the images. We can either try to reason with a \texttt{resize=} parameter, though this size fraction can prove itself unreliable so we will use help of the \textit{Pillow}\footnote{\url{https://pillow.readthedocs.io}} library:
 
-\begin{lstlisting}[language=Python, caption=Preprocessing of the dataset]
+\begin{lstlisting}[language=Python, caption=Pre-processing of the data set]
 x = people.images
 
 def downsample(image):
@@ -565,9 +563,9 @@ def downsample(image):
 x = np.array([downsample(i) for i in x]) / 255
 \end{lstlisting}
 
-Now we have solved the image sizes, we can prepare the dataset into two distinct bundles, one for training and one for validation. This means the data we are training the model against are not the same we use later for validation, therefore the result of validation is pure and not affected by over-fitting. Here we can use the help of \textit{scikit-learn} library once again, since it provides a \texttt{train\_test\_split} function which allow us to separate these two sets randomly, with a respective desired ratio. And last but not least, we need to convert our labels to a hot one encoding. This time we can use a \textit{Keras} native function \texttt{to\_categorical}.
+Now we have solved the image sizes, we can prepare the data set into two distinct bundles, one for training and one for validation. This means the data we are training the model against are not the same we use later for validation, therefore the result of validation is pure and not affected by over-fitting. Here we can use the help of \textit{scikit-learn} library once again, since it provides a \texttt{train\_test\_split} function which allow us to separate these two sets randomly, with a respective desired ratio. And last but not least, we need to convert our labels to a hot one encoding. This time we can use a \textit{Keras} native function \texttt{to\_categorical}.
 
-The dataset is now prepared, let's take a look at the distribution of images magnitude per label that we can expect as well as other metrics we may consider before training. As we can see on following Fig\,\ref{fig:lfw_distribution}, the distribution is not ideal, and our model will have a tendency to overfit on certain overrepresented labels and underfit on others. This is unfortunate and we can try to eliminate such behavior by a \textit{dropout} layer and with additional augmentation.
+The data set is now prepared, let's take a look at the distribution of images magnitude per label that we can expect as well as other metrics we may consider before training. As we can see on following Fig\,\ref{fig:lfw_distribution}, the distribution is not ideal, and our model will have a tendency to over-fit on certain overrepresented labels and under-fit on others. This is unfortunate and we can try to eliminate such behavior by a \textit{dropout} layer and with additional augmentation.
 
 \begin{figure}[ht]
     \centering
@@ -585,7 +583,7 @@ The dataset is now prepared, let's take a look at the distribution of images mag
         Amount of images for \textbf{training} & \num{2070} \\
         Amount of images for \textbf{testing} & \num{518} \\
         Minimum samples per subject & \num{25} \\
-        Meximum amples per subject & \num{521} \\
+        Maximum samples per subject & \num{521} \\
         Resolution & $32\times32$ px \\
         Channels & 3 color channels, RGB \\
         \bottomrule
@@ -654,7 +652,7 @@ def predict(model, x, batch_size=10):
 \subsection{Save and load a model}
 \label{ss:save_model}
 
-This is a last part of a model lifecycle. Previous text showed how each phase contributes to creation of a model which finally allows a researched to observe and measure their experiments. To have a model last, we need a meaning to store it's trained properties as well as layout. Since our models allow great customization and invasive changes in the core architecture, we are obliged to persist not only the weight of every trainable parameter, but also a configuration of each layer, amounts of neurons in each, probability rates preset before even any training begun. \textit{Keras} library provides a mean how to achieve that. Each model can be transformed into a H5, JSON or YAML format, while only the H5 format allows us to save weights along with it. However, since the \textit{CapsNet} model is not a single model and we define two different models, one for training and one for inference, we have to keep our weights separate. Hence we save them as a H5 file separately and then proceed to store the model architectural configuration settings as a separate YAML file for each model. And just to keep everything together and bundled, we pack these 3 files into a gun-zipped tarball. This is how we can do it:
+This is a last part of a model life cycle. Previous text showed how each phase contributes to creation of a model which finally allows a researched to observe and measure their experiments. To have a model last, we need a meaning to store it's trained properties as well as layout. Since our models allow great customization and invasive changes in the core architecture, we are obliged to persist not only the weight of every trainable parameter, but also a configuration of each layer, amounts of neurons in each, probability rates preset before even any training begun. \textit{Keras} library provides a mean how to achieve that. Each model can be transformed into a H5, JSON or YAML format, while only the H5 format allows us to save weights along with it. However, since the \textit{CapsNet} model is not a single model and we define two different models, one for training and one for inference, we have to keep our weights separate. Hence we save them as a H5 file separately and then proceed to store the model architectural configuration settings as a separate YAML file for each model. And just to keep everything together and bundled, we pack these 3 files into a gun-zipped tarball. This is how we can do it:
 
 \begin{lstlisting}[language=Python, caption=Saving a model in \textit{Keras}]
 with open('train.yml', 'w') as f:
@@ -666,7 +664,7 @@ with open('test.yml', 'w') as f:
 training_model.save_weights('weights.h5')
 \end{lstlisting}
 
-The process shown here is significantly simplified, since our tarball scenario requires more complex handling, but the priciples stays the same. A similar process, yet reversed procedure can be used later to load the data back into a model instance. The implementation provided with this thesis allows passing a special parameter to \texttt{CapsNet} constructor which would skip the network initialization phase and allow to create a model from a class method. This \texttt{load} method uses native function \texttt{model\_from\_yaml} to load up the network configurations and later \texttt{load\_weights} methods to upload trained values. Since we store the weights from the more complex model only, the simplified testing model, is required to load the weights by layer name. Here is how it might look like in a simplified scenario. If a reader is interested in more details of this process, feel free to consult our sources.
+The process shown here is significantly simplified, since our tarball scenario requires more complex handling, but the principles stays the same. A similar process, yet reversed procedure can be used later to load the data back into a model instance. The implementation provided with this thesis allows passing a special parameter to \texttt{CapsNet} constructor which would skip the network initialization phase and allow to create a model from a class method. This \texttt{load} method uses native function \texttt{model\_from\_yaml} to load up the network configurations and later \texttt{load\_weights} methods to upload trained values. Since we store the weights from the more complex model only, the simplified testing model, is required to load the weights by layer name. Here is how it might look like in a simplified scenario. If a reader is interested in more details of this process, feel free to consult our sources.
 
 
 \begin{lstlisting}[language=Python, caption=Loading a model in \textit{Keras}]
@@ -675,7 +673,7 @@ custom_objects = {
     'PredictionCapsule': PredictionCapsule,
     'FeatureCapsule': FeatureCapsule,
     'Mask': Mask,
-    # Tensorflow and Keras backend functions used in lambda layers
+    # TensorFlow and Keras back-end functions used in lambda layers
     'tf': tf,
     'k': k
 }
@@ -691,3 +689,4 @@ testing_model.load_weights('weights.h5', by_name=True)
 
 \section{Experiment}
 
+Based on previous sections we have prepared our network to be successfully trained.

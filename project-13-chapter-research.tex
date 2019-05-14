@@ -117,7 +117,7 @@ The last, pooling stage, provides better understanding of the convolution output
 
 There are many pooling operations, let's list some of the most popular ones like \textbf{max pooling}\,\cite{maxpooling} (reports the maximum output in rectangular neighbourhood), average of rectangular neighbourhood, $L^2$ norm of the rectangular neighbourhood, and weighted average of distance from the central pixel.
 
-Invariance to transition is produced by pooling over spatial regions, however pooling layer can learn an invariance to a transformation of other kinds as well. That happens if we pool over outputs of other separately parametrized convolutions. As an example you can see an invariance to slant in cursive on figure\,\ref{fig:pooling}. This principle is accented mainly in maxout networks\,\cite{maxout}.
+Invariance to transition is produced by pooling over spatial regions, however pooling layer can learn an invariance to a transformation of other kinds as well. That happens if we pool over outputs of other separately parametrized convolutions. As an example you can see an invariance to slant in cursive on figure\,\ref{fig:pooling}. This principle is accented mainly in max-out networks\,\cite{maxout}.
 
 \begin{figure}[ht]
     \centering
@@ -125,14 +125,14 @@ Invariance to transition is produced by pooling over spatial regions, however po
     \caption{\textit{Pooling response with learned invariance to slant}: Here we have 3 filters, where all of them had a task to learn a handwritten number 3. Each of them resulted in learning of different slant of the number. When a number 3 is given as the input, one of the filters will match it and cause a high activation in corresponding detector unit. Due to use of pooling, the max pooling unit has a large activation as well, no matter which filter matched the number.}\label{fig:pooling}
 \end{figure}
 
-Since pooling can summarise a response of layer over whole neighbourhood of input units, it is not necessary to have the same amount of pooling units as the detectors. We can leverage pooling to provide downsampling as can be seen in figure\,\ref{fig:downsample}. That further improves performance of the network since it lowers the amount of inputs for the next layer.
+Since pooling can summarise a response of layer over whole neighbourhood of input units, it is not necessary to have the same amount of pooling units as the detectors. We can leverage pooling to provide down-sampling as can be seen in figure\,\ref{fig:downsample}. That further improves performance of the network since it lowers the amount of inputs for the next layer.
 
-\textbf{Pooling with downsampling} is an essential step when dealing with input of variable size. Let's say we want to use the convolution to detect a face on images with different resolutions. We have learned our detectors to register mouth in the bottom half of the image and another two sets of detectors to locate eyes, each in one of the top quadrants. We can use convolution layer with downsampling pooling to provide the required classification. We expect to be provided by 3 activations on the output, and each of the detector has assigned its portion of the input. It does not matter, if the portion contains one amount of pixels or much more.
+\textbf{Pooling with down-sampling} is an essential step when dealing with input of variable size. Let's say we want to use the convolution to detect a face on images with different resolutions. We have learned our detectors to register mouth in the bottom half of the image and another two sets of detectors to locate eyes, each in one of the top quadrants. We can use convolution layer with down-sampling pooling to provide the required classification. We expect to be provided by 3 activations on the output, and each of the detector has assigned its portion of the input. It does not matter, if the portion contains one amount of pixels or much more.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=.6\textwidth]{obrazky-figures/downsampling.pdf}
-    \caption{Pooling with downsampling}\label{fig:downsample}
+    \caption{Pooling with down-sampling}\label{fig:downsample}
 \end{figure}
 
 In deep learning this is often the case. We don't refer to convolution as a simple single operation as described in the beginning of this chapter. Such convolution layer with a single kernel would be capable of extracting only a single feature, although in many spatial locations. Usually many convolutions are applied and performed in parallel. That can provide many different kernels for different features, which are interesting for the use case. As a result, the network can locate many kinds of features at many locations.
@@ -140,14 +140,14 @@ In deep learning this is often the case. We don't refer to convolution as a simp
 \subsection{Strided convolution}
 \label{ss:strided}
 
-Also when we have stumbled upon the downsampling in pooling, this step can be sometimes omitted and simplified even more. Although the result is similar to the pooling with downsampling, the logic in based on different assumptions. In pooling operation, we leverage all the information retrieved by the convolutions and simplify the output.
+Also when we have stumbled upon the down-sampling in pooling, this step can be sometimes omitted and simplified even more. Although the result is similar to the pooling with down-sampling, the logic in based on different assumptions. In pooling operation, we leverage all the information retrieved by the convolutions and simplify the output.
 
 A strided convolution is rather avoiding some of the convolutions at all. That further lowers the computational costs, hence at a risk of not extracting all the features in such detail. In this case we sample pixels in every direction with a step of $s$. The step $s$ is called a \textbf{stride}. It is also possible to define a separate stride for each step direction.
 
 \begin{figure}
     \centering
     \includegraphics[width=.6\textwidth]{obrazky-figures/conv_down.pdf}
-    \caption{Convolution and pooling with downsampling}\label{fig:conv_down}
+    \caption{Convolution and pooling with down-sampling}\label{fig:conv_down}
 \end{figure}
 
 
@@ -157,7 +157,7 @@ A strided convolution is rather avoiding some of the convolutions at all. That f
     \caption{Strided convolution}\label{fig:strided}
 \end{figure}
 
-As it can be clearly seen on the images\,\ref{fig:conv_down} and\,\ref{fig:strided} the two step downsampling is computationally more expensive than the strided optimisation, while it can provide similar results.
+As it can be clearly seen on the images\,\ref{fig:conv_down} and\,\ref{fig:strided} the two step down-sampling is computationally more expensive than the strided optimisation, while it can provide similar results.
 
 \subsection{Zero padding}
 
@@ -252,7 +252,7 @@ In any later layer except the first layer of capsules the capsule can understand
     \label{eq:capsule}
 \end{equation}
 
-Here we are introducing $c_{ij}$ coupling coefficients which are determined by the dynamic routing process in multiple iterations. The $c_{ij}$ coefficients are computed for each capsule $i$ in relation to every capsule $j$ in the layer above. For each capsule $i$ the sum of these coefficients is equal to 1 and represents a special softmax for routing. This activation uses initial logits $b_{ij}$ that are log prior probabilities of the likelihood a capsule $i$ is coupled to capsule $j$. In general, routing provides each capsule $j$ a mean to determine which capsules $i$ are interesting enough and aligned in the same fashion for it to base its prediction upon. This coupling is determined independently on current input.
+Here we are introducing $c_{ij}$ coupling coefficients which are determined by the dynamic routing process in multiple iterations. The $c_{ij}$ coefficients are computed for each capsule $i$ in relation to every capsule $j$ in the layer above. For each capsule $i$ the sum of these coefficients is equal to 1 and represents a special soft-max for routing. This activation uses initial logits $b_{ij}$ that are log prior probabilities of the likelihood a capsule $i$ is coupled to capsule $j$. In general, routing provides each capsule $j$ a mean to determine which capsules $i$ are interesting enough and aligned in the same fashion for it to base its prediction upon. This coupling is determined independently on current input.
 
 \begin{equation}
     c_{ij} = \frac{exp(b_{ij})}{\sum_{k}exp(b_{ik})}
@@ -277,7 +277,7 @@ Later on we will define two distinct layer types: \textit{prediction capsules} a
     \end{algorithmic}
 \end{algorithm}
 
-The aim is simple, yet harder to achieve. All and every capsule in \textit{primary capsule} and \textit{prediction capsule} layers are made to agree on the location of the features in space and their orientation. At first all the routing logits $b_{ij}$ are initialized to zero. That means each input capule's ouput is sent to the next layer's capsules with equal probability $c_{ij}$. In time the logits are learned and since they are independent on the current image\footnote{Each image is expected to include one and just one face, not more.}, they can be discriminatively trained at the same time as all the other weights. Their only dependency is the type and location of the capsules involved. Its training process involves iteratively adjusting and refining the logits based on measurement of agreement between the prediction $\hat{u}_{j|i}$ made by capsule $i$ in the underlying layer and current output $v_j$ of each capsule $j$ in the layer above.
+The aim is simple, yet harder to achieve. All and every capsule in \textit{primary capsule} and \textit{prediction capsule} layers are made to agree on the location of the features in space and their orientation. At first all the routing logits $b_{ij}$ are initialized to zero. That means each input capsule's output is sent to the next layer's capsules with equal probability $c_{ij}$. In time the logits are learned and since they are independent on the current image\footnote{Each image is expected to include one and just one face, not more.}, they can be trained at the same time as all the other weights. Their only dependency is the type and location of the capsules involved. Its training process involves iteratively adjusting and refining the logits based on measurement of agreement between the prediction $\hat{u}_{j|i}$ made by capsule $i$ in the underlying layer and current output $v_j$ of each capsule $j$ in the layer above.
 
 \begin{equation}
     a_{ij} = v_j \cdot \hat{u}_{j|i}
