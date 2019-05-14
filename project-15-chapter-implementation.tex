@@ -66,6 +66,7 @@ Most of the arguments above can be defined on the fly, omitted or abstracted. Ex
 
 Fundamental layer which allows to pass input data to a model. This layer has the biggest say in the shape of consumed data.
 
+\pagebreak
 \begin{lstlisting}[language=Python, caption=Input layer]
 layers.Input(
     shape=input_shape  # A shape in a tuple format without
@@ -100,12 +101,10 @@ Provides a two dimensional convolution. Convolution as operation as well as its 
 \begin{lstlisting}[language=Python, caption=2D convolution layer]
 layers.Conv2D(
     filters=init_conv_filters,     # Amount of filters
-    kernel_size=init_conv_kernel,  # Specifies height and weight of
-                                   # kernel matrix
+    kernel_size=init_conv_kernel,  # Specifies dimensions of kernel
     strides=1,                     # A number of strides to use
     padding='valid',               # Sets padding on outer borders
     activation='relu',             # Desired activation function
-    ...
 )
 \end{lstlisting}
 
@@ -369,8 +368,6 @@ These are the building blocks and a complete context boundaries in which a predi
     \item Implementing the operation described in equation \ref{eq:capsule} we multiply the weight matrix \texttt{W}
 \end{enumerate}
 
-Now, once more in code:
-
 \begin{lstlisting}[language=Python, caption=Prediction capsule call without routing]
 # Prepare inputs
 # inputs == [None, input_capsule_count, input_capsule_dim]
@@ -396,9 +393,7 @@ b = tf.zeros(
 for i in range(routing_iters):
     with tf.variable_scope(f'routing_{i}'):
         c = tf.keras.activations.softmax(b, axis=1)
-        # c == [None, capsule_count, input_capsule_count, 1]
         # Perform: sum(c x u)
-        #
         # c == [None, capsule_count, input_capsule_count, 1]
         # u == [None, capsule_count, input_capsule_count, capsule_dim]
         s = tf.reduce_sum(tf.multiply(c, u), axis=2, keepdims=True)
@@ -406,14 +401,12 @@ for i in range(routing_iters):
         # Perform: squash
         v = squash(s)
         # v == [None, capsule_count, 1, capsule_dim]
-
         # Perform: sum(output x input)
         v_tiled = tf.tile(v, (1, 1, input_capsule_count, 1))
         b += tf.reduce_sum(
             tf.matmul(u, v_tiled, transpose_b=True),
             axis=3, keepdims=True
         )
-        # b == [None, capsule_count, input_capsule_count, 1]
 
 # Squeeze the extra dim (used for manipulation, not needed on output)
 # v == [None, capsule_count, 1, capsule_dim]
@@ -542,6 +535,7 @@ In previous chapters suitable data sets were already mentioned and elaborated. S
 
 For next parts of this text, we will continue to use the \textit{LFW} data set as the sole example for input data. In order to collect this data set we don't need to be inventing the wheel again and we can leverage the capabilities granted via \texttt{sklearn} library.
 
+\pagebreak
 \begin{lstlisting}[language=Python, caption=Collect Labeled Faces in the Wild data set]
 people = fetch_lfw_people(
     color=True,
