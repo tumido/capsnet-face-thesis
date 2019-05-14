@@ -322,6 +322,7 @@ On the other hand, the encoder part required more sophisticated mean to compute 
 
 \begin{equation}
     L_k = T_k max(0, m^+ - \norm{v_k})^2 + \lambda (1 - T_k) max(0, \norm{v_k} - m^-)^2
+    \label{eq:margin_loss}
 \end{equation}
 
 where, $T_k = 1$ is a hot one encoded truth of the capsule belonging to that particular label. Then $m^+ = 0.9$ and $m^- = 0.1$ are the loss boundaries and we use the down-weighting factor of $\lambda = 0.5$ to stop shrinking in lengths of activation vectors when initial learning happens\,\cite{capsule}.
