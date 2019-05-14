@@ -62,7 +62,7 @@ layers.Layer(
 
 Most of the arguments above can be defined on the fly, omitted or abstracted. Except for one, which is really important to use, in case we desire to store the model for later use. And that's the \texttt{name} parameter. This string allows user to specify unique name within the architecture for this particular layer. And since we can share layers between models, this feature can be leveraged to load the proper weights data into a different model, despite being exported from another one. This topic will be covered more in the section \ref{ss:save_model}.
 
-\subsubsection{\texttt{layers.Input}}
+\subsubsection{\texttt{keras.layers.Input}}
 
 Fundamental layer which allows to pass input data to a model. This layer has the biggest say in the shape of consumed data.
 
@@ -73,7 +73,7 @@ layers.Input(
 )
 \end{lstlisting}
 
-\subsubsection{\texttt{layers.Dense}}
+\subsubsection{\texttt{keras.layers.Dense}}
 
 A \textit{Dense} stands for a well known, fully connected neural networks layer. It's product can be represented as equation \ref{eq:dense}, where the \texttt{act} is an activation function. This activation is performed over a element-wise multiplication of the input and a weight matrix kernel with additional bias added. Both kernel and bias are learned through training.
 
@@ -93,9 +93,9 @@ layers.Dense(
 )
 \end{lstlisting}
 
-\subsubsection{\texttt{layers.Conv2D}}
+\subsubsection{\texttt{keras.layers.Conv2D}}
 
-Provides a two dimensional convolution. Convolution as operation as well as its meanings were already described in section \ref{ss:conv}. This layer type utilizes these principles in 2D space. \textit{Keras} provides also other layer types for 1D and 3D convolution. However, the matter of our use case lays in image processing. And since images are a spatial two dimensional space, it dictates the use of \texttt{layers.Conv2D}. In \textit{Keras}, there are also other layers like \texttt{layers.Convolution2D}, though this is just an alias which points to the same implementation as \texttt{layers.Conv2D}.
+Provides a two dimensional convolution. Convolution as operation as well as its meanings were already described in section \ref{ss:conv}. This layer type utilizes these principles in 2D space. \textit{Keras} provides also other layer types for 1D and 3D convolution. However, the matter of our use case lays in image processing. And since images are a spatial two dimensional space, it dictates the use of \texttt{keras.layers.Conv2D}. In \textit{Keras}, there are also other layers like \texttt{keras.layers.Convolution2D}, though this is just an alias which points to the same implementation as \texttt{keras.layers.Conv2D}.
 
 \begin{lstlisting}[language=Python, caption=2D convolution layer]
 layers.Conv2D(
@@ -109,7 +109,7 @@ layers.Conv2D(
 )
 \end{lstlisting}
 
-\subsubsection{\texttt{layers.Dropout}}
+\subsubsection{\texttt{keras.layers.Dropout}}
 
 An overfit prevention layer, which randomly sets each particular input to 0 with probability of \texttt{rate}. This is performed on each update during the training phase.
 
@@ -121,7 +121,7 @@ layers.Dropout(
 )
 \end{lstlisting}
 
-\subsubsection{\texttt{layers.Reshape}}
+\subsubsection{\texttt{keras.layers.Reshape}}
 
 A simple layer which allows to modify the shape of the input data. The result shape consists of \texttt{batch\_size} as first dimension and \texttt{target\_shape} as the rest. A special value of $-1$ can be used, which is treated as a variable, calculated, dimension.
 
@@ -132,9 +132,9 @@ layers.Reshape(
 )
 \end{lstlisting}
 
-\subsubsection{\texttt{layers.Lambda}}
+\subsubsection{\texttt{keras.layers.Lambda}}
 
-This is the first more complex layer. it might not seem so, however this layer allows to add custom behavior. Its name is derived from lambda function, anonymous functions which are invoked in situ. The \texttt{layers.Lambda} layer allows user to invoke any operation and transformation defined as a function. We use this type of layer in multiple scenarios, but for clarity we will list here just a single one\,--\,a calculation of length of each vector in the tensor.
+This is the first more complex layer. it might not seem so, however this layer allows to add custom behavior. Its name is derived from lambda function, anonymous functions which are invoked in situ. The \texttt{keras.layers.Lambda} layer allows user to invoke any operation and transformation defined as a function. We use this type of layer in multiple scenarios, but for clarity we will list here just a single one\,--\,a calculation of length of each vector in the tensor.
 
 \begin{lstlisting}[language=Python, caption=Lambda layer]
 def length(inputs):
@@ -147,7 +147,7 @@ layers.Lambda(
 \end{lstlisting}
 
 
-\subsubsection{\texttt{layers.Layer}}
+\subsubsection{\texttt{keras.layers.Layer}}
 
 This abstract class serves as a base for all standard as well as all any custom layers in \textit{Keras}. It's behavior and shape is fully customizable. Inheritance from this class allows user to invent and define a brand new layer, while maintaining the same API and compilation strategy as for any standard layer. While this might sound confusing the authors of \textit{Keras} framework made it really easy to comprehend and straightforward to implement. Let's take a look:
 
@@ -204,17 +204,90 @@ Overall, the architecture is straightforward, but for good results it requires t
 
 Also, it's worth mentioning a \textit{CapsNet} is not a \textit{single-input, single-output} type of network. For training purposes, it consumes both the image and the label and outputs a predicted label along with a reconstructed image. This behavior changes when the network is used for predictions. At that point the neural network is expected to behave and process a single input image and provide one output for it\,--\,the predicted label. However more outputs might be required in inference, since instead of a prediction we can be more interested in a similarity vector, which might be a better fit for unknown indentity description. One way or another, any of these scenarios requires a different model layout. And since it's not possible to achieve a multiple layouts with a single model, we're destined to use multiple models, each with different layer structure. So now, we need to make sure that once we train one model the other one is capable to benefit from it as well. And now it's the right time to use the layer sharing between models as described above.
 
-\subsection{Encoder}
+\section{Encoder}
 
+Encoder serves as the true capsule network. It is expected to consume an image containing a face and to produce a prediction of an identity the input belongs to. This is achieved by a series of layers as described in the chapter \ref{chapter:research}. The structure prescribed by the following image is then implemented using layers described in this chapter.
 
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=\textwidth]{obrazky-figures/my_capsnet_encoder.pdf}
+    \caption{Encoder visualization}
+    \label{fig:my_encoder}
+\end{figure}
 
-\subsection{Decoder}
+\begin{enumerate}
+    \item Input image is consumed as a
+    \item Then standard 2D convolution is applied
+    \item Convoluted output is routed towards the primary, feature capsules
+    \item Prediction capsules measures activation on the previous layer and provides a weight based decision of likelihood that the capsule label matches the input.
+\end{enumerate}
 
+Additionally we add a \textit{Dropout} layer in between step 1 and 2 to prevent over-fitting on over-represented labels.
 
+As you can see, the network itself is not complicated much. Let's take look at the implementation itself:
+
+\begin{lstlisting}[language=Python, caption=Features capsule with squash activation]
+x = layers.Input(name='input_image', shape=input_shape)
+
+conv = layers.Conv2D(
+    filters=init_conv_filters,
+    kernel_size=init_conv_kernel,
+    strides=1,
+    padding='valid',
+    activation='relu',
+    name='encoder_conv2d'
+)(x)
+
+dropout = layers.Dropout(.3, name='encoder_dropout')(conv)
+
+feature_caps = FeatureCapsule(
+    capsule_dim=feature_caps_dim,
+    channels_count=feature_caps_channels,
+    kernel_size=feature_caps_kernel,
+    strides=2,
+    padding='valid',
+    name='encoder_feature_caps'
+)(dropout)
+
+prediction_caps = PredictionCapsule(
+    capsule_count=bins,
+    capsule_dim=prediction_caps_dim,
+    routing_iters=routing_iters,
+    kernel_initializer=kernel_initializer,
+    name='encoder_pred_caps'
+)(feature_caps)
+
+output = layers.Lambda(
+    length,
+    name='capsnet'
+)(prediction_caps)
+\end{lstlisting}
+
+As you can see the implementation is quite versatile and allows a lot possibilities to configure and tune it's behavior. We have available quite few adjustable parameters and some more dependent on circumstances in which the model is deployed. We can convey the later group first and then provide explanation of the tunable parameters.
+
+\begin{itemize}
+    \item \texttt{input\_shape} is an essential attribute based on the input data. It allows the network to be prepared for input images of certain height and width. Multiple layers are directly or indirectly dependent on proper settings of this size.
+    \item \texttt{bins} Allows researcher to set the amount of identities which we want to classify. This should also be dependent on the input data, since setting this value to different amount might result in false positive identifications.
+\end{itemize}
+
+Now to the more interesting arguments, which doesn't affect the model boundaries, but rather focus on performance and accuracy. It's worth mentioning that any of these arguments has impact on the architecture and model size, since they will change the number of trainable parameters.
+
+\begin{itemize}
+    \item \texttt{init\_conv\_filters} sets how many different features should be detected in the very first convolution layer.
+    \item \texttt{init\_conv\_kernel} modifies the 2D dimensions of the kernel used in the first convolution layer.
+    \item \texttt{feature\_caps\_kernel} is used to adjust the dimensions of convolutional kernel in the \textit{Primary feature capsules}.
+    \item \texttt{feature\_caps\_dim} defines dimensionality of a capsule in the \textit{Primary feature capsules} layer.
+    \item \texttt{feature\_caps\_channels} is another attribute of the \textit{Primary feature capsules}, which signifies amount of channels from which each capsule should build its grid of feature
+    \item \texttt{prediction\_caps\_dim} sets the dimensionality of each capsule in \textit{Prediction capsules} layer. This effect the amount of features which are accented - sets the maximum connection limit for each prediction capsule towards the feature capsules.
+    \item \texttt{kernel\_initializer} specifies the weight initialization in \textit{Prediction capsules}.
+    \item \texttt{routing\_iters} allows a user to select the amount of iterations the dynamic routing should take.
+\end{itemize}
+
+Now once the scheme in general has been communicated, it's obvious that key knowledge is hidden in the implementation of the capsule layers. That would also provide explanation to the parameters mentioned above and their importance.
 
 \subsection{Primary feature capsules layer}
 
-Name of this layer and expectations set by previous chapters promise that great deal of invention is present n this layer. However that's not entirely true. More interesting begavior can be found in the next prediction capsules layer. The primary capsules are designed for a simple feature extraction as it might be known fro traditional convolutional networks. This feature extraction has a twist to it, though. As prescribed in the chapter \ref{chapter:research}, a non linear \textit{squash} activation is used here. We've already conveyed the equation \ref{eq:squash} describing the real nature of the squash function. Now we have the opportunity to cover this in a code.
+Name of this layer and expectations set by previous chapters promise that great deal of invention is present n this layer. However that's not entirely true. More interesting behavior can be found in the next prediction capsules layer. The primary capsules are designed for a simple feature extraction as it might be known from traditional convolutional networks. This feature extraction has a twist to it, though. As prescribed in the chapter \ref{chapter:research}, a non linear \textit{squash} activation is used here. We've already conveyed the equation \ref{eq:squash} describing the real nature of the squash function. Now we have the opportunity to cover this in a code.
 
 The feature capsules layer is in it's true nature a composite layer of three layers stacked and with the squash activation on output.
 
@@ -350,15 +423,182 @@ v = tf.squeeze(v, axis=2)
 # v == [None, capsule_count, capsule_dim]
 \end{lstlisting}
 
-The routing eliminates the \texttt{input\_capsule\_count} and \texttt{input\_capsule\_dim} from the tensor and instead provides new dimension of \texttt{capsule\_dim} which applies the attribute of current prediction capsule layer.
+The routing eliminates the \texttt{input\_capsule\_count} and \texttt{input\_capsule\_dim} from the tensor and instead provides new dimension of \texttt{capsule\_dim} which applies the attribute of current prediction capsule layer. As you can see the resulting shape of a prediction capsule classification activations per each image over each capsule dimension is the proper output shape of the layer. This would eventually tell us, which capsule found that particular image most interesting and the likelihood that it belongs to a class mapped to a capsule.
+
+\section{Decoder}
+
+Based on the findings in chapter\,\ref{chapter:research}, a decoder is a sequential model meant to provide an image reconstruction feedback. The gro is to implement a training helper, which covers the key spatial feature areas of a particular identity, so we can later compare and match the input image to measure accuracy of our prediction. In case of a MNIST dataset this factor is of a great help, though in case of coherent input data with small difference on large spatial feature scale, as a human face image is, the importance of a decoder seems diminished. Moreover a simple 3 layers deep decoder comprising of fully connected layers offered by research on MNIST can't be successfully used on RGB data with granular features. Therefore we leverage a solution introduced by Thibault Neveu in his traffic signs classifier\,\ref{ss:traffic_signs}. We will build a convoluted reconstruction model, which essential building blocks are a dense layer, resizing layers and convolutional layers. In the end this forms a neural network of 10 layers, which provides more detail than a 3 layer model of fully connected layers.
+
+The decoder consumes a prediction provided by \textit{encoder} as well as the true image and aims to recreate a image of a face based on the feature grid activations in the prediction. The result can be understood as a master template for that particular identity. We will look into that in our model evaluation later.
+
+Now, let's describe the flow we want the layers to convey in our decoder unit:
+
+\begin{enumerate}
+    \item \texttt{keras.layers.Dense} which normalizes and unifies the input mapping enabling later convolutions to run efficiently and select proper input activations.
+    \item \texttt{keras.layers.Reshape} layer converts the fully connected output from one dimensional array to a base image matrix with $5\times5$ pixels over 16 channels.
+    \item Now an alternating pattern of \texttt{keras.layers.Conv2D} and \texttt{keras.layers.Lambda} with \texttt{resize} function provides a resizing, upscaling of the image, while interpolating its properties back to $32\times32$ pixels in a convoluted fashion.
+    \item Before we finalize the decoder, another \texttt{keras.layers.Conv2D} convolutinal layer is used to reduce populated channels and provide only one best channel for each color.
+    \item As the last layer we chose to chain an activation layer \texttt{keras.layers.Activation} transforming our matrices to a ReLU activated image data.
+\end{enumerate}
+
+In case this is not explanatory enough, let's look at a diagram:
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[height=18em]{obrazky-figures/my_decoder.pdf}
+    \caption{A convolutional decoder for a \textit{CapsNet} used in our implementation.}
+    \label{fig:decoder}
+\end{figure}
 
 \subsection{Masking layer}
 
+Since we want our \textit{decoder} to provide as accurate reconstruction we need tell it, when the predicted output matches our expectation on what capsule. So before we pass our \textit{encoder} output to the \textit{decoder} defined above, we need to build a mechanism which would combine true labels and predicted activations in our capsules. This can be easily done by introducing an intermediate layer, which can nullify every other capsule vector than the correct one. And since we already have our labels defined as a hot one encoding, we can just simply multiply our capsule network encoder findings as a tensor for each input by the label vector. That will ensure propagation of correct capsule activations, because they happen to be on the only (hot) index, while other capsules are deactivated because their vector is multiplied by a zero, therefore they won't provide any input value for this image. Therefore we end up with set of vectors per each label in size of $\texttt{capsule\_dim}\times\texttt{labels\_count}$. Despite we consume two outputs in this layer, the output shape can be computed solely from the first input\,--\,the \textit{prediction capsule} layer shape. The dimension of true labels is shared because we keep the number of identities and amount of capsules consistent (1 to 1 mapping).
 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[height=14em]{obrazky-figures/my_mask.pdf}
+    \caption{Graphical representation of the masking layer. Color coded in blue is the reconstruction target, while in gray are the suppressed inputs.}
+    \label{fig:mask}
+\end{figure}
+
+This layer is straightforward to implement. Despite the simple calculation, it would be difficult to use \texttt{keras.layers.Lambda} since we are combining 2 inputs and calculating the output shape out of them, therefore we take the base \texttt{keras.layers.Layer} and extend it's \texttt{call} and \texttt{compute\_output\_shape} methods. Since this layer doesn't require trainable weights, there's no need to overwrite the default \texttt{\_\_init\_\_} on \texttt{build}.
+
+\begin{lstlisting}[language=Python, caption=Masking layer]
+class Mask(layers.Layer):
+    def call(self, inputs, **kwargs):
+        # Unpack
+        capsule_output, labels = inputs
+        # A vector is multiplied by a scalar hot one encoding.
+        # Therefore only one vector is kept.
+        return k.batch_flatten(capsule_output * k.expand_dims(labels))
+
+    def compute_output_shape(self, input_shape):
+        # PredictionCapsule layer shape
+        # input_shape[0].shape == (None, capsule_count, capsule_dim)
+
+        # True labels shape
+        # input_shape[1].shape == (None, capsule_count)
+
+        # Calculate from PredictionCapsule shape
+        return (None, input_shape[0][1] * input_shape[0][2])
+\end{lstlisting}
+
+
+\subsection{Recapitulation}
+
+Now we understand the building blocks of our network. Let's recapitulate the whole architecture to better understand the complete flow how the data will be processed and classified. We begin with an image of a human face. This image is set to be $32\times32$ pixels and the ground truth labels are expected to be a hot one encoding of the vectorized identity bins.
+
+Then we can expect the \textit{encoder} to adhere to the architecture shown on figure\,\ref{fig:my_encoder}. When the model is validated or we are running an inference, we just calculate a norm by length over the outputs are we have a prediction. On the other hand, when the model is being trained, we need to add a \textit{decoder}. However, in between we can't forget about the intermediate layer encoding the true labels for reconstruction. So we plug there the \textit{masking layer}, after which we can successfully chain the \textit{decoder}. Let's have a look how a summary of such model would look like:
+
+\begin{table}[ht]
+    \centering
+    \resizebox{\linewidth}{!}{
+        \begin{tabular}{l|l|l|r|l}
+            \toprule
+            Name                                     & Type                       & Output shape          & Parameters     & Connected to\\
+            \midrule
+            \texttt{input\_image}                    & \texttt{Input}             & $(None, 32, 32, 3)$   & \num{0}        & \\
+            \texttt{encoder\_conv2d}                 & \texttt{Conv2D}            & $(None, 24, 24, 512)$ & \num{124928}   & \texttt{input\_image}\\
+            \texttt{encoder\_dropout}                & \texttt{Dropout}           & $(None, 24, 24, 512)$ & \num{0}        & \texttt{encoder\_conv2d}\\
+            \texttt{encoder\_feature\_caps\_conv2d}  & \texttt{Conv2D}            & $(None, 10, 10, 256)$ & \num{3277056}  & \texttt{encoder\_dropout}\\
+            \texttt{encoder\_feature\_caps\_reshape} & \texttt{Reshape}           & $(None, 1600, 16)$    & \num{0}        & \texttt{encoder\_feature\_caps\_conv2d}\\
+            \texttt{encoder\_feature\_caps\_squash}  & \texttt{Lambda (squash)}   & $(None, 1600, 16)$    & \num{0}        & \texttt{encoder\_feature\_caps\_reshape}\\
+            \texttt{encoder\_pred\_caps}             & \texttt{PredictionCapsule} & $(None, 42, 32)$      & \num{34406400} & \texttt{encoder\_feature\_caps\_squash}\\
+            \texttt{capsnet}                         & \texttt{Lambda (length)}   & $(None, 42)$          & \num{0}        & \texttt{encoder\_pred\_caps}\\
+            \texttt{input\_label}                    & \texttt{Input}             & $(None, 42)$          & \num{0}        & \\
+            \texttt{mask}                            & \texttt{Mask}              & $(None, 1344)$        & \num{0}        & \texttt{encoder\_pred\_caps}\\
+                                                     &                            &                       &                & \texttt{input\_label}\\
+            \texttt{decoder\_dense}                  & \texttt{Dense}             & $(None, 400)$         & \num{538000}   & \texttt{mask}\\
+            \texttt{decoder\_reshape\_1}             & \texttt{Reshape}           & $(None, 5, 5, 16)$    & \num{0}        & \texttt{decoder\_dense}\\
+            \texttt{decoder\_resize\_1}              & \texttt{Lambda (resize)}   & $(None, 8, 8, 16)$    & \num{0}        & \texttt{decoder\_reshape\_1}\\
+            \texttt{decoder\_conv2d\_1}              & \texttt{Conv2D}            & $(None, 8, 8, 4)$     & \num{580}      & \texttt{decoder\_resize\_1}\\
+            \texttt{decoder\_resize\_2}              & \texttt{Lambda (resize)}   & $(None, 16, 16, 4)$   & \num{0}        & \texttt{decoder\_conv2d\_1}\\
+            \texttt{decoder\_conv2d\_2}              & \texttt{Conv2D}            & $(None, 16, 16, 8)$   & \num{296}      & \texttt{decoder\_resize\_2}\\
+            \texttt{decoder\_resize\_3}              & \texttt{Lambda (resize)}   & $(None, 32, 32, 8)$   & \num{0}        & \texttt{decoder\_conv2d\_2}\\
+            \texttt{decoder\_conv2d\_3}              & \texttt{Conv2D}            & $(None, 32, 32, 16)$  & \num{1168}     & \texttt{decoder\_resize\_3}\\
+            \texttt{decoder\_conv2d\_4}              & \texttt{Conv2D}            & $(None, 32, 32, 3)$   & \num{435}      & \texttt{decoder\_conv2d\_3}\\
+            \texttt{decoder\_activation}             & \texttt{Activation}        & $(None, 32, 32, 3)$   & \num{0}        & \texttt{decoder\_conv2d\_4}\\
+            \midrule
+            \multicolumn{3}{l|}{Total}                                                                    & \num{38348863} & \\
+            \bottomrule
+        \end{tabular}
+    }
+    \caption{Implemented CapsNet architecture: Each model in different conditions can differ in number of parameters and and each layer shapes. For example initial convolution can be set to different amount of filters which is determined by experiment. Other example can be the amount of capsules in prediction layer (and its output shape) since that is tightly bonded to the amount of identity bins. Listed layer types are understood to belong to \texttt{keras.layers} namespace. In case of \texttt{Lambda} layers, the function in use is listed in parenthesis.}
+\end{table}
 
 \section{Lifecycle of a model}
 
-Traditionally
+Traditionally in machine learning a model needs to be trained, then it is tested and validated. Since there's no reason to change this workflow this section will follow the established scheme and walk you through the required steps in the particular order in which they need to be examined:
+
+\begin{enumerate}
+    \item Data set selection, collection and preprocessing
+    \item Establishing model
+    \item Training a model
+    \item Validation of trained accuracy
+    \item Publishing results
+\end{enumerate}
+
+\subsection{Data set preparation}
+
+In previous chapters suitable data sets were already mentioned and elaborated. Since size of our solution is greatly dependent on the amount of identities, we need to select a dataset with fair ratio between the size of labels vector and amount of samples per each identity. For this particular demonstration we chose the \textit{Labeled Faces in the Wild}\,\ref{ss:lfw} due to fair distribution when limited to 25 samples per label or greater, and its simplicity to collect via \textit{scikit-learn}\footnote{\url{https://scikit-learn.org}} library. We also tried and demonstrated in our Jupyter notebooks the \textit{PINS}\,\ref{ss:pins} data set, but the diversity in data proved itself to be of no use. However the collection code remains in the thesis sources and in the notebooks, so it is available to be experimented with.
+
+For next parts of this text, we will continue to use the \textit{LFW} data set as the sole example for input data. In order to collect this dataset we don't need to be inventing the wheel again and we can leverage the capabilities granted via \texttt{sklearn} library.
+
+\begin{lstlisting}[language=Python, caption=Collect Labeled Faces in the Wild dataset]
+people = fetch_lfw_people(
+    color=True,
+    min_faces_per_person=25,
+)
+\end{lstlisting}
+
+By default the images are $300\times300$ pixels big, though since we aim to process images as small as $32\times32$ pixels we need to resize the images. We can either try to reason with a \texttt{resize=} parameter, though this size fraction can prove itself unreliable so we will use help of the \textit{Pillow}\footnote{\url{https://pillow.readthedocs.io}} library:
+
+\begin{lstlisting}[language=Python, caption=Preprocessing of the dataset]
+x = people.images
+
+def downsample(image):
+    image = Image.fromarray(image.astype('uint8'), 'RGB')
+    image = image.resize(resize_to, Image.ANTIALIAS)
+
+    return np.array(image)
+
+x = np.array([downsample(i) for i in x]) / 255
+\end{lstlisting}
+
+Now we have solved the image sizes, we can prepare the dataset into two distinct bundles, one for training and one for validation. This means the data we are training the model against are not the same we use later for validation, therefore the result of validation is pure and not affected by over-fitting. Here we can use the help of \textit{scikit-learn} library once again, since it provides a \texttt{train\_test\_split} function which allow us to separate these two sets randomly, with a respective desired ratio. And last but not least, we need to convert our labels to a hot one encoding. This time we can use a \textit{Keras} native function \texttt{to\_categorical}.
+
+The dataset is now prepared, let's take a look at the distribution of images magnitude per label that we can expect as well as other metrics we may consider before training. As we can see on following figure\,\ref{fig:lfw_distribution}, the distribution is not ideal, and our model will have a tendency to overfit on certain overrepresented labels and underfit on others. This is unfortunate and we can try to eliminate such behavior by a \textit{dropout} layer and with additional augmentation.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[height=14em]{obrazky-figures/lfw_distribution.pdf}
+    \caption{LFW subset distribution}
+    \label{fig:lfw_distribution}
+\end{figure}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabularx}{.8\textwidth}{l|X}
+        \toprule
+        Number of subjects & \num{42} \\
+        Total amount images & \num{2588} \\
+        Amount of images for \textbf{training} & \num{2070} \\
+        Amount of images for \textbf{testing} & \num{518} \\
+        Minimum samples per subject & \num{25} \\
+        Meximum amples per subject & \num{521} \\
+        Resolution & $32\times32$ px \\
+        Channels & 3 color channels, RGB \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Metrics of the used subset of \textit{LFW} data set}
+\end{table}
+
+
+
+
+% \begin{lstlisting}[language=Python, caption=]
+% \end{lstlisting}
+
 
 \subsection{Train}
 

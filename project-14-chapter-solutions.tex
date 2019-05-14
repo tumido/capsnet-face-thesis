@@ -56,7 +56,7 @@ The only attempt I was able to locate at the time of publishing this thesis, whi
 \subsection{CapsNet\,--\,Traffic sign classifier}
 \label{ss:traffic_signs}
 
-The most complete implementation of capsule network on a more complex problem than a MNIST data set. This particular implementation\,\cite{capsnet_traffic} focuses to create a German traffic signs classifier. A network of 42 prediction capsules is able to assign correct label to a traffic sign with 98\% validation accuracy (97\% for testing). It follows similar architecture pattern as described above, at least for the \textit{encoder} part. The decoder is made differently, since a fully connected 3 layer decoding is not considered helpful for a image data in color. Instead a convolutional decoder with resizing\,--\,upscaling to nearest neighbor is used to provide reconstruction network. As per the documentation, this proved much more useful along with reduction in routing. The network is implemented in pure \textit{Tensorflow} framework. In our own solution later, we will use this network as a guidance and great inspiration for our work. The implementation is not very clean, though provide great insight into how one can manipulate and classify RGB data with emphasis on small feature size. We will borrow some visualization methods later in our example notebooks as well.
+The most complete implementation of capsule network on a more complex problem than a MNIST data set. In this particular implementation\,\cite{capsnet_traffic}, the author Thibault Neveu focuses to create a German traffic signs classifier. A network of 42 prediction capsules is able to assign correct label to a traffic sign with 98\% validation accuracy (97\% for testing). It follows similar architecture pattern as described above, at least for the \textit{encoder} part. The decoder is made differently, since a fully connected 3 layer decoding is not considered helpful for a image data in color. Instead a convolutional decoder with resizing\,--\,upscaling to nearest neighbor is used to provide reconstruction network. As per the documentation, this proved much more useful along with reduction in routing. The network is implemented in pure \textit{Tensorflow} framework. In our own solution later, we will use this network as a guidance and great inspiration for our work. The implementation is not very clean, though provide great insight into how one can manipulate and classify RGB data with emphasis on small feature size. We will borrow some visualization methods later in our example notebooks as well.
 
 \subsection{CapsNet-Keras}
 
@@ -156,6 +156,7 @@ This data set provides annotations for Faces in the Wild\,\cite{fiw} database. F
 \end{table}
 
 \subsection{LFW: Labeled Faces in the Wild}
+\label{ss:lfw}
 
 LFW\,\cite{lfw} provides labels for images from Faces in the Wild data set mentioned before. Therefore when used in conjunction with FDDB, this data set can provide a robust base for face recognition. The database spans many identities, though it lacks volume\,--\,many subjects have only one image in the data set. That does not provide enough coverage to train a network to recognize that individual.
 
@@ -277,6 +278,7 @@ Subjects vary in ethnicity, age, sex as well as in appearance. Data set includes
 \end{table}
 
 \subsection{Aligned Face Dataset from Pinterest}
+\label{ss:pins}
 
 Aligned Face Dataset from Pinterest (PINS) is a custom dataset available on Kaggle\,\cite{pins}. It provides normalized, aligned and feature centered image data collected from Pinterest and processed via \textit{dlib}. The image distribution is not strictly uniform, although it provides at least 100 images per identity. The only drawback is that images listed are not always in-the-wild. Many times it include stages photos, many of them post processed and modified. Therefore despite interesting metrics, the data set proved unusable because of it great great inconsistency within each identity domain.
 
