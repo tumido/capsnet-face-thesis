@@ -11,7 +11,7 @@ This section aims to explain what convolution is, what are the motivations behin
 \subsection{Convolution}
 \label{ss:conv}
 
-Convolution as a mathematical operation generally symbolise an operation on two functions of real-valued argument. Let's start with an example of such functions and demonstrate a motivation behind convolution:
+Convolution as a mathematical operation generally symbolise an operation on two functions of real-valued argument. Let's start with an example, paraphrased from Hinton's book\,\cite{deeplearningbook}. of such functions and demonstrate a motivation behind convolution:
 
 Assume we have a vehicle and a laser parking sensor mounted on its front. This sensor is used to measures a distance to some object, let's say a docking station for the vehicle. And we want to park the vehicle at some precise proximity to the object. The sensor provides a single output $p(t)$, which reads as a position of the vehicle at certain time. Both $p$ and $t$ are real-valued, which means that the sensor can provide a different output value at any instance in time.
 
@@ -105,7 +105,7 @@ Convolution can process data samples of different sizes. When the use case requi
 \subsection{Pooling}
 \label{ss:pooling}
 
-In neural networks, convolution layer does not mean solely a convolution operation is applied. Typically such layer consists of multiple stages:
+In neural networks, convolution layer does not mean solely a convolution operation is applied\,\cite{handbook_face}. Typically such layer consists of multiple stages:
 
 \begin{enumerate}
     \item \textbf{Convolution stage}: Multiple parallel convolutions are computed, which produces a set of linear activations.

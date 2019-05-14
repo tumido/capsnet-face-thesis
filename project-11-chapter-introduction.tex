@@ -7,7 +7,7 @@ In this era of computers and information technologies, mankind tend to use what 
 \section{Motivation}
 Facial recognition in computer science is used in many different ways. Some use cases require people to be recognised for personal or company security purposes, for surveillance or just for our convenience.
 
-Automating security countermeasures is a huge driving factor. It allows us to devote our time to other activities then watching over our belongings. It ensures our privacy and well being of the community. Let's list some basic use cases:
+Automating security countermeasures is a huge driving factor. It allows us to devote our time to other activities then watching over our belongings. It ensures our privacy and wellbeing of the community\,\cite{viola2004robust}. Let's list some basic use cases:
 
 \begin{itemize}
     \item \textbf{Personal security}: unlocking a smartphone or laptop, etc.
@@ -15,13 +15,13 @@ Automating security countermeasures is a huge driving factor. It allows us to de
     \item \textbf{Surveillance}: Outlaws identification in public places, riot control, etc.
 \end{itemize}
 
-Furthermore, automated recognition of people's faces and their identification can facilitate many other processes for our convenience. That usually means it can save us time and provide a better service. These use cases spans from face and smile detection on when focusing and timing a camera shot to automated tagging of individual's friend on social media networks.
+Furthermore, automated recognition of people's faces and their identification can facilitate many other processes for our convenience\,\cite{ourbiometricfuture}. That usually means it can save us time and provide a better service. These use cases spans from face and smile detection on when focusing and timing a camera shot to automated tagging of individual's friend on social media networks.
 
 \section{Justification}
 
 As in any other field in computer science, there is an ongoing race to provide better service in facial recognition. There are multiple aspects used as a metric to define better solution and this varies for each use case. Once, it is essential to provide the best performing software, for automated recognition, in places where limited computational power is available. Other time, it is rather about precision and time required to recognise a face. Outrunning other solutions means better service and inventing new technologies along the way unlocks better understanding on our own thinking process. In this thesis the existing solutions will be elaborated in detail as well as principles used to achieve such results.
 
-There are also different approaches used to create and design such solutions. Sometimes a naive approach is used, other times the implementation leverages different aspects of Artificial Intelligence, especially Neural Networks.
+There are also different approaches used to create and design such solutions. Sometimes a naive approach like edge detections and direct vectorisation\,\cite{prabhu2009facial} is used, other times the implementation leverages different aspects of Artificial Intelligence, especially Neural Networks.
 
 The aim of this thesis is to construct a very own solution to this problem, relying strictly on Neural Networks. Each part of the problem is explained, while only the later one is the crucial and key deliverable for this thesis. Therefore only the actual facial recognition over already located faces is implemented. Comparison with existing solutions is offered as a part of the Available solutions chapter\,\ref{chapter:solutions}, later in this thesis.
 
@@ -41,7 +41,7 @@ As wide as the use cases, the variety of input data is vast. Some cases depends 
     \caption[Example of pictures in{-}the{-}wild]{Example of pictures in{-}the{-}wild. From left: Richard Sutton, Yoshua Bengio, Geoffrey Hinton. \textit{Source: Steve Jurvetson (CC BY 2.0\,\footnotemark)}}
 \end{figure}
 
-CCTV as a source of the input data has some crucial advantages for real world scenarios over any random pictures in-the-wild. Usually CCTV produces feeds, therefore the subject of recognition is captured on many frames of a video recording. That means, the model can be provided by many images of the same face and if properly configured and trained, it can leverage this aspect.
+CCTV as a source of the input data has some crucial advantages for real world scenarios over any random pictures in-the-wild. Usually CCTV produces feeds, therefore the subject of recognition is captured on many frames of a video recording. That means, the model can be provided by many images of the same face and if properly configured and trained, it can leverage this aspect\,\cite{biometricguide}.
 
 In our scenario, this data has to be simplified and preprocessed since our main interest lays in the field of identity mapping for each face. Therefore instead of a full, legit CCTV footage, we will mainly work with already located and isolated, face centred images. More detail elaboration of the input data can be found in chapter \ref{chapter:implementation}.
 
@@ -52,4 +52,4 @@ Imagine an individual captured on a CCTV footage. To identify a person by face, 
 
 \subsection{Output information}
 
-Last but not least, let's define what is expected to be found in such pictures. A facial identification model aims to come up with a unique vector (face template) for each person. Unique in a sense of minimising inter-dimensionality and maximising intra-dimensionality. That means the vector extracted from a picture is similar to all other vectors for the same person, as much as possible. It is also the most different to vector assigned to other people. Naturally each picture of the same person can result into slightly different template. However this sample specific output vector is expected to be nearly identical to a summarised template for the person. This summarised template is a result of combining many output vectors for the same individual. In this thesis we will elaborate more simplistic approach which will result into comparable results, yet more convenient and better consumable output.
+Last but not least, let's define what is expected to be found in such pictures. A facial identification model aims to come up with a unique vector (face template) for each person. Unique in a sense of minimising inter-dimensionality and maximising intra-dimensionality\,\cite{jain2000biometric}. That means the vector extracted from a picture is similar to all other vectors for the same person, as much as possible. It is also the most different to vector assigned to other people. Naturally each picture of the same person can result into slightly different template. However this sample specific output vector is expected to be nearly identical to a summarised template for the person. This summarised template is a result of combining many output vectors for the same individual. In this thesis we will elaborate more simplistic approach which will result into comparable results, yet more convenient and better consumable output.

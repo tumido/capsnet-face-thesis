@@ -4,7 +4,7 @@ Later on you'll stumble upon a list of available face recognition databases and 
 
 \section{Existing CNN implementations}
 
-There are many available solution and existing implementations. They naturally differs, models compete and cover different use cases. We have already established, that the face recognition is a dynamic field with competitive nature. Open challenges and competitions are enabling greater progress in the field. However that makes it impossible to provide an always up-to-date review of available solutions and implementations.
+There are many available solution and existing implementations\,\cite{face_rec}. They naturally differs, their models compete and cover different use cases\,\cite{handbook_face}. We have already established, that the face recognition is a dynamic field with competitive nature. Open challenges and competitions are enabling greater progress in the field. However that makes it impossible to provide an always up-to-date review of available solutions and implementations.
 
 Here's a short list of example challenges and competitions held in the face recognition field. It provides an insight into how wide the field is and how many different architectures can be used:
 
@@ -46,17 +46,17 @@ It is capable of optimizations like \textit{Deep Compression}\,\cite{compression
 
 \section{Experimental implementations of CapsNet}
 
-Convolutional neural networks are already heavily established in the field, and since \textit{CapsNet} is a new and emerging architecture, it haven't proved itself in this particular field. Couple of different implementations exists, though only few are aiming for the facial recognition. However this architecture is the key delivery for this thesis, so it would be beneficial at least list the solutions and attempts to provide a reader more comprehensive view. First, we're will list the solutions to our problem and later focus better and more detail implementations which are more generic \textit{CapsNet}s or tackles different areas.
+Convolutional neural networks are already heavily established in the field, and since \textit{CapsNet} is a new and emerging architecture, it haven't proved itself in this particular field\,\cite{capsnet_comparative_perf}. Couple of different implementations exists, though only few are aiming for the facial recognition. However this architecture is the key delivery for this thesis, so it would be beneficial at least list the solutions and attempts to provide a reader more comprehensive view. First, we're will list the solutions to our problem and later focus better and more detail implementations which are more generic \textit{CapsNet}s or tackles different areas.
 
 \subsection{CapsNet4Faces}
 
-The only attempt I was able to locate at the time of publishing this thesis, which aims to solve the same problem as this thesis does. However the implementation\,\cite{capsnet4faces} seems incomplete and is based on the later mentioned traffic signs classifier\,\ref{ss:traffic_signs}. The basic description states 100\% accuracy although I was not able to replicate that and moreover all listed example Jupyter notebooks are faulty and do not contain expected outputs. In many places outdated results from Thibault Neveu's traffic sign classifier is shown. Despite the fact this solution is most likely not complete, it has to be listed, since it's the only publicly available solution using the same architecture found.
+The only attempt I was able to locate at the time of publishing this thesis, which aims to solve the same problem as this thesis does. However the implementation\,\cite{capsnet4faces} seems incomplete and is based on the later mentioned \textit{Traffic sign classifier}\,\ref{ss:traffic_signs}. The basic description states 100\% accuracy although I was not able to replicate that and moreover all listed example Jupyter notebooks are faulty and do not contain expected outputs. In many places outdated results from Thibault Neveu's traffic sign classifier is shown. Despite the fact this solution is most likely not complete, it has to be listed, since it's the only publicly available solution using the same architecture found.
 
 
 \subsection{CapsNet\,--\,Traffic sign classifier}
 \label{ss:traffic_signs}
 
-The most complete implementation of capsule network on a more complex problem than a MNIST data set. In this particular implementation\,\cite{capsnet_traffic}, the author Thibault Neveu focuses to create a German traffic signs classifier. A network of 42 prediction capsules is able to assign correct label to a traffic sign with 98\% validation accuracy (97\% for testing). It follows similar architecture pattern as described above, at least for the \textit{encoder} part. The decoder is made differently, since a fully connected 3 layer decoding is not considered helpful for a image data in colour. Instead a convolutional decoder with resizing\,--\,up-scaling to nearest neighbour is used to provide reconstruction network. As per the documentation, this proved much more useful along with reduction in routing. The network is implemented in pure \textit{TensorFlow} framework. In our own solution later, we will use this network as a guidance and great inspiration for our work. The implementation is not very clean, though provide great insight into how one can manipulate and classify RGB data with emphasis on small feature size. We will borrow some visualization methods later in our example notebooks as well.
+The most complete implementation of capsule network on a more complex problem than a MNIST data set. In this particular implementation\,\cite{capsnet_traffic}, the author Thibault Neveu focuses to create a classifier of German traffic signs. A network of 42 prediction capsules is able to assign correct label to a traffic sign with 98\% validation accuracy (97\% for testing). It follows similar architecture pattern as described above, at least for the \textit{encoder} part. The decoder is made differently, since a fully connected 3 layer decoding is not considered helpful for a image data in colour. Instead a convolutional decoder with resizing\,--\,up-scaling to nearest neighbour is used to provide reconstruction network. As per the documentation, this proved much more useful along with reduction in routing. The network is implemented in pure \textit{TensorFlow} framework. In our own solution later, we will use this network as a guidance and great inspiration for our work. The implementation is not very clean, though provide great insight into how one can manipulate and classify RGB data with emphasis on small feature size. We will borrow some visualization methods later in our example notebooks as well.
 
 \subsection{CapsNet-Keras}
 
@@ -141,15 +141,15 @@ In order to better understand the nature of CCTV imagery, pictures in-the-wild a
 
 This data set provides annotations for Faces in the Wild\,\cite{fiw} database. FDDB\,\cite{fddb} lists coordinates for bounding boxes for over 5 thousands faces located on pictures from Faces in the Wild database. Usually multiple faces are located on a single picture. This data set can provide ground for face detection algorithms and therefore it can be benefited from in the first step of our implementation. For recognition of individuals, whom such face belongs to, another data set has to be used. A great accompanying data set can be the LFW, mentioned in next subsection.
 
-\todo{Fix this table}
 \begin{table}[ht]
     \centering
     \begin{tabularx}{.8\textwidth}{l|X}
         \toprule
         Number of subjects & \num{5171} \\
         Total images &  \num{28045} \\
-        Poses & Varies \\
+        Samples per subject & Varies, many have just one, others up to 40 \\
         Resolution & All kinds, even blurred faces \\
+        License & Creative Commons \\
         \bottomrule
     \end{tabularx}
     \caption{FDDB data set metrics}
