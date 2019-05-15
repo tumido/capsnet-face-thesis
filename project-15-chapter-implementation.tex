@@ -1,14 +1,12 @@
-Implementation chapter is meant to cover the actual experimentation and programming part of this thesis. Reader of this document is lead through series of experiments and examples and is taken on journey to a reliable solution of the matter. On following pages you will find and reveal complexity of this problem.
-
-This chapter aims to show and uncover every detail the author stumbled upon when he tried to implement the solutions proposed by Hinton\,\cite{capsule}, which we elaborated in detail in Chapter \ref{chapter:research}. Moreover we will discuss the differences when this solution is compared to other, related implementations mentioned in the Chapter \ref{chapter:solutions}.
+Implementation chapter is meant to cover the actual experimentation and programming part of this thesis. Reader of this document is lead through series examples and is taken on journey to a reliable solution of the matter. On following pages you will find and reveal complexity of this problem. This chapter aims to show and uncover every detail the author stumbled upon when he tried to implement the solutions proposed by Hinton\,\cite{capsule}, which we elaborated in detail in Chapter\,\ref{chapter:research}.
 
 \section{Preparation and prerequisites}
 
-\textit{Keras} with \textit{TensorFlow} back-end was selected as the key framework to use for this implementation. That inherently means, we are bound to use Python as a programming language. However, selection of Python is natural and reasonable anyways, since it is the most used language in the field of machine learning, artificial intelligence experimentation. Moreover due to technical limitation and proven better performance, Anacoda Python distribution is selected as the proper back-end. According to various researches\,\todo{cite} and projects, \textit{TensorFlow} performance fluctuates a lot since the pre-compiled packages are not allowed to use all the capabilities of each and every specific hardware combination. Therefore projects like Thoth\footnote{http://thoth-station.ninja} were created to provide dependency mesh mapping . In our example we can be satisfied by the enhanced performance of Anaconda/Conda \textit{TensorFlow} distribution (from either Anaconda or Intel channels). Moreover, running \textit{TensorFlow} locally on CPU is used for quick prototyping. For more demanding executions, Google Colab\footnote{https://colab.research.google.com} is selected as Jupyter notebook execution provider. All source codes to this implementation were released under Apache 2.0 license on Git Hub\footnote{https://github.com/tumido/capsnet-face}.
+\textit{Keras} with \textit{TensorFlow} back-end was selected as the key framework to use for this implementation. That inherently means, we are bound to use Python as a programming language. However, selection of Python is natural and reasonable anyways, since it is the most used language in the field of machine learning and artificial intelligence experimentation. Moreover due to technical limitation and proven better performance, Anacoda Python distribution is selected as the proper back-end. According to various researches\footnote{Stop Installing Tensorflow using pip for performance sake! \url{https://medium.com/p/5854f9d9eb0c}} and projects, \textit{TensorFlow} performance fluctuates a lot since the pre-compiled packages are not allowed to use all the capabilities of each and every specific hardware combination. Therefore projects like Thoth\footnote{http://thoth-station.ninja} were created to provide dependency mesh mapping. In our example we can be satisfied by the enhanced performance of \textit{Anaconda/Conda TensorFlow} distribution (from either Anaconda or Intel channels). Moreover, running \textit{TensorFlow} locally on CPU is used for quick prototyping. For more demanding executions, Google Colab\footnote{https://colab.research.google.com} is selected as Jupyter notebook execution provider. All source codes to this implementation were released under Apache 2.0 license on Git Hub\footnote{https://github.com/tumido/capsnet-face}.
 
 \section{Keras on TensorFlow}
 
-\textit{Keras} is a high level API for machine learning. It provides unified means to define and access models and layers as well as most common mathematical principles and functions in a highly polished package. This package relies on a back-end provider to implement the solutions behind the scenes. \textit{TensorFlow} is one of these back-end. Principles of this cooperation and more elaborate description of other back-ends and solutions can be found in chapter \ref{chapter:solutions}.
+\textit{Keras} is a high level API for machine learning. It provides unified means to define and access models and layers as well as most common mathematical principles and functions in a highly polished package. This package relies on a back-end provider to implement the solutions behind the scenes. \textit{TensorFlow} is one of these back-end. Principles of this cooperation and more elaborate description of other back-ends and solutions can be found in Chapter\,\ref{chapter:solutions}.
 
 Let's provide a basic overview of the available API and bindings that will be used later on in our implementation:
 
@@ -76,7 +74,7 @@ layers.Input(
 
 \subsubsection{\texttt{keras.layers.Dense}}
 
-A \textit{Dense} stands for a well known, fully connected neural networks layer. It's product can be represented as equation \ref{eq:dense}, where the \texttt{act} is an activation function. This activation is performed over a element-wise multiplication of the input and a weight matrix kernel with additional bias added. Both kernel and bias are learned through training.
+A \textit{Dense} stands for a well known, fully connected neural networks layer. It's product can be represented as Equation\,\ref{eq:dense}, where the \texttt{act} is an activation function. This activation is performed over a element-wise multiplication of the input and a weight matrix kernel with additional bias added. Both kernel and bias are learned through training.
 
 \begin{equation}
     o_{ij} = act(i_{ij} \times k + b_{ij})
@@ -133,7 +131,7 @@ layers.Reshape(
 
 \subsubsection{\texttt{keras.layers.Lambda}}
 
-This is the first more complex layer. it might not seem so, however this layer allows to add custom behaviour. Its name is derived from lambda function, anonymous functions which are invoked in situ. The \texttt{keras.layers.Lambda} layer allows user to invoke any operation and transformation defined as a function. We use this type of layer in multiple scenarios, but for clarity we will list here just a single one\,--\,a calculation of length of each vector in the tensor.
+This is the first more complex layer. Tt might not seem so, however this layer allows to add custom behaviour. Its name is derived from lambda function, anonymous functions which are invoked in situ. The \texttt{keras.layers.Lambda} layer allows user to invoke any operation and transformation defined as a function. We use this type of layer in multiple scenarios, but for clarity we will list here just a single one\,--\,a calculation of length of each vector in the tensor.
 
 \begin{lstlisting}[language=Python, caption=Lambda layer]
 def length(inputs):
@@ -154,7 +152,7 @@ This abstract class serves as a base for all standard as well as all any custom 
 \begin{lstlisting}[language=Python, caption=Custom layer example]
 class PredictionCapsule(layers.Layer):
     def __init__(self, custom_arg, **kwargs):
-        """Init takes all custom parameters required for the behavior."""
+        """Init takes all custom parameters required for the behaviour."""
         self.custom_arg = custom_arg
 
         # Pass the standard params to base class
@@ -183,7 +181,7 @@ class PredictionCapsule(layers.Layer):
         super(PredictionCapsule, self).build(input_shape)
 
     def call(self, inputs, **kwargs):
-        """Custom behavior. Needs to return agreed output shape."""
+        """Custom behaviour. Needs to return agreed output shape."""
         ...
         return outputs
 
@@ -192,9 +190,9 @@ class PredictionCapsule(layers.Layer):
 
 \section{Architecture}
 
-Now, when we understand what types of layer we have available, we can dive in and start building from these basic blocks a full \textit{CapsNet} network. As we've already discussed in the chapter \ref{chapter:research}, the base structure of a capsule network is not as complicated as a CNN would be, however it requires some additional, custom entities and treatment as well. Starting from the simple to the more difficult, we are about to discover the overall architecture first and granularly enhance and dig deep into detail later.
+Now, when we understand what types of layer we have available, we can dive in and start building from these basic blocks a full \textit{CapsNet} network. As we've already discussed in the Chapter\,\ref{chapter:research}, the base structure of a capsule network is not as complicated as a CNN would be, however it requires some additional, custom entities and treatment as well. Starting from the simple to the more difficult, we are about to discover the overall architecture first and granularly enhance and dig deep into detail later.
 
-Overall, the architecture is straightforward, but for good results it requires to be build from two separate distinct units, which when combined can be successfully trained. As per Hinton \cite{capsule}, we'll use the same naming conventions:
+Overall, the architecture is straightforward, but for good results it requires to be build from two separate distinct units, which when combined can be successfully trained. As per Hinton\,\cite{capsule}, we'll use the same naming conventions:
 
 \begin{enumerate}
     \item \textbf{Encoder} is the actual network of containing capsules. It serves for feature recognition and classification.
@@ -205,7 +203,7 @@ Also, it's worth mentioning a \textit{CapsNet} is not a \textit{single-input, si
 
 \section{Encoder}
 
-Encoder serves as the true capsule network. It is expected to consume an image containing a face and to produce a prediction of an identity the input belongs to. This is achieved by a series of layers as described in the chapter \ref{chapter:research}. The structure prescribed by the following image is then implemented using layers described in this chapter.
+Encoder serves as the true capsule network. It is expected to consume an image containing a face and to produce a prediction of an identity the input belongs to. This is achieved by a series of layers as described in the Chapter\,\ref{chapter:research}. The structure prescribed by the following image is then implemented using layers described in this chapter.
 
 \begin{figure}[ht!]
     \centering
@@ -262,7 +260,7 @@ output = layers.Lambda(
 )(prediction_caps)
 \end{lstlisting}
 
-As you can see the implementation is quite versatile and allows a lot possibilities to configure and tune it's behavior. We have available quite few adjustable parameters and some more dependent on circumstances in which the model is deployed. We can convey the later group first and then provide explanation of the tunable parameters.
+As you can see the implementation is quite versatile and allows a lot possibilities to configure and tune it's behaviour. We have available quite few adjustable parameters and some more dependent on circumstances in which the model is deployed. We can convey the later group first and then provide explanation of the tunable parameters.
 
 \begin{itemize}
     \item \texttt{input\_shape} is an essential attribute based on the input data. It allows the network to be prepared for input images of certain height and width. Multiple layers are directly or indirectly dependent on proper settings of this size.
@@ -286,7 +284,7 @@ Now once the scheme in general has been communicated, it's obvious that key know
 
 \subsection{Primary feature capsules layer}
 
-Name of this layer and expectations set by previous chapters promise that great deal of invention is present n this layer. However that's not entirely true. More interesting behavior can be found in the next prediction capsules layer. The primary capsules are designed for a simple feature extraction as it might be known from traditional convolutional networks. This feature extraction has a twist to it, though. As prescribed in the chapter \ref{chapter:research}, a non linear \textit{squash} activation is used here. We've already conveyed the equation \ref{eq:squash} describing the real nature of the squash function. Now we have the opportunity to cover this in a code.
+Name of this layer and expectations set by previous chapters promise that great deal of invention is present in this layer. However that's not entirely true. More interesting behaviour can be found in the next prediction capsules layer. The primary capsules are designed for a simple feature extraction as it might be known from traditional convolutional networks. This feature extraction has a twist to it, though. As prescribed in the Chapter\,\ref{chapter:research}, a non linear \textit{squash} activation is used here. We've already conveyed the Equation\,\ref{eq:squash} describing the real nature of the squash function. Now we have the opportunity to cover this in a code.
 
 The feature capsules layer is in it's true nature a composite layer of three layers stacked and with the squash activation on output.
 
@@ -329,17 +327,17 @@ outputs = layers.Lambda(
 output
 \end{lstlisting}
 
-As you might see, there's nothing really complex happening in this layer. However when this layer is connected to prediction capsules, interesting things will start happening to properly determine the proper bond between capsules.
+As you might see, there's nothing really complex happening in this layer. However when this layer is connected to prediction capsules, interesting things will start happening to properly determine the true bond between capsules.
 
 \subsection{Prediction capsules layer}
 
-In Hinton's \cite{capsule} architecture suggestion, this is the final capsule layer. Intention is to classify feature capsule activations and provide routes to data from interesting feature capsules
-for each particular label. As this might suggest, each prediction capsule is tightly mapped and bonded to a specific label. Therefore as much labels the network aims to classify, that much prediction capsules it has to contain. This is for sure a great scaling set back and this and few other drawbacks will be discussed as a part of our conclusion. For now, let's focus on how this capsule type is implemented and how we deal with the dynamic routing as described in chapter \ref{chapter:research}.
+In Hinton's\,\cite{capsule} architecture suggestion, this is the final capsule layer. Intention is to classify feature capsule activations and provide routes to data from interesting feature capsules
+for each particular label. As this might suggest, each prediction capsule is tightly mapped and bonded to a specific label. Therefore as much labels the network aims to classify, that much prediction capsules it has to contain. This is for sure a great scaling set back and this and few other drawbacks will be discussed as a part of our conclusion. For now, let's focus on how this capsule type is implemented and how we deal with the dynamic routing as described in Chapter\,\ref{chapter:research}.
 
 There are few shared properties in this layer. These are:
 
 \begin{itemize}
-    \item \texttt{capsule\_count} is a mandatory argument responsible for setting th amount of capsules available in this layer. This number corresponds to the labels we want the network to classify to.
+    \item \texttt{capsule\_count} is a mandatory argument responsible for setting the amount of capsules available in this layer. This number corresponds to the labels we want the network to classify to.
     \item \texttt{capsule\_dim} is a second mandatory parameter defining dimensionality of each capsule. Recommended settings is 32 or greater. Increasing any of these two parameters has a great impact on size of the network.
     \item \texttt{kernel\_initializer} provides a string pointer or a object from \texttt{keras.initializers}. This parameter allows user to define initial values of capsule's weight matrices.
     \item \texttt{routing\_iters} allows to change and experiment with the amount of iterations of \textit{dynamic routing}. Default value is 3, although the best value may differ.
@@ -365,7 +363,7 @@ These are the building blocks and a complete context boundaries in which a predi
 \begin{enumerate}
     \item Let's assume we have the input shape for this layer as \texttt{(None, input\_capsule\_count, input\_capsule\_dim)}.
     \item To allow space for manipulation in the prediction capsule space, we need to inject a new dimension into the input tensor and tile the \texttt{capsule\_count} over it. That way we can achieve a separate set of the initial input for a capsule in the current layer. Now we have shape \texttt{(None, capsule\_count, input\_capsule\_count, input\_capsule\_dim)}.
-    \item Implementing the operation described in equation \ref{eq:capsule} we multiply the weight matrix \texttt{W}
+    \item Implementing the operation described in Equation\,\ref{eq:capsule} we multiply the weight matrix \texttt{W}
 \end{enumerate}
 
 \begin{lstlisting}[language=Python, caption=Prediction capsule call without routing]
@@ -418,7 +416,7 @@ The routing eliminates the \texttt{input\_capsule\_count} and \texttt{input\_cap
 
 \section{Decoder}
 
-Based on the findings in Chapter\,\ref{chapter:research}, a decoder is a sequential model meant to provide an image reconstruction feedback. The gro is to implement a training helper, which covers the key spatial feature areas of a particular identity, so we can later compare and match the input image to measure accuracy of our prediction. In case of a MNIST data-set this factor is of a great help, though in case of coherent input data with small difference on large spatial feature scale, as a human face image is, the importance of a decoder seems diminished. Moreover a simple 3 layers deep decoder comprising of fully connected layers offered by research on MNIST can't be successfully used on RGB data with granular features. Therefore we leverage a solution introduced by Thibault Neveu in his traffic signs classifier\,\ref{ss:traffic_signs}. We will build a convoluted reconstruction model, which essential building blocks are a dense layer, resizing layers and convolutional layers. In the end this forms a neural network of 10 layers, which provides more detail than a 3 layer model of fully connected layers.
+Based on the findings in Chapter\,\ref{chapter:research}, a decoder is a sequential model meant to provide an image reconstruction feedback. The gro is to implement a training helper, which covers the key spatial feature areas of a particular identity, so we can later compare and match the input image to measure accuracy of our prediction. In case of a MNIST data-set this factor is of a great help, though in case of coherent input data with small difference on large spatial feature scale, as a human face image is, the importance of a decoder seems diminished. Moreover a simple 3 layers deep decoder comprising of fully connected layers offered by research on MNIST can't be successfully used on RGB data with granular features. Therefore we leverage a solution introduced by Thibault Neveu in his traffic signs classifier\,\ref{ss:traffic_signs}. We will build a convoluted reconstruction model, which essential building blocks are a dense layer, resizing layers and convolutional layers. In the end this forms a neural network of 10 layers, which provides more granular control than a 3 layer model of fully connected layers.
 
 The decoder consumes a prediction provided by \textit{encoder} as well as the true image and aims to recreate a image of a face based on the feature grid activations in the prediction. The result can be understood as a master template for that particular identity. We will look into that in our model evaluation later.
 
@@ -443,7 +441,7 @@ In case this is not explanatory enough, let's look at a diagram:
 
 \subsection{Masking layer}
 
-Since we want our \textit{decoder} to provide as accurate reconstruction we need tell it, when the predicted output matches our expectation on what capsule. So before we pass our \textit{encoder} output to the \textit{decoder} defined above, we need to build a mechanism which would combine true labels and predicted activations in our capsules. This can be easily done by introducing an intermediate layer, which can nullify every other capsule vector than the correct one. And since we already have our labels defined as a hot one encoding, we can just simply multiply our capsule network encoder findings as a tensor for each input by the label vector. That will ensure propagation of correct capsule activations, because they happen to be on the only (hot) index, while other capsules are deactivated because their vector is multiplied by a zero, therefore they won't provide any input value for this image. Therefore we end up with set of vectors per each label in size of $\texttt{capsule\_dim}\times\texttt{labels\_count}$. Despite we consume two outputs in this layer, the output shape can be computed solely from the first input\,--\,the \textit{prediction capsule} layer shape. The dimension of true labels is shared because we keep the number of identities and amount of capsules consistent (1 to 1 mapping).
+Since we want our \textit{decoder} to provide as accurate reconstruction we need to tell it, when the predicted output matches our expectation on what capsule. So before we pass our \textit{encoder} output to the \textit{decoder} defined above, we need to build a mechanism which would combine true labels and predicted activations in our capsules. This can be easily done by introducing an intermediate layer, which can nullify every other capsule vector than the correct one. And since we already have our labels defined as a hot one encoding, we can just simply multiply our capsule network encoder findings as a tensor for each input by the label vector. That will ensure propagation of correct capsule activations, because they happen to be on the only (hot) index, while other capsules are deactivated because their vector is multiplied by a zero, therefore they won't provide any input value for this image. Therefore we end up with set of vectors per each label in size of $\texttt{capsule\_dim}\times\texttt{labels\_count}$. Despite we consume two outputs in this layer, the output shape can be computed solely from the first input\,--\,the \textit{prediction capsule} layer shape. The dimension of true labels is shared because we keep the number of identities and amount of capsules consistent (1 to 1 mapping).
 
 \begin{figure}[ht]
     \centering
@@ -477,7 +475,7 @@ class Mask(layers.Layer):
 
 \subsection{Recapitulation}
 
-Now we understand the building blocks of our network. Let's recapitulate the whole architecture to better understand the complete flow how the data will be processed and classified. We begin with an image of a human face. This image is set to be $32\times32$ pixels and the ground truth labels are expected to be a hot one encoding of the vectorized identity bins.
+Now we understand the building blocks of our network. Let's recapitulate the whole architecture to better understand the complete flow, how the data will be processed and classified. We begin with an image of a human face. This image is set to be $32\times32$ pixels and the ground truth labels are expected to be a hot one encoding of the vectorized identity bins.
 
 Then we can expect the \textit{encoder} to adhere to the architecture shown on Fig\,\ref{fig:my_encoder}. When the model is validated or we are running an inference, we just calculate a norm by length over the outputs are we have a prediction. On the other hand, when the model is being trained, we need to add a \textit{decoder}. However, in between we can't forget about the intermediate layer encoding the true labels for reconstruction. So we plug there the \textit{masking layer}, after which we can successfully chain the \textit{decoder}. Let's have a look how a summary of such model would look like:
 
@@ -559,7 +557,7 @@ x = np.array([downsample(i) for i in x]) / 255
 
 Now we have solved the image sizes, we can prepare the data set into two distinct bundles, one for training and one for validation. This means the data we are training the model against are not the same we use later for validation, therefore the result of validation is pure and not affected by over-fitting. Here we can use the help of \textit{scikit-learn} library once again, since it provides a \texttt{train\_test\_split} function which allow us to separate these two sets randomly, with a respective desired ratio. And last but not least, we need to convert our labels to a hot one encoding. This time we can use a \textit{Keras} native function \texttt{to\_categorical}.
 
-The data set is now prepared, let's take a look at the distribution of images magnitude per label that we can expect as well as other metrics we may consider before training. As we can see on following Fig\,\ref{fig:lfw_distribution}, the distribution is not ideal, and our model will have a tendency to over-fit on certain overrepresented labels and under-fit on others. This is unfortunate and we can try to eliminate such behavior by a \textit{dropout} layer and with additional augmentation.
+The data set is now prepared, let's take a look at the distribution of images magnitude per label that we can expect as well as other metrics we may consider before training. As we can see on following Fig\,\ref{fig:lfw_distribution}, the distribution is not ideal, and our model will have a tendency to over-fit on certain overrepresented labels and under-fit on others. This is unfortunate and we can try to eliminate such behaviour by a \textit{dropout} layer and with additional augmentation.
 
 \begin{figure}[ht]
     \centering
@@ -587,8 +585,7 @@ The data set is now prepared, let's take a look at the distribution of images ma
 
 \subsection{Train}
 
-Training of a \textit{Keras} model can be handled in multiple different ways. Since our model requires multiple input and provides multiple outputs when trained, the \texttt{fit\_generator} approach was used. It provides greater control over data passed to the model than a simple \texttt{fit}, while it remains a pretty simple to implement than a fully custom training. Naturally, the first and foremost in \textit{Keras}, we need to compile a model, then we can use the already mentioned \texttt{fit\_generator} method with a data generator to process the training.
-
+Training of a \textit{Keras} model can be handled in multiple different ways. Since our model requires multiple input and provides multiple outputs when trained, the \texttt{fit\_generator} approach was used. It provides greater control over data passed to the model than a simple \texttt{fit}, while it remains a pretty simple to implement than a full custom training. Naturally, the first and foremost in \textit{Keras}, we need to compile a model, then we can use the already mentioned \texttt{fit\_generator} method with a data generator to process the training.
 
 \begin{lstlisting}[language=Python, caption=Training a \textit{Keras} mode using \texttt{fit\_generator}]
 model.compile(
@@ -741,7 +738,7 @@ The model has been trained in different conditions and settings and multiple tim
     \includegraphics[height=12em]{obrazky-figures/predicted_131_fail.pdf}
     \vspace{1em}
     \includegraphics[height=12em]{obrazky-figures/predicted_116_ok.pdf}
-    \caption{\textit{Top}: Tony Blair predicted, while correct is George W. Bush. As you may notice the correct capsule holds the 4th largest activation, however the result is strongly in favor of the faulty label. The faulure may seem to occur despite the fact that George W. Bush has the most images in data set and may be due to the bright spots and overall pale appearance which may remind Tony Blair. \textit{Bottom}: This time George W. Bush is predicted correctly. Activations taken from 42 identities model.}
+    \caption{\textit{Top}: Tony Blair predicted, while correct is George W. Bush. As you may notice the correct capsule holds the 4th largest activation, however the result is strongly in favor of the faulty label. The faulure may seem to occur despite the fact that George W. Bush has the most images in data set and may be due to the bright spots and overall pale appearance which may remind Tony Blair. \textit{Bottom}: This time George W. Bush is predicted correctly. Activations taken from 42 identities model. A bin labelled in green belongs to the identity capsule, a red bin shows the predicted activation.}
     \label{fig:bush}
 \end{figure}
 
@@ -756,7 +753,7 @@ The model has been trained in different conditions and settings and multiple tim
     \label{fig:serena}
 \end{figure}
 
-The show image evaluations are just samples of the whole testing scenarion. To better understand the whole picture we should consider a confusion matrix, which shows, how was each image belonging to a label actually classified. Due to readability we are listing only the confusion matrix for the model of 12 individuals in this paper. The confusion matrix for the 42 identities is available as part of the notebooks provided along with this thesis.
+The showed image evaluations are just samples of the whole testing scenario. To better understand the whole picture we should consider a confusion matrix, which shows, how was each image belonging to a label actually classified. Due to readability we are listing only the confusion matrix for the model of 12 individuals in this paper. The confusion matrix for the 42 identities is available as part of the notebooks provided along with this thesis.
 
 \begin{figure}[ht!]
     \centering
@@ -770,5 +767,5 @@ The confusion matrix states some interesting findings. First of all \textit{Geor
 \begin{enumerate}
     \item \textit{George W. Bush}: It is the label with the biggest number of images in the data set. Therefore it is likely that this identity would over-fit.
     \item \textit{Colin Powell}: This identity features significant amount wrinkles. Therefore it may be easy to match on this character, since it would provide high activation by default when wrinkles are present.
-    \item \textit{John Ashcroft}: This individual's face doesnt' hold many characteristic markers at this resolution. Unfortunately his face at $32\times32$ pixels seems generic and blends with others, for instance with \textit{Colin Powell}.
+    \item \textit{John Ashcroft}: This individual's face doesn't hold many characteristic markers at this resolution. Unfortunately his face at $32\times32$ pixels seems generic and blends with others, for instance with \textit{Colin Powell}.
 \end{enumerate}

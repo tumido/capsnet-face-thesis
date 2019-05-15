@@ -46,11 +46,11 @@ It is capable of optimizations like \textit{Deep Compression}\,\cite{compression
 
 \section{Experimental implementations of CapsNet}
 
-Convolutional neural networks are already heavily established in the field, and since \textit{CapsNet} is a new and emerging architecture, it haven't proved itself in this particular field\,\cite{capsnet_comparative_perf}. Couple of different implementations exists, though only few are aiming for the facial recognition. However this architecture is the key delivery for this thesis, so it would be beneficial at least list the solutions and attempts to provide a reader more comprehensive view. First, we're will list the solutions to our problem and later focus better and more detail implementations which are more generic \textit{CapsNet}s or tackles different areas.
+Convolutional neural networks are already heavily established in the field, and since \textit{CapsNet} is a new and emerging architecture, it haven't proved itself in this particular field\,\cite{capsnet_comparative_perf}. Couple of different implementations exists, though only few are aiming for the facial recognition. However this architecture is the key delivery for this thesis, so it would be beneficial at least list the solutions and attempts to provide a reader more comprehensive view.
 
 \subsection{CapsNet4Faces}
 
-The only attempt I was able to locate at the time of publishing this thesis, which aims to solve the same problem as this thesis does. However the implementation\,\cite{capsnet4faces} seems incomplete and is based on the later mentioned \textit{Traffic sign classifier}\,\ref{ss:traffic_signs}. The basic description states 100\% accuracy although I was not able to replicate that and moreover all listed example Jupyter notebooks are faulty and do not contain expected outputs. In many places outdated results from Thibault Neveu's traffic sign classifier is shown. Despite the fact this solution is most likely not complete, it has to be listed, since it's the only publicly available solution using the same architecture found.
+The only attempt available at the time of publishing this thesis, which aims to solve the same problem as this thesis does. However the implementation\,\cite{capsnet4faces} seems incomplete and is based on the later mentioned \textit{Traffic sign classifier}\,\ref{ss:traffic_signs}. The basic description states 100\% accuracy although I was not able to replicate that and moreover all listed example Jupyter notebooks are faulty and do not contain expected outputs. In many places outdated results from Thibault Neveu's traffic sign classifier is shown. Despite the fact this solution is most likely not complete, it has to be listed, since it's the only publicly available solution using the same architecture found. This solution is featured in an unpublished paper\footnote{\url{https://lindawangg.github.io/projects/capsnet.pdf}} with questionable conclusion since the described architecture doesn't match their very own implementation and rather follows a MNIST classifier demonstrated by Hinton\,\cite{capsule}.
 
 
 \subsection{CapsNet\,--\,Traffic sign classifier}
@@ -61,22 +61,6 @@ The most complete implementation of capsule network on a more complex problem th
 \subsection{CapsNet-Keras}
 
 A thoughtful implementation\,\cite{capsnet_keras} of a capsule network in \textit{Keras} using \textit{TensorFlow} as back-end. Despite it sole focus on MNIST data set, it provides the most understandable and cleanest implementation of such network. As we will talk about later the chosen framework is a great advantage here. It follows very closely the implementation accented by Hinton\,\cite{capsule}. It features a 3 layer encoder with one composite primary capsules layer and one layer of prediction capsules, each per a digit. The architecture shown on figures\,\ref{fig:encoder} and\,\ref{fig:decoder} applies. As you may already recognize, that means this network has 10 prediction capsules, which greatly affects its size and keep it fairly small.
-
-
-% \begin{table}[ht]
-%     \centering
-%     \begin{tabularx}{\textwidth}{X|ll|rrr}
-%         & & & \multicolumn{3}{c}{Accuracy} \\
-%         Name & Data set & License & Train & Validation & Test \\
-%         \toprule
-%         CapsNet4Faces & LFW & Apache 2.0 & 100\% & - & 93.7\% \\
-%         Traffic sign classifier & Custom & Apache 2.0 & 99\% & 98\% & 97\% \\
-
-%         \bottomrule
-%     \end{tabularx}
-%     \caption{Capsule networks comparison}
-% \end{table}
-
 
 \section{Frameworks}
 
