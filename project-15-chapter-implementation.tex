@@ -625,7 +625,7 @@ def dataset_gen(x, y, batch_size):
 
 Testing and providing predictions is a simple process, since everything comes already prepared with \textit{Keras} models. For testing purposes a model is required to be compiled, otherwise it can't provide loss calculations and therefore it can be tested. On the other hand, when we desire simple predictions the model doesn't need to be compiled, only presence of weights is required.
 
-\begin{lstlisting}[language=Python, caption=Test run of a \textit{Keras} model example]
+\begin{lstlisting}[language=Python, caption=Test run and prediction of a \textit{Keras} model example]
 def test(model, x_test, y_test, batch_size=10):
     model.compile(
         optimizer='adam',
@@ -633,9 +633,7 @@ def test(model, x_test, y_test, batch_size=10):
         metrics={'capsnet': 'accuracy'}
     )
     return model.evaluate(x_test, y_test, batch_size=batch_size)
-\end{lstlisting}
 
-\begin{lstlisting}[language=Python, caption=Prediction example for a given model]
 def predict(model, x, batch_size=10):
     return model.predict(x, batch_size=batch_size)
 \end{lstlisting}
@@ -656,7 +654,6 @@ training_model.save_weights('weights.h5')
 \end{lstlisting}
 
 The process shown here is significantly simplified, since our tarball scenario requires more complex handling, but the principles stays the same. A similar process, yet reversed procedure can be used later to load the data back into a model instance. The implementation provided with this thesis allows passing a special parameter to \texttt{CapsNet} constructor which would skip the network initialization phase and allow to create a model from a class method. This \texttt{load} method uses native function \texttt{model\_from\_yaml} to load up the network configurations and later \texttt{load\_weights} methods to upload trained values. Since we store the weights from the more complex model only, the simplified testing model, is required to load the weights by layer name. Here is how it might look like in a simplified scenario. If a reader is interested in more details of this process, feel free to consult our sources.
-
 
 \begin{lstlisting}[language=Python, caption=Loading a model in \textit{Keras}]
 custom_objects = {
