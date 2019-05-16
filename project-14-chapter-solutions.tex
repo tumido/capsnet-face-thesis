@@ -40,7 +40,7 @@ Older architecture of CNN provides reliable solution for image classification\,\
 
 SqueezeNet\,\cite{squeezenet} is a totally different architecture of deep neural networks than the previous mention. It introduced itself as an network with AlexNet accuracy, despite having half of the amount of parameters. It is designed to create small networks with fewer parameters than any other common network type.
 
-Initially this network was released in 2016 as a Caffe implementation. Later it found its way into other frameworks and was hugely adopted in use cases with limited resources. Therefore it makes applications, which would require a model to be run on low-powered processing platforms like FPGAs and smartphones, available.
+Initially this network was released in 2016 as a \textit{Caffe} implementation. Later it found its way into other frameworks and was hugely adopted in use cases with limited resources. Therefore it makes applications, which would require a model to be run on low-powered processing platforms like FPGAs and smartphones, available.
 
 It is capable of optimizations like \textit{Deep Compression}\,\cite{compression}, which allows trained models to be compressed. In case of SqueezeNet it can reduce model size $10\times$.
 
@@ -50,13 +50,13 @@ Convolutional neural networks are already heavily established in the field, and 
 
 \subsection{CapsNet4Faces}
 
-The only attempt available at the time of publishing this thesis, which aims to solve the same problem as this thesis does. However the implementation\,\cite{capsnet4faces} seems incomplete and is based on the later mentioned \textit{Traffic sign classifier}\,\ref{ss:traffic_signs}. The basic description states 100\% accuracy although I was not able to replicate that and moreover all listed example Jupyter notebooks are faulty and do not contain expected outputs. In many places outdated results from Thibault Neveu's traffic sign classifier is shown. Despite the fact this solution is most likely not complete, it has to be listed, since it's the only publicly available solution using the same architecture found. This solution is featured in an unpublished paper\footnote{\url{https://lindawangg.github.io/projects/capsnet.pdf}} with questionable conclusion since the described architecture doesn't match their very own implementation and rather follows a MNIST classifier demonstrated by Hinton\,\cite{capsule}.
+The only CapsNet attempt aiming to solve the same problem, available at the time of publishing this thesis. However the implementation\,\cite{capsnet4faces} seems incomplete and is based on the later mentioned \textit{Traffic sign classifier}\,\ref{ss:traffic_signs}. The basic description states 100\,\% accuracy although I was not able to replicate that and moreover all listed example Jupyter notebooks are faulty and do not contain expected outputs. In many places outdated results from Thibault Neveu's traffic sign classifier is shown. Despite the fact this solution is most likely not complete, it has to be listed, since it's the only publicly available solution using the same architecture found. This solution is featured in an unpublished paper\,\cite{capsnet4faces_paper} with questionable conclusion since the described architecture doesn't match their very own implementation and rather follows a MNIST classifier demonstrated by Hinton\,\cite{capsule}.
 
 
 \subsection{CapsNet\,--\,Traffic sign classifier}
 \label{ss:traffic_signs}
 
-The most complete implementation of capsule network on a more complex problem than a MNIST data set. In this particular implementation\,\cite{capsnet_traffic}, the author Thibault Neveu focuses to create a classifier of German traffic signs. A network of 42 prediction capsules is able to assign correct label to a traffic sign with 98\% validation accuracy (97\% for testing). It follows similar architecture pattern as described above, at least for the \textit{encoder} part. The decoder is made differently, since a fully connected 3 layer decoding is not considered helpful for a image data in colour. Instead a convolutional decoder with resizing\,--\,up-scaling to nearest neighbour is used to provide reconstruction network. As per the documentation, this proved much more useful along with reduction in routing. The network is implemented in pure \textit{TensorFlow} framework. In our own solution later, we will use this network as a guidance and great inspiration for our work. The implementation is not very clean, though provide great insight into how one can manipulate and classify RGB data with emphasis on small feature size. We will borrow some visualization methods later in our example notebooks as well.
+The most complete implementation of capsule network on a more complex problem than a MNIST data set. In this particular implementation\,\cite{capsnet_traffic}, the author Thibault Neveu focuses to create a classifier of German traffic signs. A network of 42 prediction capsules is able to assign correct label to a traffic sign with 98\,\% validation accuracy (97\,\% for testing). It follows similar architecture pattern as described above, at least for the \textit{encoder} part. The decoder is made differently, since a fully connected 3 layer decoding is not considered helpful for a image data in colour. Instead a convolutional decoder with resizing\,--\,up-scaling to nearest neighbour is used to provide reconstruction network. As per the documentation, this proved much more useful along with reduction in routing. The network is implemented in pure \textit{TensorFlow} framework. In our own solution later, we will use this network as a guidance and great inspiration for our work. The implementation is not very clean, though provide great insight into how one can manipulate and classify RGB data with emphasis on small feature size. We will borrow some visualization methods later in our example notebooks as well.
 
 \subsection{CapsNet-Keras}
 
@@ -67,8 +67,9 @@ A thoughtful implementation\,\cite{capsnet_keras} of a capsule network in \texti
 Each of the previously mentioned solutions has something in common. They have used a AI framework or library of some sort. Writing neural networks from scratch is obviously a complex task, therefore there are many initiatives, which seeks to simplify and facilitate access to such complex structures. Let's list some of the most common ones and list some of their basic advantages and disadvantages.
 
 \subsection{Torch and PyTorch}
+\nocite{pytorch}
 
-Torch is a deep-learning and computational framework written in Lua. While very powerful, its design prevented from being adopted by users and researchers. The main problem was in usage of rather an exotic programming language, which created barrier for users. It is been decided to create a Python clone of the framework, which brought PyTorch\,\footnote{\url{https://pytorch.org/}} to existence. It was created by Facebook and released in 2007 under an open source license. One of its key features are dynamic computation graphs, which can serve well when processing inputs or outputs of variable length.
+\textit{Torch} is a deep-learning and computational framework written in Lua. While very powerful, its design prevented from being adopted by users and researchers. The main problem was in usage of rather an exotic programming language, which created barrier for users. It is been decided to create a Python clone of the framework, which brought \textit{PyTorch}\,\footnote{\url{https://pytorch.org/}} to existence. It was created by Facebook and released in 2007 under an open source license. One of its key features are dynamic computation graphs, which can serve well when processing inputs or outputs of variable length.
 
 \begin{itemize}
     \item[$\boldsymbol{+}$] Many pluggable modules
@@ -83,20 +84,22 @@ Torch is a deep-learning and computational framework written in Lua. While very 
 \end{itemize}
 
 \subsection{TensorFlow}
+\nocite{tensorflow}
 
-This library created by Google was designed as a replacement for their previous project called Theano. TensorFlow\,\footnote{\url{https://www.tensorflow.org/}} is a heavyweight framework written as a Python API in C/C++. It simplifies researcher's task in many ways better than other framework. For example it generates a computational graph and performs automatic differentiation. That means the user is not required to write a training code (back-propagation) every time, he's experimenting with a new network topology. Since this framework is backed by Google, it thrives in many different applications and can scale across devices. Many possibilities for applying saved models in different environment enables use of AI in mobile devices and even in web browsers. However it is broad possibilities and options make this framework hard to understand and for newcomers it can be confusing and too complex. Therefore an abstraction layer above TensorFlow had been created, but more about that in the \textit{Keras} subsection below.
+This library created by Google was designed as a replacement for their previous project called \textit{Theano}. \textit{TensorFlow}\,\footnote{\url{https://www.tensorflow.org/}} is a heavyweight framework written as a Python API in C/C++. It simplifies researcher's task in many ways better than other framework. For example it generates a computational graph and performs automatic differentiation. That means the user is not required to write a training code (back-propagation) every time, he's experimenting with a new network topology. Since this framework is backed by Google, it thrives in many different applications and can scale across devices. Many possibilities for applying saved models in different environment enables use of AI in mobile devices and even in web browsers. However it is broad possibilities and options make this framework hard to understand and for newcomers it can be confusing and too complex. Therefore an abstraction layer above \textit{TensorFlow} had been created, but more about that in the \textit{Keras} subsection below.
 
 \begin{itemize}
     \item[$\boldsymbol{+}$] Native Python and Numpy integration
     \item[$\boldsymbol{+}$] Automatic training code
     \item[$\boldsymbol{+}$] Broad community and wide audience
     \item[$\boldsymbol{-}$] Heavyweight frameworks
-    \item[$\boldsymbol{-}$] A bit slower than PyTorch
+    \item[$\boldsymbol{-}$] A bit slower than \textit{PyTorch}
 \end{itemize}
 
-\subsection{Caffe and Caffe2}
+\subsection{Caffe and \textit{Caffe2}}
+\nocite{caffe2}
 
-Caffe is another competition framework, which is widely popular among researchers. It started as a C/C++ port of Matlab's implementation of fast convolutional networks. It is mainly oriented on feed forward networks and image processing and is not intended for other deep learning application like text processing or 1D series data. Later on it became performance wise obsolete and community of Caffe developers decided to start from scratch and created a long-awaited successor Caffe2\,\footnote{\url{https://caffe2.ai/}}. Backed by Facebook, as their second deep learning toolkit after PyTorch, it provides more lightweight and scalable solution than before. It is main area of focus is enterprise grade production environments.
+\textit{Caffe} is another competition framework, which is widely popular among researchers. It started as a C/C++ port of Matlab's implementation of fast convolutional networks. It is mainly oriented on feed forward networks and image processing and is not intended for other deep learning application like text processing or 1D series data. Later on it became performance wise obsolete and community of \textit{Caffe} developers decided to start from scratch and created a long-awaited successor \textit{Caffe2}\,\footnote{\url{https://caffe2.ai/}}. Backed by Facebook, as their second deep learning tool kit after \textit{PyTorch}, it provides more lightweight and scalable solution than before. It is main area of focus is enterprise grade production environments.
 
 \begin{itemize}
     \item[$\boldsymbol{+}$] Great for image processing and feed-forward networks
@@ -106,8 +109,9 @@ Caffe is another competition framework, which is widely popular among researcher
 \end{itemize}
 
 \subsection{Keras}
+\nocite{keras}
 
-A modern abstraction layer above TensorFlow. Authors and users of TensorFlow suffered from heavy and complex code structures and when PyTorch appeared with their light and straightforward Python API, they have started adopting the same principles for the TensorFlow as well. Therefore a project named Keras\,\footnote{\url{https://keras.io/}} was created. It provides intuitive API inspired by Torch and while starting from TensorFlow it outgrown this base and spread across many deep learning libraries as its back-ends - Theano, Deeplearning4j, and CNTK. In addition to its high level abstraction over the back-ends, Keras also provides means to drill down and optimize and manipulate the underlying code.
+A modern abstraction layer above \textit{TensorFlow}. Authors and users of \textit{TensorFlow} suffered from heavy and complex code structures and when \textit{PyTorch} appeared with their light and straightforward Python API, they have started adopting the same principles for the \textit{TensorFlow} as well. Therefore a project named \textit{Keras}\,\footnote{\url{https://keras.io/}} was created. It provides intuitive API inspired by \textit{Torch} and while starting from \textit{TensorFlow} it outgrown this base and spread across many deep learning libraries as its back-ends - \textit{Theano}, \textit{Deeplearning4j}, and \textit{CNTK}. In addition to its high level abstraction over the back-ends, \textit{Keras} also provides means to drill down and optimize and manipulate the underlying code.
 
 \begin{itemize}
     \item[$\boldsymbol{+}$] Intuitive API
@@ -129,8 +133,8 @@ This data set provides annotations for Faces in the Wild\,\cite{fiw} database. F
     \centering
     \begin{tabularx}{.8\textwidth}{l|X}
         \toprule
-        Number of subjects & \num{5171} \\
-        Total images &  \num{28045} \\
+        Number of subjects & \numprint{5171} \\
+        Total images &  \numprint{28045} \\
         Samples per subject & Varies, many have just one, others up to 40 \\
         Resolution & All kinds, even blurred faces \\
         License & Creative Commons \\
@@ -148,8 +152,8 @@ LFW\,\cite{lfw} provides labels for images from Faces in the Wild data set menti
     \centering
     \begin{tabularx}{.8\textwidth}{l|X}
         \toprule
-        Number of subjects & \num{5749} \\
-        Total images & \num{13233} \\
+        Number of subjects & \numprint{5749} \\
+        Total images & \numprint{13233} \\
         Samples per subject & Varies, many have just one, others up to 40 \\
         Resolution & 250 $\times$ 250 \\
         License & Creative Commons \\
@@ -160,14 +164,14 @@ LFW\,\cite{lfw} provides labels for images from Faces in the Wild data set menti
 
 \subsection{The Extended Yale Face Database B}
 
-Extended version of original Yale Face Database. The extension was provided by UCSD\,\cite{ext_yale_paper}. This database comprises of over \num{16000} images of 28 unique subjects. They are fitted to same size and resolution, covering various angles of the face. There are 9 poses provided for each person, each of them covering 64 different illumination condition. When compared to a large scale data set this database lacks volume, however it maintains consistency across its samples.
+Extended version of original Yale Face Database. The extension was provided by UCSD\,\cite{ext_yale_paper}. This database comprises of over \numprint{16000} images of 28 unique subjects. They are fitted to same size and resolution, covering various angles of the face. There are 9 poses provided for each person, each of them covering 64 different illumination condition. When compared to a large scale data set this database lacks volume, however it maintains consistency across its samples.
 
 \begin{table}[ht]
     \centering
     \begin{tabularx}{.8\textwidth}{l|X}
         \toprule
         Number of subjects & 28 \\
-        Total images & \num{16128} \\
+        Total images & \numprint{16128} \\
         Samples per subject & 576 \\
         Poses & 9 \\
         Resolution & $168 \times 192$ pixels \\
@@ -181,14 +185,14 @@ Extended version of original Yale Face Database. The extension was provided by U
 
 A face database originated from University of Zagreb. Quality data set of surveillance-like face images. It aims to simulate a CCTV captured images by maintaining an uncontrolled indoor environment. Each of 130 subjects is captured by up to 8 video surveillance cameras. Some of them even capable of IR capturing. Each camera produces images of different resolution and sharpness. Cameras are also set in different angles against the subject. SCFace\,\cite{scface} mimics real-world circumstances and use cases of CCTV, therefore this data set can be used to train robust solutions for face recognition targeting CCTV and surveillance cameras.
 
-A disadvantage is the size of this data set, where we can find \num{4160} image samples only. When compared to large-scaled data set like the VGGFace and VGGFace2 mentioned in next subsection, this data set lacks volume. Also the variety of subjects is not robust enough in comparison to other data set. As said, SCFace captures 130 subjects. Most of them are of the same sex, all of the same ethnicity.
+A disadvantage is the size of this data set, where we can find \numprint{4160} image samples only. When compared to large-scaled data set like the VGGFace and VGGFace2 mentioned in next subsection, this data set lacks volume. Also the variety of subjects is not robust enough in comparison to other data set. As said, SCFace captures 130 subjects. Most of them are of the same sex, all of the same ethnicity.
 
 \begin{table}[ht]
     \centering
     \begin{tabularx}{.8\textwidth}{l|X}
         \toprule
         Number of subjects & 130 \\
-        Total images & \num{4160} \\
+        Total images & \numprint{4160} \\
         Samples per subject & Fixed amount of 32 images per person \\
         Resolution & Varies, 3 different sizes \\
         License & Custom, research purpose only \\
@@ -201,7 +205,7 @@ This database is available for research purposes and upon written request to the
 
 \subsection{VGGFace2}
 
-Visual Geometry Group produced a second iteration of their face recognition data set\,\cite{VVGFace2}. This is one of the widest data sets which are publicly available. It provides a wide-scale data for face recognition for over 9000 different identities. Distribution of individuals varies though, with minimal 87 images up to 843 per identity. Average number of images per subject is 362. The data set contains over \num{3.3} million of images in total. Subjects varies in ethnicity, age and profession, while the images varies in angles or poses. Collection of such vast amount of images is a product of web scraping, so the images might not always be consistent with definition of pictures in-the-wild.
+Visual Geometry Group produced a second iteration of their face recognition data set\,\cite{VVGFace2}. This is one of the widest data sets which are publicly available. It provides a wide-scale data for face recognition for over 9000 different identities. Distribution of individuals varies though, with minimal 87 images up to 843 per identity. Average number of images per subject is 362. The data set contains over \numprint{3.3} million of images in total. Subjects varies in ethnicity, age and profession, while the images varies in angles or poses. Collection of such vast amount of images is a product of web scraping, so the images might not always be consistent with definition of pictures in-the-wild.
 
 The data set is made available under Creative Commons license\,\footnote{\url{https://creativecommons.org/licenses/by-sa/4.0/}}, therefore it is available for broad use to any project.
 
@@ -209,8 +213,8 @@ The data set is made available under Creative Commons license\,\footnote{\url{ht
     \centering
     \begin{tabularx}{.8\textwidth}{l|X}
         \toprule
-        Number of subjects & \num{9294} \\
-        Total images & \num{3311286} \\
+        Number of subjects & \numprint{9294} \\
+        Total images & \numprint{3311286} \\
         Samples per subject & Varies, 87--843 per subject \\
         Resolution & Varies, many different sizes \\
         License & Creative Commons \\
@@ -231,8 +235,8 @@ Subjects vary in all desired aspects and images provide enough variety in poses 
     \centering
     \begin{tabularx}{.8\textwidth}{l|X}
         \toprule
-        Number of subjects & \num{99892} \\
-        Total images & \num{8456240} \\
+        Number of subjects & \numprint{99892} \\
+        Total images & \numprint{8456240} \\
         Samples per subject & Varies, average 85 per entity \\
         Resolution & Varies, up to 300 $\times$ 300 \\
         License & Research purposes only \\
@@ -251,8 +255,8 @@ Subjects vary in ethnicity, age, sex as well as in appearance. Data set includes
     \centering
     \begin{tabularx}{.8\textwidth}{l|X}
         \toprule
-        Number of subjects & \num{10177} \\
-        Total images & \num{202599} \\
+        Number of subjects & \numprint{10177} \\
+        Total images & \numprint{202599} \\
         Samples per subject & Varies \\
         Resolution & Varies \\
         License & Research purposes only \\
@@ -270,8 +274,8 @@ Aligned Face Dataset from Pinterest (PINS) is a custom data set available on Kag
     \centering
     \begin{tabularx}{.8\textwidth}{l|X}
         \toprule
-        Number of subjects & \num{100} \\
-        Total images & \num{10770} \\
+        Number of subjects & \numprint{100} \\
+        Total images & \numprint{10770} \\
         Samples per subject & Varies \\
         Resolution & Varies \\
         License & Research purposes only \\

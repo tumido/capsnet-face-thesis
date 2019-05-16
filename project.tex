@@ -22,7 +22,7 @@
 %\documentclass[zadani,print]{fitthesis} % pro černobílý tisk - odkazy jsou černé
 %\documentclass[english,zadani,print]{fitthesis} % for the black and white print - links are black
 %\documentclass[zadani,cprint]{fitthesis} % pro barevný tisk - odkazy jsou černé, znak VUT barevný
-%\documentclass[english,zadani,cprint]{fitthesis} % for the print - links are black, logo is color
+% \documentclass[english,zadani,cprint]{fitthesis} % for the print - links are black, logo is color
 % * Je-li práce psaná v anglickém jazyce, je zapotřebí u třídy použít
 %   parametr english následovně:
 %   If thesis is written in english, it is necessary to use
@@ -42,7 +42,7 @@
 % Základní balíčky jsou dole v souboru šablony fitthesis.cls
 % Basic packages are at the bottom of template file fitthesis.cls
 % zde můžeme vložit vlastní balíčky / you can place own packages here
-\usepackage{siunitx}
+\usepackage{numprint}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
 
@@ -189,7 +189,7 @@
 
   Pro hodnocení, které příznaky jsou pro tuto identity důležité, se využívá algoritmu \textit{dynamic routing}. Ten způsobí, že každá kapsle iterativně vybírá ty příznaky, které daný obrázek nejlépe vystihují. Přístup je iterativní, je tedy volitelné, kolikrát se pro každý vstupní obrázek routing provede.
 
-  Řešení bylo implementováno pro \textit{Labeled Face in the Wild} data set, tedy databázi obrázků typu \textit{in-the-wild}. Sledované řešení určovalo identitu u~42, resp 11 identit ve dvou různých experimentech. Každý z~těchto experimentů byl proveden v~různých nastaveních sítě a prezentované řešení se jevilo jako optimální nastavení. U~42 identit síť dosáhla \textbf{53.7\,\%} úspěšné identifikace u~11 identit to bylo \textbf{75\,\%}. Vstupní rozlišení obrázku bylo zvoleno jako $32\times32$ pixelů.
+  Řešení bylo implementováno pro \textit{Labeled Face in the Wild} data set, tedy databázi obrázků typu \textit{in-the-wild}. Sledované řešení určovalo identitu u~42, resp 11 identit ve dvou různých experimentech. Každý z~těchto experimentů byl proveden v~různých nastaveních sítě a prezentované řešení se jevilo jako optimální nastavení. U~42 identit síť dosáhla \textbf{53,7\,\%} úspěšné identifikace u~11 identit to bylo \textbf{75\,\%}. Vstupní rozlišení obrázku bylo zvoleno jako $32\times32$ pixelů.
 }
 
 % nastavení délky bloku s titulkem pro úpravu zalomení řádku - lze definovat zde nebo výše / setting the length of a block with a thesis title for adjusting a line break - can be defined here or above

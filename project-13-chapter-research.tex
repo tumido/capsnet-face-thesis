@@ -33,7 +33,7 @@ To complete the definition, we have to note that $w$ has to be a valid probabili
 
 Convolutional neural networks use a bit different terminology, than we used in the example. The function providing data we want to consume ($p$ from the example) is simply called \textbf{input}. The other parameter to the convolution, in our example that was the weight function, is called a \textbf{kernel}. The result of convolution ($s$) of input ($p$) over a kernel ($w$) is simply called \textbf{output} or \textbf{feature map}.
 
-Our expectation that the sensor from the example above, would provide a measurement continuously, in any instant of time, is not realistic. Time is usually discretized in digital world, therefore it is meaningful to assume the sensor is providing measurements at regular intervals. So instead of integrating over time continuum, we can define a discrete convolution as:
+Our expectation that the sensor from the example above, would provide a measurement continuously, in any instant of time, is not realistic. Time is usually discretized in digital world, therefore it is meaningful to assume the sensor is providing measurements at regular intervals. So instead of integrating over time continuum, we can define\,\cite{deeplearningbook} a discrete convolution as:
 
 \begin{equation}
     s(t) = \sum_{a=-\infty}^{\infty} p(a) w(t - a) = (p * w)(t)
@@ -41,7 +41,7 @@ Our expectation that the sensor from the example above, would provide a measurem
 
 Our example was quite simple and straightforward, usually in artificial intelligence and deep-learning the input is common to be multidimensional array (tensor) of data. Also the kernel happens to be a tensor of parameters which values are often obtained by some learning algorithm.
 
-Finally, when processing multidimensional data, convolution is used over multiple axis at the same time. That's important for our application, because pictures, we are about to process, have more than one dimension. So in case we have an input image $I$\,--\,a two-dimensional bitmap, our convolution should use a two-dimensional kernel $K$ as well:
+Finally, when processing multidimensional data, convolution is used over multiple axis at the same time. That's important for our application, because pictures, we are about to process, have more than one dimension. So in case we have an input image $I$\,--\,a two-dimensional bitmap, our convolution should use a two-dimensional kernel $K$ as well\,\cite{deeplearningbook}:
 
 \begin{equation}
     S(x,y) = (I * K)(x, y) = \sum_i\sum_j I(m, n) K(x - i)(y - j)
@@ -49,7 +49,7 @@ Finally, when processing multidimensional data, convolution is used over multipl
 
 \begin{figure}[ht]
     \includegraphics[width=\textwidth]{obrazky-figures/convolution.pdf}
-    \caption{Convolution operation with 2D input data and 2D kernel}\label{fig:convolution}
+    \caption{Convolution operation with 2D input data and 2D kernel.}\label{fig:convolution}
 \end{figure}
 
 \subsection{Use of convolution in neural networks}
@@ -86,7 +86,7 @@ However, this view limits us just to direct influence on a unit. Receptive field
 \begin{figure}[ht]
     \centering
     \includegraphics[width=.6\textwidth]{obrazky-figures/receptive.pdf}
-    \caption{Receptive field of unit $s_3$}\label{fig:receptive}
+    \caption{Receptive field of unit $s_3$.}\label{fig:receptive}
 \end{figure}
 
 \subsubsection{Parameter sharing}
@@ -95,7 +95,7 @@ A feature of convolution referring to a reuse of parameters in more than one com
 
 \subsubsection{Equivariant representation}
 
-A function is equivariant to another when $f(g(x)) = g(f(x))$. Convolution is naturally equivariant for example to translation\,\cite[p.~339]{deeplearningbook} . Imagine we have an input image and we shift the image some pixels to any direction of choice. When convolution is performed, the same kernel is applied to any set of pixels, therefore the set of features, our network layer aims to collect, can be found in the shifted image as well as in the original. It would just appear shifted in the output feature map. Here we can benefit from parameter sharing in use cases like edge detection. We're interested in the same feature, no matter where it appears on the image. In other use cases, like for example face detection, we might not be interested in the full parameter sharing. Imagine we have a kernel which is trained to detect a mouth. In order to work properly, we should restrict this kernel to look for the feature only in bottom portion of the picture, because detecting a mouth on forehead would not result in proper outputs. We'll cover more about multi-kernel convolution layers later.
+A function is equivariant to another when $f(g(x)) = g(f(x))$. Convolution is naturally equivariant for example to translation\,\cite[p.~339]{deeplearningbook}. Imagine we have an input image and we shift the image some pixels to any direction of choice. When convolution is performed, the same kernel is applied to any set of pixels, therefore the set of features, our network layer aims to collect, can be found in the shifted image as well as in the original. It would just appear shifted in the output feature map. Here we can benefit from parameter sharing in use cases like edge detection. We're interested in the same feature, no matter where it appears on the image. In other use cases, like for example face detection, we might not be interested in the full parameter sharing. Imagine we have a kernel which is trained to detect a mouth. In order to work properly, we should restrict this kernel to look for the feature only in bottom portion of the picture, because detecting a mouth on forehead would not result in proper outputs. We'll cover more about multi-kernel convolution layers later.
 
 \subsubsection{Variable size of the input}
 
@@ -131,7 +131,7 @@ Since pooling can summarise a response of layer over whole neighbourhood of inpu
 \begin{figure}[ht]
     \centering
     \includegraphics[width=.6\textwidth]{obrazky-figures/downsampling.pdf}
-    \caption{Pooling with down-sampling}\label{fig:downsample}
+    \caption{Pooling with down-sampling.}\label{fig:downsample}
 \end{figure}
 
 In deep learning this is often the case. We don't refer to convolution as a simple single operation as described in the beginning of this chapter. Such convolution layer with a single kernel would be capable of extracting only a single feature, although in many spatial locations. Usually many convolutions are applied and performed in parallel. That can provide many different kernels for different features, which are interesting for the use case. As a result, the network can locate many kinds of features at many locations.
@@ -146,14 +146,14 @@ A strided convolution is rather avoiding some of the convolutions at all. That f
 \begin{figure}
     \centering
     \includegraphics[width=.6\textwidth]{obrazky-figures/conv_down.pdf}
-    \caption{Convolution and pooling with down-sampling}\label{fig:conv_down}
+    \caption{Convolution and pooling with down-sampling.}\label{fig:conv_down}
 \end{figure}
 
 
 \begin{figure}
     \centering
     \includegraphics[width=.6\textwidth]{obrazky-figures/strided.pdf}
-    \caption{Strided convolution}\label{fig:strided}
+    \caption{Strided convolution.}\label{fig:strided}
 \end{figure}
 
 As it can be clearly seen on the images\,\ref{fig:conv_down} and\,\ref{fig:strided} the two step down-sampling is computationally more expensive than the strided optimisation, while it can provide similar results.
@@ -182,7 +182,7 @@ Another type available is a \textbf{tiled convolution}\,\cite{tiled_conv} layer.
     \includegraphics[width=.6\textwidth]{obrazky-figures/fully_connected.pdf} \\
     Fully connected \\
     \bigskip
-    \caption{Comparison of convolutional layers}
+    \caption{Comparison of convolutional layers.}
     \label{fig:compare_layers}
 \end{figure}
 
@@ -208,7 +208,7 @@ To demonstrate this drawback imagine a CNN face detector. Deeper layers of netwo
     \includegraphics[height=0.3\textwidth]{obrazky-figures/face_normal.pdf}
     \hspace{10em}
     \includegraphics[height=0.3\textwidth]{obrazky-figures/face_disorted.pdf}
-    \caption{Both of these images can be evaluated to be a face. Spatial location, relation and pose between simpler features are not considered by this type of network. Both images appear similar to CNN. \textit{Original artwork provided by Freepik\,\cite{freepik}}}
+    \caption{Both of these images can be evaluated to be a face. Spatial location, relation and pose between simpler features are not considered by this type of network. Both images appear similar to CNN. \textit{Original artwork provided by Freepik\,\cite{freepik}}.}
     \label{fig:capsule_face}
 \end{figure}
 
@@ -221,7 +221,7 @@ So how do we model this hierarchical relationship inside a neural network? Here 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=.8\textwidth]{obrazky-figures/duck.pdf}
-    \caption{CNN struggles to recognise this is the same object. Human brain, on the other hand, immediately understands that objects on the picture are identical, despite being viewed from multiple different angles. \textit{Original artwork provided by Freepik\,\cite{freepik}}}
+    \caption{CNN struggles to recognise this is the same object. Human brain, on the other hand, immediately understands that objects on the picture are identical, despite being viewed from multiple different angles. \textit{Original artwork provided by Freepik\,\cite{freepik}}.}
     \label{fig:duck}
 \end{figure}
 
@@ -261,7 +261,7 @@ Here we are introducing $c_{ij}$ coupling coefficients which are determined by t
 Later on we will define two distinct layer types: \textit{prediction capsules} and \textit{primary capsules}. These are required to communicate and rate the activations based on accuracy of the prediction. The algorithm used is called \textbf{dynamic routing by agreement} and is described in greater detail by Hinton in publication \textit{Dynamic routing between capsules}\,\cite{capsule}. It utilizes the already described coupling coefficients and log prior. The algorithm goes as this:
 
 \begin{algorithm}[H]
-    \caption{Dynamic routing by agreement}\label{alg:routing}
+    \caption{Dynamic routing by agreement.}\label{alg:routing}
     \begin{algorithmic}[1]
         \Procedure{ROUTING}{$\hat{u}_{j|i}, r, l$}
         \ForAll{capsule $i$ in layer $j$ and capsule $j$ in layer $(l + 1)$} $b_{ij}\gets 0$ \EndFor
@@ -294,7 +294,7 @@ A decoder network is a fully connected (dense) or convolutional network, which p
 \begin{figure}[ht]
     \centering
     \includegraphics[height=11em]{obrazky-figures/reconsArch.png}
-    \caption{Decoder architecture as per Hinton\,\cite{capsule}}
+    \caption{Decoder architecture as per Hinton\,\cite{capsule}.}
     \label{fig:decoder}
 \end{figure}
 
@@ -306,7 +306,7 @@ As said the 3 layer encoder consist of two convolutional layers (one traditional
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{obrazky-figures/capsulearch.png}
-    \caption{Encoder architecture as per Hinton\,\cite{capsule}}
+    \caption{Encoder architecture as per Hinton\,\cite{capsule}.}
     \label{fig:encoder}
 \end{figure}
 
@@ -327,7 +327,7 @@ where, $T_k = 1$ is a hot one encoded truth of the capsule belonging to that par
 
 \subsection{Primary capsules}
 
-This composite layer encapsulates a convolution with vectorization and \textit{squashing}. Therefore this layer is also called \textit{convolutional capsule layer}. It provides knowledge about greater context of each local feature, and makes more abstract detection about overall shape and orientation of such feature. Key factor in this layer is a non-linear activation called \textit{squashing}. We've already covered the squashing function by equation\,\ref{eq:squash}. Hinton, describes this layer\,\cite{capsule} as:
+This composite layer encapsulates a convolution with vectorization and \textit{squashing}. Therefore this layer is also called \textit{convolutional capsule layer}. It provides knowledge about greater context of each local feature, and makes more abstract detection about overall shape and orientation of such feature\,\cite{capsule_compare}. Key factor in this layer is a non-linear activation called \textit{squashing}. We've already covered the squashing function by equation\,\ref{eq:squash}. Hinton, describes this layer\,\cite{capsule} as:
 
 \begin{quotation}
     In convolutional capsule layers each unit in a capsule is a convolutional unit. Therefore, each capsule will output a grid of vectors rather than a single output vector.
@@ -337,6 +337,6 @@ The quoted statement stipulates boundaries by which this layer is different to a
 
 \subsection{Prediction capsules}
 
-Next layer is understood to be a fully connected capsule layer, which purpose is to rate the features located by the previous \textit{primary capsule} layer and bundle the smallest amount of unique activation per label. As it may sound confusing, we need to elaborate further and step by step. We already know, that the output of previous layer in each of its capsules is a local grid of vectors which are unique to each its member as well as for each capsule. Key word is "grid". It signifies the output is three dimensional. However traditionally a feature is understood as a 2D location. Our primary capsules holds also another interesting factor to this. We can now understand and recognize a feature in relation to others. And that's precisely what is done in this layer. The amount of prediction capsules corresponds to the amount of target labels. Therefore each capsule is mapped to one particular label, in our case an identity, and is expected to locate the features which are unique to this particular identity as well as all the common features which define a face. However this is not an easy task, and a simple weighted multiplication over a kernel would not provide enough insight into the complicated data. Therefore an algorithm called \textit{dynamic routing} is used. This routing algorithm has been already discussed and can be seen as Algorith\,\ref{alg:routing}.
+Next layer is understood to be a fully connected capsule layer, which purpose is to rate the features located by the previous \textit{primary capsule} layer and bundle the smallest amount of unique activation per label. As it may sound confusing, we need to elaborate further and step by step. We already know, that the output of previous layer in each of its capsules is a local grid of vectors which are unique to each its member as well as for each capsule. Key word is "grid". It signifies the output is three dimensional. However traditionally a feature is understood as a 2D location. Our primary capsules holds also another interesting factor to this. We can now understand and recognize a feature in relation to others. And that's precisely what is done in this layer. The amount of prediction capsules corresponds to the amount of target labels. Therefore each capsule is mapped to one particular label, in our case an identity, and is expected to locate the features which are unique to this particular identity as well as all the common features which define a face. However this is not an easy task, and a simple weighted multiplication over a kernel would not provide enough insight into the complicated data. Therefore an algorithm called \textit{dynamic routing}\,\cite{capsule_compare} is used. This routing algorithm has been already discussed and can be seen as Algorithm\,\ref{alg:routing}.
 
 The main purpose is to recognise that particular features which holds the same or similar context as the others in each particular label. The context can be of many different types, from simple distance of multiple features in 3D space, over a consistent angle hold between two features, to for instance a simple contextualized location relative to other features.
